@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Logic Simulation</title>
+
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+
+  <link href='https://fonts.googleapis.com/css?family=Architects%20Daughter' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div id="top">
+    <div id="main_title"><a href="#">Logic Simulator</a></div>
+    <div id="toolbar" class="noselect">
+      <i class="material-icons" title="Create new [ctrl+n]">insert_drive_file</i>
+      <i class="material-icons" title="Save [ctrl+s]">save</i>
+      <i class="material-icons" title="Open file [ctrl+o]">folder_open</i>
+      <!-- <i class="material-icons" title="Print [ctrl+p]">print</i> -->
+      <span class="seperator"></span>
+      <i class="material-icons" title="Undo [ctrl+z]" disabled>undo</i>
+      <i class="material-icons" title="Redo [ctrl+y]" disabled>redo</i>
+      <span class="seperator"></span>
+      <!-- context menu -->
+      <!-- <i class="material-icons" title="Cut [ctrl+x]" disabled>cut</i>
+      <i class="material-icons" title="Copy [ctrl+c]" disabled>copy</i>
+      <i class="material-icons" title="Paste [ctrl+v]" disabled>paste</i> -->
+      <!-- <i class="material-icons" title="Select all [ctrl+a]" disabled>select_all</i> -->
+      <!-- <span class="seperator"></span> -->
+      <i class="material-icons" title="Delete selected [delete]" disabled>delete</i>
+      <i class="material-icons" title="Duplicate selected [ctrl+d]" disabled>filter_none</i>
+      <i class="material-icons" title="Rotate selected right (90°) [ctrl+r]" disabled>rotate_right</i>
+      <i class="material-icons" title="Rotate selected left (-90°) [ctrl+shift+r]" disabled>rotate_left</i>
+      <i class="material-icons" title="Create integrated circuit (by selection) [ctrl+i]" disabled>post_add</i> <!-- receipt -->
+
+      <span class="seperator"></span>
+      <i class="material-icons" title="Generate truth table [ctrl+g]">receipt</i>
+
+      <i class="material-icons right" style="right:52px;" title="Settings [ctrl+?]">settings_gear</i>
+      <i class="material-icons right" title="About">info</i>
+    </div>
+    <!-- pause simulation -->
+    <!-- save (export) -->
+  </div>
+  <div id="drawer"></div>
+
+
+  <div class="results" style="position: fixed;top: 43px;left: 260px;z-index:20;pointer-events:none;">
+    <div>
+      Click Pos: (<span class="clickPosX">null</span>,
+      <span class="clickPosY">null</span>)
+    </div>
+    <div>
+      Move Pos: (<span class="moveClickPosX">null</span>,
+      <span class="moveClickPosY">null</span>)
+    </div>
+    <div>
+      Dragging: <span class="draggingIndicator">no</span>
+    </div>
+    <div>
+      Zoom: <span class="zoomIndicator">100%</span>
+    </div>
+  </div>
+
+  <!-- <div style="top:40px;left:250px;"> -->
+  <div id="main" style="zoom:1;top:0;left:0;">
+
+    <div id="selectionBox" class="hidden"></div>
+    <!-- <div> -->
+      <div id="SVGdiv">
+        <!-- <svg class="lineSVG">Sorry, your browser does not support inline SVG.</svg> -->
+      </div>
+    <!-- </div> -->
+    <!-- <svg height="210" width="500">
+      <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
+      Sorry, your browser does not support inline SVG.
+    </svg> -->
+  </div>
+  <!-- </div> -->
+
+  <div class="map_overlay">
+    <div class="map_outline"></div>
+  </div>
+
+
+
+
+  <!-- bottom -->
+  <!-- TODO: darken screen around -->
+  <div id="bottom">
+    <!-- TODO: show zoom level -->
+    <!-- TODO: pause / start / reset? simulation / (Advance Simulation One Step) -->
+    <!-- <i class="material-icons" title="Pause simulation" disabled>pause</i> -->
+  </div>
+
+
+
+  <!-- dark -->
+  <div id="dark" class="hidden"></div>
+
+
+  <!-- settings -->
+  <div id="settings" class="hidden">
+    <div id="close"><i class="material-icons" title="Close">close</i></div>
+    <h1>General</h1>
+    <table style="width:100%;">
+      <tbody>
+        <tr>
+          <td><p>Theme: </p></td>
+          <td><div id="theme" class="multiselect">
+            <div class="theme_light settings active">Light</div>
+            <!-- <div class="theme_light settings active">Light #2</div> -->
+            <div class="theme_dark settings">Dark</div>
+            <div class="theme_night settings">Night</div>
+            <div class="theme_neon settings">Neon</div>
+          </div></td>
+        </tr>
+        <tr>
+          <td><p>Line Type: </p></td>
+          <td><div id="line_type" class="multiselect">
+            <div class="curved settings active">Curved</div>
+            <div class="straight settings">Straight</div>
+            <div class="lined settings">Lined</div>
+          </div></td>
+        </tr>
+        <tr>
+          <td><p>Background: </p></td>
+          <td><div id="background" class="multiselect">
+            <div class="dotted settings active">Dotted</div>
+            <div class="lines settings">Lines</div>
+            <div class="blank settings">Blank</div>
+          </div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+  <!-- TODO: WIP context menus -->
+  <div id="menuMain" class="menu">
+    <ul class="menu-options">
+      <!-- <li class="menu-option">Back</li> -->
+      <!-- <li class="menu-option">Reload</li> -->
+      <li class="menu-option">Save</li>
+      <li class="menu-option">Select all</li> <!-- TODO: Show "Select none" when all is selected -->
+      <!-- <li class="menu-option">Cut Selected</li>
+      <li class="menu-option">Copy Selected</li> -->
+      <li class="menu-option" disabled>Paste</li>
+      <!-- <li class="menu-option">Save As</li> -->
+      <!-- <li class="menu-option">Inspect</li> -->
+    </ul>
+  </div>
+
+  <!-- TODO: show this when elems are selected -->
+  <div id="menuComponent" class="menu">
+    <ul class="menu-options">
+      <li class="menu-option" id="contextLabel">Add Label</li>
+      <li class="menu-option">Delete</li>
+      <li class="menu-option">Cut</li>
+      <li class="menu-option">Copy</li>
+      <!-- <li class="menu-option">Save As</li> -->
+      <li class="menu-option">Inspect</li>
+    </ul>
+  </div>
+
+  <script src="assets/js/script.js"></script>
+  <script src="assets/js/load.js"></script>
+  <script src="assets/js/zoom.js"></script>
+  <script src="assets/js/context.js"></script>
+</body>
+</html>
+
+
+<!-- Drag & drop
+Click & drag (see bloons name)
+(no settings, just click or drag)
+
+middle mouse button = move !!!
+
+drag = select && ctrl/alt/shift? + drag = move
+OR
+drag = move && ctrl + drag = select
+
+choose theme... (retro, realistic, material, light, dark, ...)
+
+(Elenergi, aut, computer, logic)
+
+smart logic simulator - Google / Google Play
+
+logic simulator online:
+- https://logic.ly/demo
+- https://circuitverse.org/simulator
+
+-->

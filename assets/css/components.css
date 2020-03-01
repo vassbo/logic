@@ -1,0 +1,419 @@
+.box {
+  border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  background: var(--component-back);
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+
+  z-index: 1;
+
+  /* position: absolute; */
+}
+.box.shorter {
+  width: 60px;
+}
+
+.component {
+  position: absolute;
+}
+
+
+.selected:not(.lineSVG) {
+  /* box-shadow: 0px 0px 16px 1px rgba(0, 0, 0, 0.6); */
+  box-shadow: 0px 0px 4px 2px var(--selection);
+}
+
+.lineSVG.selected {
+  filter: drop-shadow(0px 0px 3px var(--selection));
+}
+
+
+
+
+.connection {
+  position: absolute;
+  background: orange;
+}
+
+.connection.right {
+  height: 2px;
+  width: 10px;
+  right: 0;
+  top: 50%;
+  /* transform: translate(98%, 50%); */
+  transform: translate(98%);
+}
+.connection.left {
+  height: 2px;
+  width: 10px;
+  left: 0;
+  top: 50%;
+  /* transform: translate(98%, 50%); */
+  transform: translate(-98%);
+}
+
+
+.connector {
+  border-radius: 50%;
+  border: 2px solid orange;
+  position: absolute;
+  background: white;
+  /* cursor: pointer; */
+  height: 12px;
+  width: 12px;
+  transition: 0.1s;
+}
+
+.connection.right .connector {
+  right: 0;
+  top: 50%;
+  transform: translate(98%, -50%);
+}
+.connection.left .connector {
+  left: 0;
+  top: 50%;
+  transform: translate(-98%, -50%);
+}
+
+
+.connector.notConnected {
+  background: red;
+}
+
+
+.line {
+  stroke: var(--line-idle);
+  /* stroke-width: 2; */
+  stroke-width: 4;
+
+  /* stroke-dasharray: 10; */
+
+  /* z-index: 99; */
+  /* position: absolute; */
+
+  pointer-events: visible;
+  fill: none; /* transparent */
+}
+.line.powered {
+  stroke: var(--line-powered);
+  /* stroke-dasharray: none; */
+}
+
+.line.border {
+  stroke-width: 5;
+  stroke: black;
+}
+
+svg {
+  position: absolute;
+  /* position: absolute;
+  z-index: 1000;
+  height: 200px;
+  width: 200px; */
+  /* display: block; */
+}
+
+
+/*******/
+
+.label {
+  /* z-index: 2; */
+  position: relative;
+  text-align: center;
+  /* bottom: -10%; */
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 2px;
+
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--main-color-inverted);
+  background: var(--transparent--20);
+  /* font-weight: bold; */
+
+  cursor: default;
+  /* TODO: no text selection.... */
+}
+.label.small {
+  font-size: 10px;
+  padding: 0;
+  background: none;
+}
+
+
+
+.toggle {
+  border-radius: 4px;
+  width: 80%;
+  height: 80%;
+  background: var(--component-action);
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.34);
+}
+#main .toggle {
+  cursor: pointer;
+}
+#main .toggle:hover {
+  background: var(--component-action--hover);
+}
+#main .toggle:active {
+  content: "light";
+  cursor: default;
+  background: var(--component-action);
+  box-shadow: inset 4px 1px 6px 1px rgba(0, 0, 0, 0.34);
+}
+
+.btn-light {
+  border-radius: 2px;
+  width: 12px;
+  height: 3px;
+  background: var(--light-idle);
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+#main .btn-light {
+  cursor: pointer;
+}
+.btn-light.on {
+  background: var(--light-active);
+  box-shadow: 0 0 14px 7px var(--light-active--shadow);
+  /* background: #3d82cb;
+  box-shadow: 0 0 14px 7px rgba(61, 130, 203, 0.5); */
+}
+
+
+
+
+.button {
+  border-radius: 50%;
+  width: 80%;
+  height: 80%;
+  background: var(--component-action);
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.34);
+}
+#main .button {
+  cursor: pointer;
+}
+#main .button:hover {
+  background: var(--component-action--hover);
+}
+#main .button:active {
+  cursor: default;
+  background: var(--component-action);
+  box-shadow: inset 4px 1px 6px 1px rgba(0, 0, 0, 0.34);
+}
+
+
+
+
+@font-face {
+ font-family:'digital-clock';
+ src: url('/assets/fonts/digital.ttf');
+}
+
+.clock {
+  border-radius: 20%;
+  width: 80%;
+  height: 80%;
+  background: var(--component-action);
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.clock .display input {
+  background: green;
+  outline-color: #00a3ff;
+  width: 80%;
+  height: 25%;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-shadow: inset 2px 1px 4px 1px rgba(0, 0, 0, 0.34);
+  border-radius: 2px;
+  border: none;
+  border: 1px solid black;
+
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  font-family: 'digital-clock';
+  /* color: white; */
+}
+#drawer input {
+  cursor: default;
+}
+
+
+.signal-light {
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+  background: var(--light-idle);
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* #main .signal-light {
+  cursor: pointer;
+} */
+.signal-light.on {
+  background: var(--light-active);
+  box-shadow: 0 0 14px 7px var(--light-active--shadow);
+  /* background: #3d82cb;
+  box-shadow: 0 0 14px 7px rgba(61, 130, 203, 0.5); */
+}
+
+
+
+
+.constant {
+  border-radius: 10%;
+  width: 80%;
+  height: 80%;
+  background: var(--component-action);
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.constant span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: white
+}
+
+
+
+
+.box.round {
+  border-radius: 50%;
+}
+.light {
+  border-radius: 50%;
+  width: 80%;
+  height: 80%;
+  background: var(--light-active);
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: default;
+  box-shadow: 0px 0px 20px 6px var(--light-active--shadow);
+}
+
+#main .light.off {
+  /* background: #acd2ed; */
+  background: var(--light-off);
+  box-shadow: none;
+}
+/* .light {
+  width: 80px;
+  height: 80px;
+  background: var(--component-back);
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+
+  z-index: 1;
+
+  border-radius: 50%;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */
+/* .light */
+
+
+
+
+
+.number_display {
+  border-radius: 10%;
+  width: 80%;
+  height: 80%;
+  background: var(--component-action);
+  background: none;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.number_display div {
+  border-radius: 12%;
+  background: var(--light-idle);
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.number_display #number_1 { /* top */
+  width: 80%;
+  height: 14%;
+  top: 8%;
+  left: 50%;
+}
+.number_display #number_2 { /* top right */
+  width: 16%;
+  height: 45%;
+  top: 25%;
+  left: 90%;
+}
+.number_display #number_3 { /* bottom right */
+  width: 16%;
+  height: 45%;
+  top: 75%;
+  left: 90%;
+}
+.number_display #number_4 { /* bottom */
+  width: 80%;
+  height: 14%;
+  top: 92%;
+  left: 50%;
+}
+.number_display #number_5 { /* bottom left */
+  width: 16%;
+  height: 45%;
+  top: 75%;
+  left: 10%;
+}
+.number_display #number_6 { /* top left */
+  width: 16%;
+  height: 45%;
+  top: 25%;
+  left: 10%;
+}
+.number_display #number_7 { /* middle */
+  width: 80%;
+  height: 14%;
+  top: 50%;
+  left: 50%;
+}
+
+
+
+
+
+.circuit .circuit__connectors--left {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+}
