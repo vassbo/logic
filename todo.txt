@@ -1,1 +1,8 @@
 - Add a gamemode (Like; MakeItTrue)
+(Logic mode, electric mode, game mode)
+
+- ctrl + shift will not deselect anything before selecting with blue box
+
+- move cursor on main drag
+
+- save settings to local storage

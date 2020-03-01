@@ -79,6 +79,12 @@
 .connector.notConnected {
   background: red;
 }
+.connector.hover {
+  background: #ff651b;
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
+}
 
 
 .line {

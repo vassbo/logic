@@ -53,14 +53,14 @@ function updateMap(basedFromElement, mapElement, firstRun) {
       console.log(mapElement.children[0].style.left);
     }
 }
-updateMap(document.querySelectorAll('#main')[0], document.querySelectorAll('.map_overlay')[0], true);
+updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), true);
 
 // Drag around
 document.getElementById('main').addEventListener('mousedown', function(e) {
     clickPosX = e.pageX;
     clickPosY = e.pageY;
-    document.querySelectorAll('.clickPosX')[0].innerHTML = clickPosX;
-    document.querySelectorAll('.clickPosY')[0].innerHTML = clickPosY;
+    document.querySelector('.clickPosX').innerHTML = clickPosX;
+    document.querySelector('.clickPosY').innerHTML = clickPosY;
 
     oldPosX = e.pageX;
     oldPosY = e.pageY;
@@ -69,11 +69,11 @@ document.getElementById('main').addEventListener('mousedown', function(e) {
       dragging = true;
     }
 
-    document.querySelectorAll('.draggingIndicator')[0].innerHTML = 'yes';
+    document.querySelector('.draggingIndicator').innerHTML = 'yes';
 
-    e.preventDefault(); // prevents the browser from adding their own cursor
+    // e.preventDefault(); // prevents the browser from adding their own cursor
     this.classList.add('cursordrag'); // Adds the custom grabbing hand cursor
-    updateMap(document.querySelectorAll('#main')[0], document.querySelectorAll('.map_overlay')[0], false); // Update Map
+    updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // Update Map
 });
 
 document.addEventListener('mousemove', function(e) {
@@ -87,8 +87,8 @@ document.addEventListener('mousemove', function(e) {
       // TODO: WIP:
       // movePosX = e.pageX / mapZoom;
       // movePosY = e.pageY / mapZoom;
-      document.querySelectorAll('.moveClickPosX')[0].innerHTML = movePosX;
-      document.querySelectorAll('.moveClickPosY')[0].innerHTML = movePosY;
+      document.querySelector('.moveClickPosX').innerHTML = movePosX;
+      document.querySelector('.moveClickPosY').innerHTML = movePosY;
 
       // console.log(oldPosX);
       // console.log(movePosX);
@@ -125,7 +125,7 @@ document.addEventListener('mousemove', function(e) {
         oldPosY = movePosY;
       }
 
-      updateMap(document.querySelectorAll('#main')[0], document.querySelectorAll('.map_overlay')[0], false); // Update Map
+      updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // Update Map
     }
   }
 });
@@ -133,7 +133,7 @@ document.addEventListener('mousemove', function(e) {
 document.addEventListener('mouseup', function(e) {
   elem = document.getElementById("main");
   dragging = false;
-  document.querySelectorAll('.draggingIndicator')[0].innerHTML = 'no';
+  document.querySelector('.draggingIndicator').innerHTML = 'no';
 
   elem.classList.remove('cursordrag'); // Returns the cursor to default
 });
@@ -162,7 +162,7 @@ function wheel(event) {
     mapZoom = elem.style.zoom;
   }
   // console.log(mapZoom);
-  document.querySelectorAll('.zoomIndicator')[0].innerHTML = Math.round(mapZoom * 100) + '%';
+  document.querySelector('.zoomIndicator').innerHTML = Math.round(mapZoom * 100) + '%';
 
   console.log(movePosY);
   console.log(movePosX);
@@ -208,7 +208,7 @@ function wheel(event) {
     style.left: $(elem).style.left() - movePosX
   }, 1000);*/
 
-  updateMap(document.querySelectorAll('#main')[0], document.querySelectorAll('.map_overlay')[0], false); // Update Map
+  updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // Update Map
   event.preventDefault();
 }
 
@@ -251,10 +251,10 @@ function moveIndicator(e) {
     console.log((offsetX * -1 / mapSizePercentage));
 
     // TODO: WIPWIPWIPWIPWIPWIPWIP
-    document.querySelectorAll('#main')[0].style.top = offsetY * -1 / mapSizePercentage * 2 + 'px';
-    document.querySelectorAll('#main')[0].style.left = offsetX * -1 / mapSizePercentage * 2 + 'px';
-    // document.querySelectorAll('#main')[0].style.top = (offsetY * -1 / mapSizePercentage * 2) / 2 + 'px';
-    // document.querySelectorAll('#main')[0].style.left = (offsetX * -1 / mapSizePercentage * 2) / 2 + 'px';
+    document.querySelector('#main').style.top = offsetY * -1 / mapSizePercentage * 2 + 'px';
+    document.querySelector('#main').style.left = offsetX * -1 / mapSizePercentage * 2 + 'px';
+    // document.querySelector('#main').style.top = (offsetY * -1 / mapSizePercentage * 2) / 2 + 'px';
+    // document.querySelector('#main').style.left = (offsetX * -1 / mapSizePercentage * 2) / 2 + 'px';
   }
 }
 

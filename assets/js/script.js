@@ -36,7 +36,7 @@
 
 
 
-var setting_lineType = "straight";
+var setting_lineType = "curved"; // straight / lined
 
 var setting_lineColor_idle = "#b00000";
 var setting_lineColor_powered = "red";
@@ -250,46 +250,60 @@ function updateSignal(id) {
 // appendElement("clock");
 // appendElement("light");
 // -------------------------------
-function appendElement(type, id) { // TODO: THIS IS NEVER #MAIN!!!
+function appendElement(type, id) { // TODO: THIS IS NEVER #MAIN!!! // id = parent element
   if (id == undefined) {
     id = "main";
   }
   var component = document.createElement("div");
   // component.classList.add(type);
-  if (type == 'number_display') {
-    component.classList.add("box");
-    component.classList.add("shorter");
-  } else if (type == 'light') {
-    component.classList.add("box");
-    component.classList.add("round");
-  } else {
-    component.classList.add("box");
+  // if (type == 'number_display') {
+  //   component.classList.add("box");
+  //   component.classList.add("shorter");
+  // } else if (type == 'light') {
+  //   component.classList.add("box");
+  //   component.classList.add("round");
+  // } else {
+  //   component.classList.add("box");
+  // }
+
+  var object = getObjectByType(type);
+
+  for (var k = 0; k < object.classes.length; k++) {
+    component.classList.add(object.classes[k]);
   }
 
-  switch (type) {
-    case 'button':
-      component.innerHTML = '<div class="' + type + '"></div>';
-      break;
-    case 'toggle':
-      component.innerHTML = '<div class="' + type + '"><div class="btn-light"></div></div>';
-      break;
-    case 'clock':
-      component.innerHTML = '<div class="' + type + '"><div class="display"><input class="clock_input" id="clockInput#' + clockInputs + '" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div></div>';
-      clockInputs++;
-      break;
-    case 'light':
-      component.innerHTML = '<div class="' + type + ' off"></div>';
-      break;
-    case 'high_constant':
-      component.innerHTML = '<div class="constant"><span>1</span></div>';
-      break;
-    case 'low_constant':
-      component.innerHTML = '<div class="constant"><span>0</span></div>';
-      break;
-    case 'number_display':
-      component.innerHTML = '<div class="' + type + '"><div id="number_1"></div><div id="number_2"></div><div id="number_3"></div><div id="number_4"></div><div id="number_5"></div><div id="number_6"></div><div id="number_7"></div></div>';
-      break;
+  var classList = type;
+  if (object.innerClasses !== undefined) {
+    for (var l = 0; l < object.innerClasses.length; l++) {
+      classList += ' ' + object.innerClasses[l];
+    }
   }
+  component.innerHTML = '<div class="' + classList + '">' + object.children + '</div>';
+
+  // switch (type) {
+  //   case 'button':
+  //     component.innerHTML = '<div class="' + type + '"></div>';
+  //     break;
+  //   case 'toggle':
+  //     component.innerHTML = '<div class="' + type + '"><div class="btn-light"></div></div>';
+  //     break;
+  //   case 'clock':
+  //     component.innerHTML = '<div class="' + type + '"><div class="display"><input class="clock_input" id="clockInput#' + clockInputs + '" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div></div>';
+  //     clockInputs++;
+  //     break;
+  //   case 'light':
+  //     component.innerHTML = '<div class="' + type + ' off"></div>';
+  //     break;
+  //   case 'high_constant':
+  //     component.innerHTML = '<div class="constant noselect"><span>1</span></div>';
+  //     break;
+  //   case 'low_constant':
+  //     component.innerHTML = '<div class="constant noselect"><span>0</span></div>';
+  //     break;
+  //   case 'number_display':
+  //     component.innerHTML = '<div class="' + type + '"><div id="number_1"></div><div id="number_2"></div><div id="number_3"></div><div id="number_4"></div><div id="number_5"></div><div id="number_6"></div><div id="number_7"></div></div>';
+  //     break;
+  // }
 
 
   if (id == "main") {
@@ -301,7 +315,12 @@ function appendElement(type, id) { // TODO: THIS IS NEVER #MAIN!!!
     dragElement(component, true);
   }
 
+
   document.getElementById(id).appendChild(component);
+  if (type == 'clock') {
+    document.getElementById('clockInput#temp').id = 'clockInput#' + clockInputs;
+    clockInputs++;
+  }
   return component;
 }
 // position: absolute; transform: rotate(0deg); left: 99px; top: 118px;
@@ -312,6 +331,21 @@ function appendElement(type, id) { // TODO: THIS IS NEVER #MAIN!!!
 // }, 10);
 // -------------------------------
 
+
+function getObjectByType(type) {
+  var object;
+  for (var i = 0; i < Object.keys(components).length; i++) {
+    var key = Object.keys(components)[i];
+    for (var j = 1; j < Object.keys(components[key]).length; j++) {
+      var elem = components[key][Object.keys(components[key])[j]];
+      if (Object.keys(components[key])[j] == type) {
+        object = elem;
+        break;
+      }
+    }
+  }
+  return object;
+}
 
 
 function addLabel(name, component, drawer) {
@@ -327,18 +361,31 @@ function addLabel(name, component, drawer) {
 
 var connections = 0;
 function addConnection(component, type) {
-  var connection = document.createElement("div");
-  connection.classList.add("connection");
-  if (type == "button" || type == "toggle") {
-    connection.classList.add("right");
-  } else if (type == "light") {
-    connection.classList.add("left");
-  } else {
-    connection.classList.add("right");
+  var object = getObjectByType(type);
+  // TODO: multiple connections
+  var leftCount = 0, rightCount = 0;
+  for (var i = 0; i < Object.keys(object.connections).length; i++) {
+    var connectionObject = object.connections[Object.keys(object.connections)[i]];
+    if (connectionObject.pos == 'right') rightCount++;
+    else if (connectionObject.pos == 'left') leftCount++;
   }
-  connection.innerHTML = '<div class="connector" id="' + connections + '"></div>';
-  component.appendChild(connection);
-  connections++;
+  // create connections
+  var slicesRight = component.offsetHeight / (rightCount + 1),
+      slicesLeft = component.offsetHeight / (leftCount + 1);
+  for (var j = 0; j < rightCount; j++) {
+    appendConnection(slicesRight * (j + 1), j, 'right');
+  }
+  for (var k = 0; k < leftCount; k++) {
+    appendConnection(slicesLeft * (k + 1), k, 'left');
+  }
+  function appendConnection(top, pos, direction) {
+    var connection = document.createElement("div");
+    connection.style.top = top + 'px';
+    connection.classList.add("connection", direction); // object.connections[pos].pos
+    connection.innerHTML = '<div class="connector" id="' + connections + '"></div>';
+    component.appendChild(connection);
+    connections++;
+  }
 }
 
 
@@ -410,10 +457,7 @@ function hover(e) {
       if (hasNoConnections(target.id) || !target.closest(".connection").classList.contains("left")) { // if it has no connection || has a connector thats not left
         if (!moved || startingConnect !== target) { // not the same start and end
           if (!moved || noMatchingLines(startingConnect.id + ':' + target.id)) { // no lines with the exact same id (same connections)
-            target.style.background = "#ff651b";
-            target.style.cursor = "pointer";
-            target.style.height = "16px";
-            target.style.width = "16px";
+            target.classList.add('hover');
             found = true;
             foundTarget = target;
           }
@@ -421,14 +465,13 @@ function hover(e) {
       }
     }
   }
-  if (found && foundTarget !== target) {
-    // foundTarget.style.background = null;
-    // foundTarget.style.cursor = null;
-    // foundTarget.style.height = null;
-    // foundTarget.style.width = null;
-    foundTarget.removeAttribute("style");
-    found = false;
+  var elems = document.querySelectorAll('.connector');
+  for (var i = 0; i < elems.length; i++) {
+    if (elems[i].classList.contains('hover') && elems[i] !== target) {
+      elems[i].classList.remove('hover');
+    }
   }
+  if (found && foundTarget !== target) found = false;
 }
 
 
@@ -893,7 +936,13 @@ function checkForNoConnections() {
 
 
 function getSVGPositions(x1, y1, x2, y2) {
-  var storeInput = [x1, y1, x2, y2];
+  // TODO: center svg with connection ... ?
+  var storeInput = {
+    x1: x1,
+    y1: y1,
+    x2: x2,
+    y2: y2
+  };
   // TODO: WIP
   var store;
   var oppositeX = false;
@@ -942,9 +991,15 @@ function getSVGPositions(x1, y1, x2, y2) {
     array[2] = differenceX * 0.65 + x1; // 65%
     array[3] = differenceY * 2 + y1; // 200%
   }
-  var output = 'M ' + storeInput[0] + ' ' + storeInput[1] + ' C ' + array[0] + ' ' + array[1] + ', ' + array[2] + ' ' + array[3] + ', ' + storeInput[2] + ' ' + storeInput[3];
+  var output = 'M ' + storeInput.x1 + ' ' + storeInput.y1 + ' C ' + array[0] + ' ' + array[1] + ', ' + array[2] + ' ' + array[3] + ', ' + storeInput.x2 + ' ' + storeInput.y2;
+  // output = 'M ' + storeInput.x1 + ' ' + storeInput.y1 + ' C ' + storeInput.x1 + ' ' + storeInput.y1 * 1.5 + ', ' + storeInput.x2 + ' ' + storeInput.y2 + ', ' + storeInput.x2 + ' ' + storeInput.y2;
   if (setting_lineType == "straight") {
-    output = 'M ' + storeInput[0] + ' ' + storeInput[1] + ' C ' + storeInput[0] + ' ' + storeInput[1] + ', ' + storeInput[2] + ' ' + storeInput[3] + ', ' + storeInput[2] + ' ' + storeInput[3];
+    output = 'M ' + storeInput.x1 + ' ' + storeInput.y1 + ' C ' + storeInput.x1 + ' ' + storeInput.y1 + ', ' + storeInput.x2 + ' ' + storeInput.y2 + ', ' + storeInput.x2 + ' ' + storeInput.y2;
+  } else if (setting_lineType == 'lined') {
+    // x1,y1 -> (x2-x1)/2 -> y1 -> y2 -> x2
+    var center = (Math.abs(storeInput.x2 - storeInput.x1) / 2) + Math.min(storeInput.x1, storeInput.x2);
+    console.log(storeInput.x1 + ', ' + storeInput.x2);
+    output = 'M ' + storeInput.x1 + ' ' + storeInput.y1 + ' L ' + center + ' ' + storeInput.y1 + ', ' + center + ' ' + storeInput.y2 + ', ' + storeInput.x2 + ' ' + storeInput.y2;
   }
   // console.log(array);
   return output;
@@ -1015,7 +1070,7 @@ document.addEventListener('mousemove', function(e) {
     selectionBox.style.width = width + "px";
     selectionBox.style.height = height + "px";
 
-    elementsIsideBox(left, top, width, height);
+    elementsIsideBox(left, top, width, height, e.shiftKey);
     selectionBox.classList.remove("hidden");
   } else if (!selectionBox.classList.contains("hidden") && created) {
     selectionBox.style.opacity = "0";
@@ -1037,7 +1092,7 @@ document.addEventListener("mouseup", function() {
 
 
 
-function elementsIsideBox(left, top, width, height) {
+function elementsIsideBox(left, top, width, height, shift) {
   // console.log(left);
   // console.log(top);
   // console.log(width);
@@ -1068,7 +1123,7 @@ function elementsIsideBox(left, top, width, height) {
     // console.log(query[i].offsetHeight);
     if (query[i].style.left.replace(/\D+/g, '') >= left && query[i].style.top.replace(/\D+/g, '') >= top && query[i].style.left.replace(/\D+/g, '') <= (left + width) && query[i].style.top.replace(/\D+/g, '') <= (top + height) || Number(query[i].style.left.replace(/\D+/g, '')) + query[i].offsetWidth >= left && Number(query[i].style.top.replace(/\D+/g, '')) + query[i].offsetHeight >= top && query[i].style.left.replace(/\D+/g, '') <= (left + width) && query[i].style.top.replace(/\D+/g, '') <= (top + height)) {
       query[i].classList.add("selected");
-    } else {
+    } else if (!shift) {
       query[i].classList.remove("selected");
     }
   }
@@ -1084,7 +1139,7 @@ function elementsIsideBox(left, top, width, height) {
     // if (lines[j].getAttribute("x1") >= left && lines[j].getAttribute("y1") >= top && lines[j].getAttribute("x2") <= (left + width) && lines[j].getAttribute("y2") <= (top + height) || Number(lines[j].getAttribute("x1")) + lines[j].offsetWidth >= left && Number(lines[j].getAttribute("y1")) + lines[j].offsetHeight >= top && lines[j].getAttribute("x2") <= (left + width) && lines[j].getAttribute("y2") <= (top + height)) {
     if (x1 >= left && y1 >= top && x2 <= (left + width) && y2 <= (top + height) || Number(x1) + lines[j].offsetWidth >= left && Number(y1) + lines[j].offsetHeight >= top && x2 <= (left + width) && y2 <= (top + height)) {
       lines[j].closest(".lineSVG").classList.add("selected");
-    } else {
+    } else if (!shift) {
       lines[j].closest(".lineSVG").classList.remove("selected");
     }
   }
@@ -1127,7 +1182,7 @@ function addLineBorders() {
     var classes = query[i].lastChild.getAttribute("class");
     // console.log(style);
     // console.log(query[i].lastChild);
-    if (style == null) {
+    if (style == null || style.length <= 1) {
       query[i].innerHTML = '<path d="' + path + '" class="line border"></path><path id="' + id + '" d="' + path + '" class="' + classes + '"></path>';
     } else {
       query[i].innerHTML = '<path style="opacity:0.2;" d="' + path + '" class="line border"></path><path id="' + id + '" style="' + style + '" d="' + path + '" class="' + classes + '"></path>';

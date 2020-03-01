@@ -1,17 +1,159 @@
 
-// drawer
-section("Inputs");
-createGrid("dinputs");
-addLabel("Toggle Switch", appendElement("toggle", "dinputs"), true);
-addLabel("Push Button", appendElement("button", "dinputs"), true);
-addLabel("Clock", appendElement("clock", "dinputs"), true);
-addLabel("High constant", appendElement("high_constant", "dinputs"), true);
-addLabel("Low contstant", appendElement("low_constant", "dinputs"), true);
+var components = {
+  inputs: {
+    name: 'Inputs',
+    toggle: {
+      name: 'Toggle Switch',
+      classes: ['box'],
+      children: '<div class="btn-light"></div>',
+      connections: {
+        0: {
+          pos: 'right',
+          name: 'output' // ... (description) TODO: <--
+        }
+      }
+    },
+    button: {
+      name: 'Push Button',
+      classes: ['box'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'right',
+        }
+      }
+    },
+    clock: {
+      name: 'Clock',
+      classes: ['box'],
+      children: '<div class="display"><input class="clock_input" id="clockInput#temp" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div>',
+      connections: {
+        0: {
+          pos: 'right',
+        }
+      }
+    },
+    high_constant: {
+      name: 'High constant',
+      classes: ['box'],
+      innerClasses: ['constant', 'noselect'],
+      children: '<span>1</span>',
+      connections: {
+        0: {
+          pos: 'right',
+        }
+      }
+    },
+    low_constant: {
+      name: 'Low constant',
+      classes: ['box'],
+      innerClasses: ['constant', 'noselect'],
+      children: '<span>0</span>',
+      connections: {
+        0: {
+          pos: 'right',
+        }
+      }
+    }
+  },
+  outputs: {
+    name: 'Outputs',
+    light: {
+      name: 'Light Bulb',
+      classes: ['box', 'round'],
+      innerClasses: ['off'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'left',
+        }
+      }
+    },
+    number_display: {
+      name: '4-Bit Digit', // seven segment display
+      classes: ['box', 'shorter'],
+      children: '<div id="number_1"></div><div id="number_2"></div><div id="number_3"></div><div id="number_4"></div><div id="number_5"></div><div id="number_6"></div><div id="number_7"></div>',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left',
+        },
+        2: {
+          pos: 'left',
+        },
+        3: {
+          pos: 'left',
+        },
+        4: {
+          pos: 'right',
+        }
+      }
+    }
+  },
+  logic_gates: {
+    name: 'Logic Gates',
+    and: {
+      name: 'AND Gate',
+      classes: ['box'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
+    },
+    or: {
+      name: 'OR Gate',
+      classes: ['box'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
+    }
+  }
+};
 
-section("Outputs");
-createGrid("doutputs");
-addLabel("Light Bulb", appendElement("light", "doutputs"), true);
-addLabel("4-Bit Digit", appendElement("number_display", "doutputs"), true); // seven segment display
+
+for (var i = 0; i < Object.keys(components).length; i++) {
+  var os = Object.keys(components)[i]; // os = object section
+  section(components[os].name);
+  createGrid("d" + os); // d = drawer
+  for (var j = 1; j < Object.keys(components[os]).length; j++) {
+    var object = Object.keys(components[os])[j];
+    var elem = components[os][object];
+    addLabel(elem.name, appendElement(object, "d" + os), true);
+  }
+}
+
+// drawer
+// section("Inputs");
+// createGrid("dinputs");
+// addLabel("Toggle Switch", appendElement("toggle", "dinputs"), true);
+// addLabel("Push Button", appendElement("button", "dinputs"), true);
+// addLabel("Clock", appendElement("clock", "dinputs"), true);
+// addLabel("High constant", appendElement("high_constant", "dinputs"), true);
+// addLabel("Low constant", appendElement("low_constant", "dinputs"), true);
+//
+// section("Outputs");
+// createGrid("doutputs");
+// addLabel("Light Bulb", appendElement("light", "doutputs"), true);
+// addLabel("4-Bit Digit", appendElement("number_display", "doutputs"), true);
 // appendElement("light1", "doutputs");
 
 
