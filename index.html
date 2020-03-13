@@ -103,7 +103,7 @@
 
 
   <!-- settings -->
-  <div id="settings" class="hidden">
+  <div id="settings" class="card hidden">
     <div id="close"><i class="material-icons" title="Close">close</i></div>
     <h1>General</h1>
     <table style="width:100%;">
@@ -121,9 +121,9 @@
         <tr>
           <td><p>Line Type: </p></td>
           <td><div id="line_type" class="multiselect">
-            <div class="curved settings active">Curved</div>
+            <div class="lined settings active">Lined</div>
+            <div class="curved settings">Curved</div>
             <div class="straight settings">Straight</div>
-            <div class="lined settings">Lined</div>
           </div></td>
         </tr>
         <tr>
@@ -136,6 +136,14 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+
+  <!-- info -->
+  <div id="info" class="card hidden">
+    <div id="close"><i class="material-icons" title="Close">close</i></div>
+    <h1>Info</h1>
+    <p></p>
   </div>
 
 
@@ -163,6 +171,14 @@
       <li class="menu-option">Cut</li>
       <li class="menu-option">Copy</li>
       <!-- <li class="menu-option">Save As</li> -->
+      <li class="menu-option">Documentation</li>
+      <li class="menu-option">Inspect</li>
+    </ul>
+  </div>
+
+  <div id="menuDrawerComponent" class="menu">
+    <ul class="menu-options">
+      <li class="menu-option">Documentation</li>
       <li class="menu-option">Inspect</li>
     </ul>
   </div>

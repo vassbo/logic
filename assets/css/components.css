@@ -9,8 +9,14 @@
 
   /* position: absolute; */
 }
-.box.shorter {
-  width: 60px;
+.box.big {
+  /* width: 60px; */
+  width: 160px;
+  height: 300px;
+}
+#drawer .big {
+  max-width: 60px;
+  max-height: 80px;
 }
 
 .component {
@@ -25,6 +31,10 @@
 
 .lineSVG.selected {
   filter: drop-shadow(0px 0px 3px var(--selection));
+}
+
+.ghostElem div, .ghostElem input {
+  cursor: default !important;
 }
 
 
@@ -350,7 +360,7 @@ svg {
 
 
 
-.number_display {
+.seven_segment {
   border-radius: 10%;
   width: 80%;
   height: 80%;
@@ -362,49 +372,49 @@ svg {
   transform: translate(-50%, -50%);
 }
 
-.number_display div {
+.seven_segment div {
   border-radius: 12%;
   background: var(--light-idle);
   position: absolute;
   transform: translate(-50%, -50%);
 }
-.number_display #number_1 { /* top */
+.seven_segment #number_1 { /* top */
   width: 80%;
   height: 14%;
   top: 8%;
   left: 50%;
 }
-.number_display #number_2 { /* top right */
+.seven_segment #number_2 { /* top right */
   width: 16%;
   height: 45%;
   top: 25%;
   left: 90%;
 }
-.number_display #number_3 { /* bottom right */
+.seven_segment #number_3 { /* bottom right */
   width: 16%;
   height: 45%;
   top: 75%;
   left: 90%;
 }
-.number_display #number_4 { /* bottom */
+.seven_segment #number_4 { /* bottom */
   width: 80%;
   height: 14%;
   top: 92%;
   left: 50%;
 }
-.number_display #number_5 { /* bottom left */
+.seven_segment #number_5 { /* bottom left */
   width: 16%;
   height: 45%;
   top: 75%;
   left: 10%;
 }
-.number_display #number_6 { /* top left */
+.seven_segment #number_6 { /* top left */
   width: 16%;
   height: 45%;
   top: 25%;
   left: 10%;
 }
-.number_display #number_7 { /* middle */
+.seven_segment #number_7 { /* middle */
   width: 80%;
   height: 14%;
   top: 50%;

@@ -1,4 +1,8 @@
+// TODO: remove // DEBUG
+
 // src: https://jsfiddle.net/MadLittleMods/QAnmN/
+
+///// VARIABLES /////
 
 var clickPosX = null;
 var clickPosY = null;
@@ -19,65 +23,69 @@ var backgroundCanBeDragged = true;
 var viewportWidth2 = window.innerWidth - drawer_width;
 var viewportHeight2 = window.innerHeight - top_height;
 
-function updateMap(basedFromElement, mapElement, firstRun) {
-    // var elementWidth = basedFromElement.children[0].offsetWidth;
-    // var elementHeight = basedFromElement.children[0].offsetHeight;
-    // var viewportWidth = basedFromElement.offsetWidth;
-    // var viewportHeight = basedFromElement.offsetHeight;
+///// UPDATE MINIMAP /////
 
-    // console.log(viewportWidth2);
-    // console.log(viewportHeight2);
-
-    if(firstRun) {
-      // mapElement.style.width = elementWidth * mapSizePercentage;
-      // mapElement.style.height = elementHeight * mapSizePercentage;
-
-      // mapElement.children[0].style.width = viewportWidth * mapSizePercentage / mapZoom / 10 + "px";
-      // mapElement.children[0].style.height = viewportHeight * mapSizePercentage / mapZoom / 10 + "px";
-
-      mapElement.children[0].style.width = viewportWidth2 * mapSizePercentage / mapZoom + "px";
-      mapElement.children[0].style.height = viewportHeight2 * mapSizePercentage / mapZoom + "px";
-    } else {
-      // mapElement.children[0].style.width = viewportWidth * mapSizePercentage / mapZoom / 10 + "px";
-      // mapElement.children[0].style.height = viewportHeight * mapSizePercentage / mapZoom / 10 + "px";
-      // console.log(viewportWidth + " " + mapSizePercentage + " " + mapZoom);
-
-      mapElement.children[0].style.width = viewportWidth2 * mapSizePercentage / mapZoom + "px";
-      mapElement.children[0].style.height = viewportHeight2 * mapSizePercentage / mapZoom + "px";
-
-      mapElement.children[0].style.top = ((getNumber(basedFromElement.style.top) * -1)) * mapSizePercentage + "px";
-      mapElement.children[0].style.left = ((getNumber(basedFromElement.style.left) * -1)) * mapSizePercentage + "px";
-
-      // console.log(basedFromElement.style.top);
-      console.log(mapElement.children[0].style.top);
-      console.log(mapElement.children[0].style.left);
-    }
-}
 updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), true);
+function updateMap(basedFromElement, mapElement, firstRun) {
+  // var elementWidth = basedFromElement.children[0].offsetWidth;
+  // var elementHeight = basedFromElement.children[0].offsetHeight;
+  // var viewportWidth = basedFromElement.offsetWidth;
+  // var viewportHeight = basedFromElement.offsetHeight;
 
-// Drag around
+  // console.log(viewportWidth2);
+  // console.log(viewportHeight2);
+
+  if (firstRun) {
+    // mapElement.style.width = elementWidth * mapSizePercentage;
+    // mapElement.style.height = elementHeight * mapSizePercentage;
+
+    // mapElement.children[0].style.width = viewportWidth * mapSizePercentage / mapZoom / 10 + "px";
+    // mapElement.children[0].style.height = viewportHeight * mapSizePercentage / mapZoom / 10 + "px";
+
+    mapElement.children[0].style.width = viewportWidth2 * mapSizePercentage / mapZoom + "px";
+    mapElement.children[0].style.height = viewportHeight2 * mapSizePercentage / mapZoom + "px";
+  } else {
+    // mapElement.children[0].style.width = viewportWidth * mapSizePercentage / mapZoom / 10 + "px";
+    // mapElement.children[0].style.height = viewportHeight * mapSizePercentage / mapZoom / 10 + "px";
+    // console.log(viewportWidth + " " + mapSizePercentage + " " + mapZoom);
+
+    mapElement.children[0].style.width = viewportWidth2 * mapSizePercentage / mapZoom + "px";
+    mapElement.children[0].style.height = viewportHeight2 * mapSizePercentage / mapZoom + "px";
+
+    mapElement.children[0].style.top = ((getNumber(basedFromElement.style.top) * -1)) * mapSizePercentage + "px";
+    mapElement.children[0].style.left = ((getNumber(basedFromElement.style.left) * -1)) * mapSizePercentage + "px";
+
+    // console.log(basedFromElement.style.top);
+    console.log(mapElement.children[0].style.top);
+    console.log(mapElement.children[0].style.left);
+  }
+}
+
+
+///// MAIN DRAG /////
+
 document.getElementById('main').addEventListener('mousedown', function(e) {
+  if (e.target.id == 'main' && !e.ctrlKey) {
     clickPosX = e.pageX;
     clickPosY = e.pageY;
-    document.querySelector('.clickPosX').innerHTML = clickPosX;
-    document.querySelector('.clickPosY').innerHTML = clickPosY;
+    document.querySelector('.clickPosX').innerHTML = clickPosX; // DEBUG
+    document.querySelector('.clickPosY').innerHTML = clickPosY; // DEBUG
 
     oldPosX = e.pageX;
     oldPosY = e.pageY;
 
-    if (e.target.closest(".component") == null) {
-      dragging = true;
-    }
+    if (e.target.closest(".component") == null) dragging = true;
 
-    document.querySelector('.draggingIndicator').innerHTML = 'yes';
+    document.querySelector('.draggingIndicator').innerHTML = 'yes'; // DEBUG
 
     // e.preventDefault(); // prevents the browser from adding their own cursor
-    this.classList.add('cursordrag'); // Adds the custom grabbing hand cursor
-    updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // Update Map
+    this.classList.add('cursordrag'); // adds the custom grabbing hand cursor
+    updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // update minimap
+  }
 });
 
 document.addEventListener('mousemove', function(e) {
-  if (dragging) {
+  if (dragging && !e.ctrlKey) {
     if (backgroundCanBeDragged == true && e.ctrlKey == false) {
       backgroundIsDragged = true;
       elem = document.getElementById("main");
@@ -87,8 +95,8 @@ document.addEventListener('mousemove', function(e) {
       // TODO: WIP:
       // movePosX = e.pageX / mapZoom;
       // movePosY = e.pageY / mapZoom;
-      document.querySelector('.moveClickPosX').innerHTML = movePosX;
-      document.querySelector('.moveClickPosY').innerHTML = movePosY;
+      document.querySelector('.moveClickPosX').innerHTML = movePosX; // DEBUG
+      document.querySelector('.moveClickPosY').innerHTML = movePosY; // DEBUG
 
       // console.log(oldPosX);
       // console.log(movePosX);
@@ -99,17 +107,13 @@ document.addEventListener('mousemove', function(e) {
           elem.style.top = getNumber(elem.style.top) + (oldPosY-movePosY) * -1 + "px";
         // } else if (getNumber(elem.style.top) - window.innerHeight + top_height <= -10000) {
         //   elem.style.top = -10000 + window.innerHeight - top_height + "px";
-        } else {
-          elem.style.top = "0px";
-        }
+        } else elem.style.top = "0px";
         // if (getNumber(elem.style.left) + (oldPosX-movePosX) * -1 <= 0 && getNumber(elem.style.left) - window.innerWidth + drawer_width >= -10000) {
         if (getNumber(elem.style.left) + (oldPosX-movePosX) * -1 <= 0) {
           elem.style.left = getNumber(elem.style.left) + (oldPosX-movePosX) * -1 + "px";
         // } else if (getNumber(elem.style.left) - window.innerWidth + drawer_width <= -10000) {
         //   elem.style.left = -10000 + window.innerWidth - drawer_width + "px";
-        } else {
-          elem.style.left = "0px";
-        }
+        } else elem.style.left = "0px";
 
         elem.style.marginLeft = 250 / mapZoom + "px";
         elem.style.marginTop = 40 / mapZoom + "px";
@@ -125,26 +129,27 @@ document.addEventListener('mousemove', function(e) {
         oldPosY = movePosY;
       }
 
-      updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // Update Map
+      updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // update minimap
     }
-  }
+  } else document.getElementById("main").classList.remove('cursordrag');
 });
 
 document.addEventListener('mouseup', function(e) {
   elem = document.getElementById("main");
   dragging = false;
-  document.querySelector('.draggingIndicator').innerHTML = 'no';
+  document.querySelector('.draggingIndicator').innerHTML = 'no'; // DEBUG
 
-  elem.classList.remove('cursordrag'); // Returns the cursor to default
+  elem.classList.remove('cursordrag'); // returns the cursor to default
 });
 
-// Now we can zoom in and out
+
+///// ZOOMING /////
+
 document.getElementById('main').addEventListener('wheel', wheel);
 document.getElementsByClassName("map_overlay")[0].addEventListener('wheel', wheel);
-function wheel(event) {
+function wheel(e) {
   var elem = document.getElementById('main');
-  var delta = Math.sign(event.deltaY) * -1;
-
+  var delta = Math.sign(e.deltaY) * -1;
 
   // Zoom
   var zoomFactor = delta * 0.1;
@@ -162,7 +167,7 @@ function wheel(event) {
     mapZoom = elem.style.zoom;
   }
   // console.log(mapZoom);
-  document.querySelector('.zoomIndicator').innerHTML = Math.round(mapZoom * 100) + '%';
+  document.querySelector('.zoomIndicator').innerHTML = Math.round(mapZoom * 100) + '%'; // DEBUG
 
   console.log(movePosY);
   console.log(movePosX);
@@ -187,9 +192,9 @@ function wheel(event) {
   // }
 
   // TODO: ZOOM FROM CENTER / CURSOR POSITION
-  // var rect = event.currentTarget.getBoundingClientRect(),
-  // offsetX = event.clientX - rect.left,
-  // offsetY = event.clientY - rect.top;
+  // var rect = e.currentTarget.getBoundingClientRect(),
+  // offsetX = e.clientX - rect.left,
+  // offsetY = e.clientY - rect.top;
 
   // console.log(getNumber(elem.style.top));
   // console.log(window.innerHeight / 2);
@@ -208,27 +213,23 @@ function wheel(event) {
     style.left: $(elem).style.left() - movePosX
   }, 1000);*/
 
-  updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // Update Map
-  event.preventDefault();
+  updateMap(document.querySelector('#main'), document.querySelector('.map_overlay'), false); // update minimap
+  e.preventDefault();
 }
 
 
 
-//// minimap move
+///// MINIMAP MOVE /////
 
 var mm_draggin = false;
 document.getElementsByClassName("map_overlay")[0].addEventListener('mousedown', function(e) {
   mm_draggin = true;
   moveIndicator(e);
 });
-document.addEventListener('mouseup', function(e) {
-  mm_draggin = false;
-});
-
+document.addEventListener('mouseup', function(e) { mm_draggin = false; });
 
 document.getElementsByClassName("map_overlay")[0].addEventListener('mousemove', moveIndicator);
 function moveIndicator(e) {
-  // console.log(e);
   mapElement = document.getElementsByClassName("map_overlay")[0];
   elem = mapElement.children[0];
   // mapElement.children[0].style.width = viewportWidth2 * mapSizePercentage / mapZoom + "px";
@@ -256,11 +257,4 @@ function moveIndicator(e) {
     // document.querySelector('#main').style.top = (offsetY * -1 / mapSizePercentage * 2) / 2 + 'px';
     // document.querySelector('#main').style.left = (offsetX * -1 / mapSizePercentage * 2) / 2 + 'px';
   }
-}
-
-
-
-
-function getNumber(input) {
-  return Number(input.replace(/[A-Za-z]/g, ''));
 }

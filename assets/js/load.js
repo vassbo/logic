@@ -1,4 +1,5 @@
 
+// TODO: add documentation
 var components = {
   inputs: {
     name: 'Inputs',
@@ -15,6 +16,7 @@ var components = {
     },
     button: {
       name: 'Push Button',
+      documentation: 'Just a button, nothing special.',
       classes: ['box'],
       children: '',
       connections: {
@@ -25,6 +27,7 @@ var components = {
     },
     clock: {
       name: 'Clock',
+      documentation: 'The clock is a timer.....<br><br>ms = milli seconds<br>s = seconds<br>m = minutes<br>h = hours<br><br>e.g. 1s == 1000ms',
       classes: ['box'],
       children: '<div class="display"><input class="clock_input" id="clockInput#temp" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div>',
       connections: {
@@ -70,8 +73,28 @@ var components = {
       }
     },
     number_display: {
-      name: '4-Bit Digit', // seven segment display
-      classes: ['box', 'shorter'],
+      name: '4-Bit Digit',
+      classes: ['box'],
+      innerClasses: ['constant', 'noselect'],
+      children: '<span>0</span>',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left',
+        },
+        2: {
+          pos: 'left',
+        },
+        3: {
+          pos: 'left',
+        }
+      }
+    },
+    seven_segment: {
+      name: 'Seven Segment Display',
+      classes: ['box', 'big'],
       children: '<div id="number_1"></div><div id="number_2"></div><div id="number_3"></div><div id="number_4"></div><div id="number_5"></div><div id="number_6"></div><div id="number_7"></div>',
       connections: {
         0: {
@@ -87,7 +110,13 @@ var components = {
           pos: 'left',
         },
         4: {
-          pos: 'right',
+          pos: 'left',
+        },
+        5: {
+          pos: 'left',
+        },
+        6: {
+          pos: 'left',
         }
       }
     }
@@ -125,11 +154,27 @@ var components = {
           pos: 'right'
         }
       }
+    },
+    xor: {
+      name: 'XOR Gate',
+      classes: ['box'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
     }
   }
 };
 
-
+// append elements to drawer
 for (var i = 0; i < Object.keys(components).length; i++) {
   var os = Object.keys(components)[i]; // os = object section
   section(components[os].name);
@@ -141,22 +186,7 @@ for (var i = 0; i < Object.keys(components).length; i++) {
   }
 }
 
-// drawer
-// section("Inputs");
-// createGrid("dinputs");
-// addLabel("Toggle Switch", appendElement("toggle", "dinputs"), true);
-// addLabel("Push Button", appendElement("button", "dinputs"), true);
-// addLabel("Clock", appendElement("clock", "dinputs"), true);
-// addLabel("High constant", appendElement("high_constant", "dinputs"), true);
-// addLabel("Low constant", appendElement("low_constant", "dinputs"), true);
-//
-// section("Outputs");
-// createGrid("doutputs");
-// addLabel("Light Bulb", appendElement("light", "doutputs"), true);
-// addLabel("4-Bit Digit", appendElement("number_display", "doutputs"), true);
-// appendElement("light1", "doutputs");
-
-
+// create drawer section
 function section(name) {
   var div = document.createElement("div");
   div.classList.add("section");
@@ -164,6 +194,7 @@ function section(name) {
   document.getElementById("drawer").appendChild(div);
 }
 
+// create drawer grid
 function createGrid(name) {
   var div = document.createElement("div");
   div.id = name;
@@ -172,31 +203,40 @@ function createGrid(name) {
 }
 
 
+///// GET LOCALSTORAGE /////
 
+if (localStorage.lineType !== undefined) setting_lineType = localStorage.lineType;
+if (localStorage.lineColor_idle !== undefined) setting_lineColor_idle = localStorage.lineColor_idle;
+if (localStorage.lineColor_powered !== undefined) setting_lineColor_powered = localStorage.lineColor_powered;
+if (localStorage.theme !== undefined) setting_theme = localStorage.theme;
+if (localStorage.background !== undefined) setting_background = localStorage.background;
 
-/// initialize settings ///
-if (localStorage.lineType !== undefined) {
-  // TODO: WIP IN UPDATE
-  setting_lineType = localStorage.lineType;
+///// BUTTONS /////
+
+var query = document.querySelectorAll("i");
+for (var i = 0; i < query.length; i++) query[i].addEventListener('click', btnClick);
+function btnClick() {
+  var id = this.innerText;
+  switch (id) {
+    case "settings_gear":
+      document.getElementById("dark").classList.remove("hidden");
+      document.getElementById("settings").classList.remove("hidden");
+      break;
+    case "close":
+      document.getElementById("dark").classList.add("hidden");
+      this.closest('.card').classList.add('hidden');
+      break;
+    default:
+      alert(id);
+  }
 }
 
-if (localStorage.lineColor_idle !== undefined) {
-  setting_lineColor_idle = localStorage.lineColor_idle;
-}
-if (localStorage.lineColor_powered !== undefined) {
-  setting_lineColor_powered = localStorage.lineColor_powered;
-}
-
-if (localStorage.theme !== undefined) {
-  setting_theme = localStorage.theme;
-}
-
-if (localStorage.background !== undefined) {
-  setting_background = localStorage.background;
-}
+///// SETTINGS /////
 
 function updateSettings() {
   document.documentElement.removeAttribute("style");
+
+  // THEME
   if (setting_theme == "theme_light") {
   } else if (setting_theme == "theme_dark") {
     document.documentElement.style.setProperty('--main-color', "#242424");
@@ -220,7 +260,7 @@ function updateSettings() {
     document.documentElement.style.setProperty('--component-action--hover', "#7c0000");
     document.documentElement.style.setProperty('--toolbar-iconcolor', "#267ba3");
   } else if (setting_theme == "theme_neon") {
-    // WIP
+    // TODO: NEON THEME
     document.documentElement.style.setProperty('--main-color', "#1b1b1b");
     document.documentElement.style.setProperty('--main-color--second', "#1b1b1b");
     document.documentElement.style.setProperty('--main-color-inverted', "white");
@@ -237,65 +277,24 @@ function updateSettings() {
     document.documentElement.style.setProperty('--toolbar-iconcolor', "#08f5fb");
   }
 
+  // LINE COLOR
   document.documentElement.style.setProperty('--line-idle', setting_lineColor_idle);
   document.documentElement.style.setProperty('--line-powered', setting_lineColor_powered);
 
-  if (setting_background == "dotted") {
-    document.getElementById("main").style.backgroundImage = "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)";
-  } else if (setting_background == "lines") {
-    document.getElementById("main").style.backgroundImage = "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)";
-  } else if (setting_background == "blank") {
-    document.getElementById("main").style.backgroundImage = "none";
-  }
+  // BACKGROUND STYLE
+  if (setting_background == "dotted") document.getElementById("main").style.backgroundImage = "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)";
+  else if (setting_background == "lines") document.getElementById("main").style.backgroundImage = "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)";
+  else if (setting_background == "blank") document.getElementById("main").style.backgroundImage = "none";
 
-  // if (setting_lineType == "curved" || setting_background == "straight" || setting_background == "lined")
-  localStorage.lineType = setting_lineType;
-}
-
-
-
-
-
-/// buttons ///
-var query = document.querySelectorAll("i");
-for (var i = 0; i < query.length; i++) {
-  query[i].addEventListener('click', btnClick);
-}
-
-function btnClick() {
-  var id = this.innerText;
-  switch (id) {
-    case "settings_gear":
-      document.getElementById("dark").classList.remove("hidden");
-      document.getElementById("settings").classList.remove("hidden");
-      break;
-    case "close":
-      document.getElementById("dark").classList.add("hidden");
-      document.getElementById("settings").classList.add("hidden");
-      break;
-    default:
-      alert(id);
+  // LINE TYPE
+  if (localStorage.lineType !== setting_lineType) {
+    localStorage.lineType = setting_lineType;
+    moveSVG(document.getElementById('main'));
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-///// settings ///////
 var query = document.querySelectorAll(".settings");
-for (var i = 0; i < query.length; i++) {
-  query[i].addEventListener("click", settingsClick);
-}
-
+for (var i = 0; i < query.length; i++) query[i].addEventListener("click", settingsClick);
 function settingsClick() {
   var id = this.classList[0];
   switch (id) {
@@ -311,7 +310,6 @@ function settingsClick() {
     case "lined":
       changeSelect("line_type", id);
       setting_lineType = id;
-      console.log("IDDDDD: " + id);
       break;
     case "dotted":
     case "lines":
@@ -324,7 +322,6 @@ function settingsClick() {
   }
   updateSettings();
 }
-
 
 function changeSelect(id, new_id) {
   document.getElementById(id).getElementsByClassName("active")[0].classList.remove("active");

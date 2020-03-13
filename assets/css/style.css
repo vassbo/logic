@@ -12,13 +12,14 @@
   --component-action--hover: #ff3939;
   --light-idle: rgba(214, 214, 214, 0.7);
   --light-off: #e1e1e1;
-  --light-active: #f7f484;
+  --light-active: #f7f484; /* #dcf651 */
   --light-active--shadow: rgba(254, 255, 0, 0.82);
   /* --light-active--shadow: #ffed00; */
   /* --selection: rgba(51, 0, 255, 0.6); */
   --selection: rgba(0, 0, 255, 0.5);
   /* --selection: rgba(0, 0, 0, 0.5); */
   --selection: #c83f06;
+  --color-matched: #ff651b;
 
   --line-idle: #b00000;
   --line-powered: red;
@@ -52,6 +53,10 @@ body {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
+}
+
+.cursordrag {
+  cursor: move;
 }
 
 
@@ -304,7 +309,7 @@ i[disabled] {
 
 
 /*** settings ***/
-#settings {
+.card {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -317,6 +322,9 @@ i[disabled] {
   padding: 40px;
   z-index: 50;
 }
+/* .card h1 {
+  text-transform: uppercase;
+} */
 
 #close {
   position: absolute;

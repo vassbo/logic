@@ -1,8 +1,21 @@
 - Add a gamemode (Like; MakeItTrue)
 (Logic mode, electric mode, game mode)
 
+- lined = squared ?
+
 - ctrl + shift will not deselect anything before selecting with blue box
 
 - move cursor on main drag
 
 - save settings to local storage
+
+- show red line when a two way input (e.g. and gate) does not have an input..
+
+- svg line dragging on clock will not update line
+- svg drop on clock will remove all signals from clock one time
+
+- deleting a thing will leave black border
+
+- replace clientX/Y with pageX/Y
+
+- when selecting, and letting go on an element. Then trying to select is buggy...
