@@ -12,12 +12,13 @@
   <link href='https://fonts.googleapis.com/css?family=Architects%20Daughter' rel='stylesheet'>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body>
+<body class="noselect"> <!-- TODO: noselect body ???? -->
   <div id="top">
     <div id="main_title"><a href="#">Logic Simulator</a></div>
     <div id="toolbar" class="noselect">
       <i class="material-icons" title="Create new [ctrl+n]">insert_drive_file</i>
       <i class="material-icons" title="Save [ctrl+s]">save</i>
+      <i class="material-icons" title="Export [ctrl+e]">cloud_download</i>
       <i class="material-icons" title="Open file [ctrl+o]">folder_open</i>
       <!-- <i class="material-icons" title="Print [ctrl+p]">print</i> -->
       <span class="seperator"></span>
@@ -38,7 +39,18 @@
 
       <span class="seperator"></span>
       <i class="material-icons" title="Generate truth table [ctrl+g]">receipt</i>
+      <i class="material-icons" title="View timers">access_time</i>
+      <!-- <i class="material-icons" title="Component stats" disabled>memory</i> -->
 
+      <!-- widgets, memory, style, tune, category, layers, apps -->
+      <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">storage</i> -->
+      <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">widgets</i>
+      <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">memory</i> -->
+      <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">style</i> -->
+      <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">tune</i> -->
+      <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">category</i> -->
+      <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">layers</i> -->
+      <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">apps</i> -->
       <i class="material-icons right" style="right:52px;" title="Settings [ctrl+?]">settings_gear</i>
       <i class="material-icons right" title="About">info</i>
     </div>
@@ -46,9 +58,25 @@
     <!-- save (export) -->
   </div>
   <div id="drawer"></div>
+  <div id="dragger"></div>
+
+  <div id="tabber">
+    <i class="material-icons right tabber" title="Add tab">add</i>
+
+    <div style="overflow-x: auto; max-width: calc(100vw - 250px - 44px);display: flex;">
+      <div class="tab active" id="tab#0">
+        <span style="margin-right:0;">main</span>
+      </div>
+      <!-- <div class="tab">
+        <span>and | Inspect*</span>
+        <div id="close"><i class="material-icons tabber" title="Close">close</i></div>
+      </div> -->
+    </div>
+  </div>
 
 
-  <div class="results" style="position: fixed;top: 43px;left: 260px;z-index:20;pointer-events:none;">
+  <!-- debug -->
+  <div class="results hidden" style="position: fixed;top: 43px;left: 260px;z-index:20;pointer-events:none;">
     <div>
       Click Pos: (<span class="clickPosX">null</span>,
       <span class="clickPosY">null</span>)
@@ -66,11 +94,11 @@
   </div>
 
   <!-- <div style="top:40px;left:250px;"> -->
-  <div id="main" style="zoom:1;top:0;left:0;">
+  <div id="main#0" class="main" style="zoom:1;">
 
-    <div id="selectionBox" class="hidden"></div>
+    <div class="selectionBox" class="hidden"></div>
     <!-- <div> -->
-      <div id="SVGdiv">
+      <div class="SVGdiv">
         <!-- <svg class="lineSVG">Sorry, your browser does not support inline SVG.</svg> -->
       </div>
     <!-- </div> -->
@@ -88,18 +116,64 @@
 
 
 
-  <!-- bottom -->
-  <!-- TODO: darken screen around -->
-  <div id="bottom">
+  <!-- bottom right actions -->
+  <div id="bottomActions">
     <!-- TODO: show zoom level -->
     <!-- TODO: pause / start / reset? simulation / (Advance Simulation One Step) -->
     <!-- <i class="material-icons" title="Pause simulation" disabled>pause</i> -->
+    <div id="toolbar" class="noselect">
+      <i class="material-icons" title="Retreat Simulation One Step" disabled>fast_rewind</i>
+      <i class="material-icons" title="Reset Simulation">stop</i>
+      <i class="material-icons" title="Pause Simulation">pause</i>
+      <i class="material-icons" title="Advance Simulation One Step" disabled>fast_forward</i>
+      <span class="seperator"></span>
+      <i class="material-icons" title="Reset view">home</i>
+      <i class="material-icons" title="Open file [ctrl+o]">remove</i>
+      <input id="zoomSlider" type="range" min="20" max="300" step="2" value="100">
+      <i class="material-icons" title="Open file [ctrl+o]">add</i>
+      <p id="zoomValue">100%</p>
+      <!-- TODO: fullscreen ????? - hide everything except main,  tab_bar, minimap & bottom toolbar? -->
+      <!-- <i class="material-icons" title="Fullscreen mode">fullscreen</i> -->
+    </div>
+  </div>
+
+
+
+  <!-- right timers menu -->
+  <div id="timers" class="right_menu hidden">
+    <h2 style="padding:0 30px;">No clocks active</h2>
   </div>
 
 
 
   <!-- dark -->
   <div id="dark" class="hidden"></div>
+
+
+  <!-- modes -->
+  <!-- Logic mode, electric mode, game mode (MakeItTrue), minecraft -->
+  <div id="modes" class="card hidden" style="height:75vh;">
+    <div id="close"><i class="material-icons" title="Close">close</i></div>
+    <h1>Modes</h1>
+    <div style="overflow-y: auto;max-height: 68vh;">
+      <div class="modes_card">
+        <span>Standard</span>
+        <img src="assets/img/circuit_board.jpg" alt="Circuit Board">
+      </div>
+      <div class="modes_card">
+        <span>Electric</span>
+        <img src="assets/img/electricity.jpg" alt="Circuit Board" style="object-position: bottom;">
+      </div>
+      <div class="modes_card">
+        <span>Redstone</span>
+        <img src="assets/img/redstone.jpg" alt="Circuit Board" style="object-position: 0 -70px;">
+      </div>
+      <div class="modes_card">
+        <span>Game</span>
+        <img src="assets/img/game.jpeg" alt="Circuit Board">
+      </div>
+    </div>
+  </div>
 
 
   <!-- settings -->
@@ -172,14 +246,14 @@
       <li class="menu-option">Copy</li>
       <!-- <li class="menu-option">Save As</li> -->
       <li class="menu-option">Documentation</li>
-      <li class="menu-option">Inspect</li>
+      <li id="inspect_context" class="menu-option" disabled>Inspect</li>
     </ul>
   </div>
 
   <div id="menuDrawerComponent" class="menu">
     <ul class="menu-options">
       <li class="menu-option">Documentation</li>
-      <li class="menu-option">Inspect</li>
+      <li id="inspect_context" class="menu-option" disabled>Inspect</li>
     </ul>
   </div>
 

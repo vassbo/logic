@@ -61,6 +61,14 @@
   /* transform: translate(98%, 50%); */
   transform: translate(-98%);
 }
+.connection.top {
+  height: 10px;
+  width: 2px;
+  left: 50%;
+  top: 0;
+  /* transform: translate(98%, 50%); */
+  transform: translateY(-98%);
+}
 
 
 .connector {
@@ -84,6 +92,11 @@
   top: 50%;
   transform: translate(-98%, -50%);
 }
+.connection.top .connector {
+  right: 50%;
+  top: 0;
+  transform: translate(50%, -98%);
+}
 
 
 .connector.notConnected {
@@ -94,6 +107,15 @@
   cursor: pointer;
   height: 16px;
   width: 16px;
+}
+
+.conn_label {
+  /* font-size: 20px; */
+  color: white;
+  font-weight: bold;
+  width: fit-content;
+  position: absolute;
+  pointer-events: none;
 }
 
 
@@ -152,11 +174,13 @@ svg {
 
   cursor: default;
   /* TODO: no text selection.... */
+  white-space: nowrap;
 }
-.label.small {
+.label.small { /* drawer label */
   font-size: 10px;
   padding: 0;
   background: none;
+  /* width: 128%; */
 }
 
 
@@ -172,13 +196,13 @@ svg {
   transform: translate(-50%, -50%);
   box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.34);
 }
-#main .toggle {
+.main .toggle {
   cursor: pointer;
 }
-#main .toggle:hover {
+.main .toggle:hover {
   background: var(--component-action--hover);
 }
-#main .toggle:active {
+.main .toggle:active {
   content: "light";
   cursor: default;
   background: var(--component-action);
@@ -195,7 +219,7 @@ svg {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-#main .btn-light {
+.main .btn-light {
   cursor: pointer;
 }
 .btn-light.on {
@@ -219,13 +243,13 @@ svg {
   transform: translate(-50%, -50%);
   box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.34);
 }
-#main .button {
+.main .button {
   cursor: pointer;
 }
-#main .button:hover {
+.main .button:hover {
   background: var(--component-action--hover);
 }
-#main .button:active {
+.main .button:active {
   cursor: default;
   background: var(--component-action);
   box-shadow: inset 4px 1px 6px 1px rgba(0, 0, 0, 0.34);
@@ -284,7 +308,7 @@ svg {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-/* #main .signal-light {
+/* .main .signal-light {
   cursor: pointer;
 } */
 .signal-light.on {
@@ -335,7 +359,7 @@ svg {
   box-shadow: 0px 0px 20px 6px var(--light-active--shadow);
 }
 
-#main .light.off {
+.main .light.off {
   /* background: #acd2ed; */
   background: var(--light-off);
   box-shadow: none;
@@ -432,4 +456,95 @@ svg {
     flex-direction: column;
     align-items: flex-end;
     justify-content: center;
+}
+
+
+
+
+.gate_input {
+  background: #361fb8; /* #d51d1d */
+  color: white;
+  outline-color: #00a3ff;
+  width: 40%;
+  /* height: 25%; */
+  height: 16px;
+  /* top: 50%;
+  left: 50%;
+  position: absolute; */
+  margin-top: 50%;
+  margin-left: 48%;
+  transform: translate(-50%, -50%);
+  box-shadow: inset 2px 1px 4px 1px rgba(0, 0, 0, 0.34);
+  border-radius: 2px;
+  border: none;
+  border: 1px solid black;
+
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  font-family: 'digital-clock';
+  /* color: white; */
+}
+
+/* Chrome, Safari, Edge, Opera */
+.textInput::-webkit-outer-spin-button,
+.textInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.textInput[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+
+.andc {
+  border-radius: 8px 50px 50px 8px;
+}
+.orc { /* moon shape css */
+  /* border-width: 30px;
+  border-color: red red red transparent;
+  border-style: solid; */
+  border-radius: 8px 60px 30px 8px;
+}
+/* .xorc {
+
+} */
+
+
+
+/* transistor */
+.transistor, .transistor_inv {
+  border-radius: 10%;
+  width: 80%;
+  height: 80%;
+  background: var(--component-action);
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.arrow span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 3px;
+  background: var(--light-idle);
+}
+.arrow span:nth-child(1) {
+  width: 22px;
+  /* width: 26px; */
+}
+.arrow span:nth-child(2) {
+  transform: rotate(45deg) translate(-8px, -2px);
+}
+.arrow span:nth-child(3) {
+  transform: rotate(-45deg) translate(-5.7px, 0px);
+}
+.arrow span:nth-child(4) {
+  transform: rotate(90deg) translate(-1.5px, 26px);
 }

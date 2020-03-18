@@ -10,7 +10,7 @@ var components = {
       connections: {
         0: {
           pos: 'right',
-          name: 'output' // ... (description) TODO: <--
+          // name: 'output' // ... (description) TODO: <--
         }
       }
     },
@@ -29,7 +29,7 @@ var components = {
       name: 'Clock',
       documentation: 'The clock is a timer.....<br><br>ms = milli seconds<br>s = seconds<br>m = minutes<br>h = hours<br><br>e.g. 1s == 1000ms',
       classes: ['box'],
-      children: '<div class="display"><input class="clock_input" id="clockInput#temp" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div>',
+      children: '<div class="display"><input class="clock_input textInput" id="clockInput#0" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div>',
       connections: {
         0: {
           pos: 'right',
@@ -123,10 +123,56 @@ var components = {
   },
   logic_gates: {
     name: 'Logic Gates',
+    buffer: {
+      name: 'Buffer',
+      classes: ['box', 'bufferc'],
+      innerClasses: ['gate'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'right'
+        }
+      }
+    },
+    not: {
+      name: 'NOT Gate',
+      classes: ['box', 'notc'],
+      innerClasses: ['gate'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'right'
+        }
+      }
+    },
     and: {
       name: 'AND Gate',
-      classes: ['box'],
-      children: '',
+      classes: ['box', 'andc'],
+      innerClasses: ['gate'],
+      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">', // id="gateInput#0"
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
+    },
+    nand: {
+      name: 'NAND Gate',
+      classes: ['box', 'andc'],
+      innerClasses: ['gate'],
+      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">', // id="gateInput#0"
       connections: {
         0: {
           pos: 'left',
@@ -141,8 +187,26 @@ var components = {
     },
     or: {
       name: 'OR Gate',
-      classes: ['box'],
-      children: '',
+      classes: ['box', 'orc'],
+      innerClasses: ['gate'],
+      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
+    },
+    nor: {
+      name: 'NOR Gate',
+      classes: ['box', 'orc'],
+      innerClasses: ['gate'],
+      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
       connections: {
         0: {
           pos: 'left',
@@ -157,8 +221,9 @@ var components = {
     },
     xor: {
       name: 'XOR Gate',
-      classes: ['box'],
-      children: '',
+      classes: ['box', 'xorc'],
+      innerClasses: ['gate'],
+      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
       connections: {
         0: {
           pos: 'left',
@@ -170,12 +235,117 @@ var components = {
           pos: 'right'
         }
       }
+    },
+    xnor: {
+      name: 'XNOR Gate',
+      classes: ['box', 'xorc'],
+      innerClasses: ['gate'],
+      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
+      connections: {
+        0: {
+          pos: 'left',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
+    },
+  },
+  flip_flops: {
+    name: 'Flip-Flops'
+  },
+  other: {
+    name: 'Other',
+    transistor: {
+      name: 'Transistor', // Tri-state
+      classes: ['box'],
+      innerClasses: ['gate'],
+      children: '<div class="arrow"><span></span><span></span><span></span></div>',
+      connections: {
+        0: {
+          pos: 'top',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
+    },
+    transistor_inv: {
+      name: 'Transistor Inverted',
+      classes: ['box'],
+      innerClasses: ['gate'],
+      children: '<div class="arrow"><span></span><span></span><span></span><span></span></div>',
+      connections: {
+        0: {
+          pos: 'top',
+        },
+        1: {
+          pos: 'left'
+        },
+        2: {
+          pos: 'right'
+        }
+      }
+    },
+    seven_segment_decoder: {
+      name: 'Seven Segment Display Decoder',
+      classes: ['box', 'big'],
+      children: '',
+      connections: {
+        0: {
+          pos: 'left',
+          name: '8'
+        },
+        1: {
+          pos: 'left',
+          name: '4'
+        },
+        2: {
+          pos: 'left',
+          name: '2'
+        },
+        3: {
+          pos: 'left',
+          name: '1'
+        },
+        4: {
+          pos: 'right',
+        },
+        5: {
+          pos: 'right',
+        },
+        6: {
+          pos: 'right',
+        },
+        7: {
+          pos: 'right',
+        },
+        8: {
+          pos: 'right',
+        },
+        9: {
+          pos: 'right',
+        },
+        10: {
+          pos: 'right',
+        },
+      }
     }
+  },
+  custom: {
+    name: 'Custom'
   }
 };
 
 // append elements to drawer
 for (var i = 0; i < Object.keys(components).length; i++) {
+
   var os = Object.keys(components)[i]; // os = object section
   section(components[os].name);
   createGrid("d" + os); // d = drawer
@@ -216,19 +386,102 @@ if (localStorage.background !== undefined) setting_background = localStorage.bac
 var query = document.querySelectorAll("i");
 for (var i = 0; i < query.length; i++) query[i].addEventListener('click', btnClick);
 function btnClick() {
-  var id = this.innerText;
-  switch (id) {
-    case "settings_gear":
-      document.getElementById("dark").classList.remove("hidden");
-      document.getElementById("settings").classList.remove("hidden");
-      break;
-    case "close":
-      document.getElementById("dark").classList.add("hidden");
-      this.closest('.card').classList.add('hidden');
-      break;
-    default:
-      alert(id);
+  if (this.getAttribute('disabled') == null) {
+    var id = this.innerText;
+    switch (id) {
+      // top
+      case 'save':
+        save();
+        break;
+      case 'cloud_download':
+        save(undefined, true);
+        break;
+      case 'folder_open':
+        importFile();
+        break;
+      case 'access_time':
+        this.classList.toggle('active');
+        document.getElementById('timers').classList.toggle('hidden');
+        if (document.getElementById('timers').classList.contains('hidden')) document.getElementById('bottomActions').style.right = null;
+        else document.getElementById('bottomActions').style.right = document.querySelector('.right_menu').offsetWidth + 20 + 'px';
+        break;
+
+      // top right
+      case "widgets":
+        document.getElementById("dark").classList.remove("hidden");
+        document.getElementById("modes").classList.remove("hidden");
+        break;
+      case "settings_gear":
+        document.getElementById("dark").classList.remove("hidden");
+        document.getElementById("settings").classList.remove("hidden");
+        break;
+
+      // general
+      case "close":
+        if (!this.classList.contains('tabber')) {
+          document.getElementById("dark").classList.add("hidden");
+          this.closest('.card').classList.add('hidden');
+        }
+        break;
+
+      // bottom
+      case 'stop':
+        var play = getIcon('pause');
+        if (play !== undefined) {
+          play.innerHTML = 'play_arrow';
+          play.title = 'Resume Simulation';
+        }
+        enable(['fast_forward', 'fast_rewind'], true);
+        break;
+      case 'pause':
+        this.innerHTML = 'play_arrow';
+        this.title = 'Resume Simulation';
+        enable(['fast_forward', 'fast_rewind'], true);
+        break;
+      case 'play_arrow':
+        this.innerHTML = 'pause';
+        this.title = 'Pause Simulation';
+        enable(['fast_forward', 'fast_rewind'], false);
+        break;
+      case 'home':
+        home();
+        break;
+      case 'add':
+        if (this.classList.contains('tabber')) {
+          var count = document.getElementById('tabber').querySelectorAll('.tab').length;
+          addTab('unnamed_' + count);
+        }
+        else {
+          document.getElementById('zoomSlider').value = Number(document.getElementById('zoomSlider').value) + 20;
+          sliderChange();
+        }
+        break;
+      case 'remove':
+        document.getElementById('zoomSlider').value = Number(document.getElementById('zoomSlider').value) - 20;
+        sliderChange();
+        break;
+      default:
+        alert(id);
+    }
   }
+}
+
+// enable or disable a button
+function enable(nameQuery, enable) {
+  var query = document.querySelectorAll('.material-icons');
+  for (var i = 0; i < query.length; i++)
+    for (var j = 0; j < nameQuery.length; j++)
+      if (query[i].innerText == nameQuery[j]) {
+        if (enable) query[i].removeAttribute('disabled');
+        else query[i].setAttribute('disabled', '');
+      }
+}
+
+// get material icon element by name
+function getIcon(name) {
+  var query = document.querySelectorAll('.material-icons');
+  for (var i = 0; i < query.length; i++)
+    if (query[i].innerText == name) return query[i];
 }
 
 ///// SETTINGS /////
@@ -282,14 +535,14 @@ function updateSettings() {
   document.documentElement.style.setProperty('--line-powered', setting_lineColor_powered);
 
   // BACKGROUND STYLE
-  if (setting_background == "dotted") document.getElementById("main").style.backgroundImage = "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)";
-  else if (setting_background == "lines") document.getElementById("main").style.backgroundImage = "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)";
-  else if (setting_background == "blank") document.getElementById("main").style.backgroundImage = "none";
+  if (setting_background == "dotted") document.getElementById("main#" + active_tab).style.backgroundImage = "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)";
+  else if (setting_background == "lines") document.getElementById("main#" + active_tab).style.backgroundImage = "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)";
+  else if (setting_background == "blank") document.getElementById("main#" + active_tab).style.backgroundImage = "none";
 
   // LINE TYPE
   if (localStorage.lineType !== setting_lineType) {
     localStorage.lineType = setting_lineType;
-    moveSVG(document.getElementById('main'));
+    moveSVG(document.getElementById('main#' + active_tab));
   }
 }
 
@@ -326,4 +579,170 @@ function settingsClick() {
 function changeSelect(id, new_id) {
   document.getElementById(id).getElementsByClassName("active")[0].classList.remove("active");
   document.getElementById(id).getElementsByClassName(new_id)[0].classList.add("active");
+}
+
+
+
+
+// var saves = {
+//   activeTab: 'main',
+//   main: {
+//     zoom: 1,
+//     top: 0,
+//     left: 0,
+//     comp_0: {
+//       type: 'toggle',
+//       x: 5100,
+//       y: 5200,
+//       label: 'ayy'
+//     },
+//     comp_1: {
+//       type: 'light',
+//       x: 5400,
+//       y: 5200
+//     },
+//     conn_0: {
+//       from: {elem: 'comp_0'}, // side: 'left', pos: 1
+//       to: {elem: 'comp_1'}
+//     }
+//   }
+// };
+
+var saves = {};
+if (localStorage.saves !== "undefined") {
+  saves = JSON.parse(localStorage.saves);
+  active_tab = saves.activeTab;
+}
+
+// TODO: delete elems from saves
+var createdElems = {};
+if (Object.keys(saves).length > 0) {
+  for (var i = 0; i < Object.keys(saves).length; i++) {
+    // TODO: create tab if not main
+    var tab = Object.keys(saves)[i];
+    var currentTab = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+    if (tab == currentTab) {
+      for (var j = 0; j < Object.keys(saves[tab]).length; j++) {
+        loadObj(tab);
+      }
+    }
+  }
+}
+function loadObj(tab) {
+  var elem = Object.keys(saves[tab])[j];
+  var val = saves[tab][elem];
+  console.log(elem);
+  var currentMain = document.getElementById('main#' + active_tab);
+  console.log(saves[tab].top);
+  if (elem == 'zoom') currentMain.style[elem] = val;
+  else if (elem == 'top' || elem == 'left') currentMain.style[elem] = val + 'px';
+  else if (elem.includes('comp')) {
+    createdElems[elem] = appendElem(val.type, {x: val.x, y: val.y}, val.label || undefined);
+    val.component = createdElems[elem];
+  } else if (elem.includes('conn')) {
+    var fromObj = {elem: createdElems[val.from.elem]};
+    if (val.from.side) fromObj.side = val.from.side;
+    if (val.from.pos) fromObj.pos = val.from.pos;
+    var toObj = {elem: createdElems[val.to.elem]};
+    if (val.to.side) toObj.side = val.to.side;
+    if (val.to.pos) toObj.pos = val.to.pos;
+    cSVG(fromObj, toObj);
+  }
+}
+
+function checkSaved(type, component) {
+  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+  var main = document.getElementById('main#' + active_tab);
+  if (saves[tabName] == undefined) saves[tabName] = {};
+  // TODO: update this upon zoom and move
+  saves[tabName].zoom = main.style.zoom;
+  saves[tabName].left = getNumber(main.style.left);
+  saves[tabName].top = getNumber(main.style.top);
+
+  if (type !== undefined) {
+    var pos = 0;
+    for (var i = 0; i < Object.keys(saves[tabName]).length; i++) {
+      var name = Object.keys(saves[tabName])[i];
+      if (component !== undefined) {
+        if (saves[tabName][name].component !== undefined) {
+          if (saves[tabName][name].component === component) {
+            break;
+          }
+        }
+      }
+      if (name.includes(type)) pos++;
+    }
+    saves[tabName][type + pos] = {};
+    return saves[tabName][type + pos];
+  }
+}
+
+// update components
+function save(e, exportFile) {
+  // alert('save!');
+  if (e !== undefined) e.preventDefault();
+  document.getElementById('tab#' + active_tab).querySelector('span').classList.remove('unsaved');
+  // save to local storage automatic??
+  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+  var main = document.getElementById('main#' + active_tab);
+  checkSaved();
+  saves[tabName].zoom = main.style.zoom;
+  saves[tabName].left = getNumber(main.style.left);
+  saves[tabName].top = getNumber(main.style.top);
+  saves.activeTab = active_tab;
+  localStorage.saves = JSON.stringify(saves);
+
+  if (exportFile === true) exportFile();
+}
+function exportFile() {
+  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+  saves[tabName].name = tabName;
+  exportToJsonFile(JSON.stringify(saves[tabName], null, 2));
+}
+
+function importFile() {
+  var fileInput = document.createElement('input');
+  fileInput.setAttribute('type', 'file');
+  fileInput.setAttribute('accept', 'json'); // image/png, image/jpeg | logicx
+  // fileInput.setAttribute('download', exportFileDefaultName);
+  fileInput.click();
+
+  fileInput.addEventListener('change', opened);
+}
+
+function opened() {
+  // TODO: WIP - import
+  var reader = new FileReader();
+  reader.onload = onReaderLoad;
+  reader.readAsText(event.target.files[0]);
+
+  function onReaderLoad(event) {
+    var obj = JSON.parse(event.target.result);
+    // create tab
+    var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+    saves[tabName][obj.name] = obj;
+    addTab(obj.name);
+    loadObj(obj.name);
+  }
+
+  // setTimeout(function () {
+  //   fileInput.remove();
+  // }, 100);
+}
+
+
+function exportToJsonFile(jsonData) {
+  var dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonData);
+
+  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+  var exportFileDefaultName = tabName + '.json';
+  // var exportFileDefaultName = tabName + '.logicx';
+
+  var linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+  setTimeout(function () {
+    linkElement.remove();
+  }, 100);
 }

@@ -42,7 +42,11 @@
 // TODO: move elems to top on move
 
 
-// updateSignal | lineConnections | elementsIsideBox
+// TODO: top bar resize, conn names, ssdd inspect
+// TODO: move main on top of svg's
+
+
+// updateSignal | lineConnections | elementsIsideBox | main# -> var(--
 
 
 /////////////////////
@@ -65,9 +69,15 @@ var setting_background = "dotted";
 ///// GLOBAL /////
 
 var top_height = document.getElementById("top").offsetHeight;
-var drawer_width = document.getElementById("drawer").offsetWidth;
+// var drawer_width = document.getElementById("drawer").offsetWidth;
+function getDrawerWidth() {
+  return document.getElementById("drawer").offsetWidth;
+}
 
 var active = true;
+var mainMoved = false;
+
+var active_tab = 0;
 
 /////////////////////
 ///// DRAGGABLE /////
@@ -82,13 +92,14 @@ function dragElement(elmnt, drawer) {
   elmnt.onmousedown = dragMouseDown;
   function dragMouseDown(e) {
     e = e || window.event;
-    if (!e.target.classList.contains("clock_input") || e.target.closest("#drawer") !== null) {
+    if (!e.target.classList.contains("textInput") || e.target.closest("#drawer") !== null) {
       e.preventDefault();
 
       // get the mouse cursor position at startup:
       cursor.x = e.clientX;
       cursor.y = e.clientY;
-      if (!e.target.classList.contains("connector")) { // mvoe elem
+      if (!e.target.classList.contains("connector")) { // move elem
+        moveToTop(e.target);
         document.onmouseup = closeDragElement;
         document.onmousemove = elementDrag;
       } else { // move line
@@ -108,7 +119,7 @@ function dragElement(elmnt, drawer) {
 
     var cloned = true;
     if (active) {
-      starting.x = e.clientX;
+      starting.x = e.clientX; //  / mapZoom
       starting.y = e.clientY;
       cloned = false;
     }
@@ -124,17 +135,21 @@ function dragElement(elmnt, drawer) {
         clone = elmnt.cloneNode(true);
         clone.classList.add("component", "ghostElem");
         clone.querySelector(".label").remove();
-        document.getElementById("main").appendChild(clone);
+        document.getElementById("main#" + active_tab).appendChild(clone);
 
-        clone.style.top = elmnt.offsetTop - getNumber(document.getElementById("main").style.top) + "px";
-        clone.style.left = elmnt.offsetLeft - drawer_width - getNumber(document.getElementById("main").style.left) + "px";
+        var scrollTop = document.getElementById('drawer').scrollTop;
+        // TODO: map zoom...
+        // clone.style.top = elmnt.offsetTop / mapZoom - getNumber(document.getElementById("main").style.top) - scrollTop / mapZoom + "px";
+        // clone.style.left = elmnt.offsetLeft * mapZoom - getNumber(document.getElementById("main").style.left) - getDrawerWidth() + "px";
+        clone.style.top = elmnt.offsetTop - getNumber(document.getElementById("main#" + active_tab).style.top) - scrollTop / mapZoom + "px";
+        clone.style.left = elmnt.offsetLeft - getNumber(document.getElementById("main#" + active_tab).style.left) - getDrawerWidth() + "px";
         clone.style.opacity = "0.3";
-        clone.style.zIndex = "11";
+        clone.style.zIndex = "9999919";
       }
 
       setStyle(clone, (clone.offsetLeft - cursor.movedX / mapZoom), (clone.offsetTop - cursor.movedY / mapZoom));
 
-      if (e.clientX > drawer_width && e.clientY > top_height) clone.style.opacity = "0.7"; // elem clone inside main div
+      if (e.clientX > getDrawerWidth() && e.clientY > top_height) clone.style.opacity = "0.7"; // elem clone inside main div
       else clone.style.opacity = "0.3";
     } else {
       setStyle(elmnt, (elmnt.offsetLeft - cursor.movedX / mapZoom), (elmnt.offsetTop - cursor.movedY / mapZoom));
@@ -150,25 +165,50 @@ function dragElement(elmnt, drawer) {
     setTimeout(function() { active = true; }, 10);
 
     if (drawer) {
-      if (e.pageX > drawer_width && e.pageY > top_height) {
+      if (e.pageX > getDrawerWidth() && e.pageY > top_height) {
         clone.style.opacity = null;
-        clone.style.zIndex = null;
+        clone.style.zIndex = document.querySelectorAll('.component').length - 1;
         clone.classList.remove('ghostElem');
 
         var type = clone.classList[0];
         if (type == "box") type = clone.children[0].classList[0];
         if (type == "clock") {
-          clone.querySelector(".clock_input").id = "clockInput#" + clockInputs;
-          clone.querySelector(".clock_input").removeAttribute('tabindex');
-          clockInputs++;
+          var clockInput = 0;
+          while (document.getElementById('clockInput#' + clockInput) !== null) clockInput++;
+          clone.querySelector(".clock_input").id = "clockInput#" + clockInput;
         }
+        if (clone.querySelector(".textInput") !== null) clone.querySelector(".textInput").removeAttribute('tabindex');
 
         addListener(clone);
         dragElement(clone);
         addConnection(clone, type);
         checkForNoConnections();
+        document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
         clone = undefined;
+
+        // TODO: this
+        var component = e.target.closest('.component');
+        var object = checkSaved('comp_', component);
+        object.type = component.children[0].classList[0];
+        object.x = getNumber(component.style.left);
+        object.y = getNumber(component.style.top);
+        object.component = component;
+        if (component.querySelector('label') > 0) object.label = component.querySelector('label').innerHTML;
+        // output amount + labels | on / off
       } else if (clone !== undefined) clone.remove();
+    }
+
+    if (!drawer) {
+      document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
+
+      var component = e.target.closest('.component');
+      var object = checkSaved('comp_', component);
+      object.type = component.children[0].classList[0];
+      object.x = getNumber(component.style.left);
+      object.y = getNumber(component.style.top);
+      object.component = component;
+      if (component.querySelector('label') > 0) object.label = component.querySelector('label').innerHTML;
+      // output amount + labels | on / off
     }
 
     // stop moving when mouse button is released:
@@ -177,21 +217,21 @@ function dragElement(elmnt, drawer) {
   }
 
   var first = true;
-  var svg = document.getElementById("SVGdiv");
-  var originalSVG = document.getElementById("SVGdiv").innerHTML;
+  var svg = document.getElementById("main#" + active_tab).querySelector('.SVGdiv');
+  var originalSVG = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').innerHTML;
   var storePrevious = svg, allMatchingConnectors = [];
   function dragConnector(e) {
     moved = true;
     backgroundCanBeDragged = false;
     if (hasNoConnections(startingConnect.id) || !startingConnect.closest(".connection").classList.contains("left")) { // if it has no connection || has a connector thats not left
-      var targetX = (e.pageX - document.getElementById("drawer").offsetWidth) / mapZoom - getNumber(document.getElementById("main").style.left);
-      var targetY = (e.pageY - document.getElementById("top").offsetHeight) / mapZoom - getNumber(document.getElementById("main").style.top);
+      var targetX = (e.pageX - document.getElementById("drawer").offsetWidth) / mapZoom - getNumber(document.getElementById("main#" + active_tab).style.left);
+      var targetY = (e.pageY - document.getElementById("top").offsetHeight) / mapZoom - getNumber(document.getElementById("main#" + active_tab).style.top);
       var posFrom = getLinePos(startingConnect);
 
       // TODO: move like a robe....
       if (first) {
         first = false;
-        originalSVG = document.getElementById("SVGdiv").innerHTML;
+        originalSVG = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').innerHTML;
         svg.innerHTML = originalSVG + '<svg class="lineSVG"><path id="connecting" style="opacity:0.5;" d="' + getSVGPositions(posFrom.x, posFrom.y, targetX, targetY) + '" class="line" /></svg>';
         addLineBorders();
         updateSignal(startingConnect.id);
@@ -237,6 +277,21 @@ function dragElement(elmnt, drawer) {
               originalSVG = svg.innerHTML;
               addLineListeners();
               checkForNoConnections();
+
+              document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
+              // save to localStorage
+              var startElem = startingConnect.closest('.component');
+              var endElem = target.closest('.component');
+              var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+              for (var i = 0; i < Object.keys(saves[tabName]).length; i++) {
+                var name = Object.keys(saves[tabName])[i];
+                if (startElem == saves[tabName][name].component) startElem = name;
+                if (endElem == saves[tabName][name].component) endElem = name;
+              }
+              var object = checkSaved('conn_');
+              object.from = {elem: startElem};
+              object.to = {elem: endElem};
+              // side, pos
             } else if (moved) svg.innerHTML = originalSVG;
           }
         }
@@ -273,16 +328,80 @@ function addListener(elem) {
       break;
     case "clock":
       child.querySelector(".clock_input").addEventListener('change', clock);
+      createClockSection(child.querySelector('.clock_input'));
       clock(child.querySelector(".clock_input"));
       break;
   }
+  if (child.classList[1] == 'gate' && child.querySelector(".gate_input") !== null) child.querySelector(".gate_input").addEventListener('change', gate);
   elem.addEventListener('click', select);
 }
+
+// zoom slider
+document.getElementById('zoomSlider').addEventListener('input', sliderChange);
+function sliderChange() {
+
+  var percent = document.getElementById('zoomSlider').value;
+
+  // zoom main
+  var elem = document.getElementById('main#' + active_tab);
+
+  var zoomFactor = minZoom / 100;
+
+  elem.style.zoom = percent / 100;
+  mapZoom = elem.style.zoom;
+
+  elem.style.marginLeft = getDrawerWidth() / mapZoom + "px";
+  elem.style.marginTop = top_height / mapZoom + "px";
+
+  document.querySelector('.zoomIndicator').innerHTML = Math.round(mapZoom * 100) + '%'; // DEBUG
+
+  // update
+  checkMainPos();
+  updateMap(document.getElementById('main#' + active_tab), document.querySelector('.map_overlay'), false); // update minimap
+
+  if (percent.length <= 2) percent = '&nbsp;&nbsp;' + percent;
+  document.getElementById('zoomValue').innerHTML = percent + '%';
+}
+
+// drawer resizer (dragger)
+var draggerDown = false, dragger = document.getElementById('dragger'), draggerMoved = false;
+document.addEventListener('mousemove', function(e) {
+  if (draggerDown) {
+    draggerMoved = true;
+    dragger.style.left = e.clientX + 'px';
+    var drawer = document.getElementById('drawer');
+    drawer.style.width = e.clientX + 'px';
+    document.getElementById('main#' + active_tab).style.marginLeft = e.clientX + 'px';
+    document.querySelector('.map_overlay').style.left = e.clientX + 5 + 'px';
+    if (e.clientX <= 220) updateGrid(1);
+    else if (e.clientX <= 350) updateGrid(2);
+    else if (e.clientX <= 450) updateGrid(3);
+    else if (e.clientX <= 600) updateGrid(4);
+    else if (e.clientX <= 800) updateGrid(5);
+    else if (e.clientX <= 1000) updateGrid(6);
+    else if (e.clientX <= 1200) updateGrid(7);
+    else if (e.clientX <= 1500) updateGrid(8);
+    resize(); // update minimap
+  }
+});
+dragger.addEventListener('mousedown', function() { draggerDown = true; });
+dragger.addEventListener('click', function() {
+  if (!draggerMoved) {
+    var drawer = document.getElementById('drawer');
+    var pos = 0;
+    if (drawer.style.width == '0px') pos = 250;
+    dragger.style.left = pos + 'px';
+    drawer.style.width = pos + 'px';
+    updateGrid(2);
+    document.getElementById('main#' + active_tab).style.marginLeft = pos + 'px';
+    document.querySelector('.map_overlay').style.left = pos + 5 + 'px';
+  }
+});
 
 // add line listeners
 function addLineListeners() {
   setTimeout(function () {
-    var query = document.querySelectorAll(".line");
+    var query = document.getElementById("main#" + active_tab).querySelectorAll(".line");
     for (var i = 0; i < query.length; i++) query[i].addEventListener('click', select);
   }, 50);
 }
@@ -305,14 +424,32 @@ document.addEventListener("keydown", function(e) {
     var ghostElems = document.querySelectorAll('.ghostElem');
     for (var k = 0; k < ghostElems.length; k++) ghostElems[k].remove();
   } else if (e.key == "Backspace" || e.key == "Delete") {
-    if (!document.activeElement.classList.contains("clock_input")) deleteSelected();
+    if (!document.activeElement.classList.contains("textInput")) deleteSelected();
+  } else if (e.key == 's' && e.ctrlKey) {
+    save(e);
+  } else if (e.key == 'e' && e.ctrlKey) {
+    save(e, true);
+  } else if (e.key == 'o' && e.ctrlKey) {
+    e.preventDefault();
+    importFile();
+  } else if (e.key == 'w') { //  && e.ctrlKey
+    console.log(active_tab);
+    if (Number(active_tab) !== 0) {
+      closeTab(e, document.getElementById('tab#' + active_tab));
+    }
+  } else if (e.key == 't') {
+    console.log('ayy');
+    e.preventDefault();
+    var count = document.getElementById('tabber').querySelectorAll('.tab').length;
+    addTab('unnamed_' + count);
   }
 });
 
 // remove selection on main click
-document.getElementById("main").addEventListener('click', function(e) {
-  if (e.target.id == "main" || e.target.classList.contains("lineSVG")) if (!e.ctrlKey) removeSelection();
-});
+document.getElementById("main#" + active_tab).addEventListener('click', mainClick);
+function mainClick(e) {
+  if (e.target.id.includes("main#") || e.target.classList.contains("lineSVG")) if (!e.ctrlKey && !mainMoved) removeSelection();
+}
 
 // highlight connectors on hover
 var found = false, foundTarget;
@@ -334,9 +471,10 @@ document.addEventListener('mousemove', function(e) {
 });
 
 // add / update / remove blue selection box
+// TODO: mapZoom
 var created = false, boxLeft = 0, boxTop = 0, mouseDown = false;
 document.addEventListener('mousemove', function(e) {
-  var selectionBox = document.getElementById("selectionBox");
+  var selectionBox = document.getElementById('main#' + active_tab).querySelector('.selectionBox');
   if (mouseDown && e.ctrlKey) {
     if (!created) {
       selectionBox.style.opacity = "1";
@@ -345,13 +483,13 @@ document.addEventListener('mousemove', function(e) {
       created = true;
     }
 
-    var left = boxLeft - drawer_width,
+    var left = boxLeft - getDrawerWidth(),
         top = boxTop - top_height,
         width = e.pageX - boxLeft,
         height = e.pageY - boxTop;
 
     if (e.pageX - boxLeft < 0) {
-      left = e.pageX - drawer_width;
+      left = e.pageX - getDrawerWidth();
       width = boxLeft - e.pageX;
     }
     if (e.pageY - boxTop < 0) {
@@ -359,8 +497,8 @@ document.addEventListener('mousemove', function(e) {
       height = boxTop - e.pageY;
     }
 
-    left -= getNumber(document.getElementById("main").style.left);
-    top -= getNumber(document.getElementById("main").style.top);
+    left -= getNumber(document.getElementById("main#" + active_tab).style.left);
+    top -= getNumber(document.getElementById("main#" + active_tab).style.top);
     setStyle(selectionBox, left, top, width, height);
 
     elementsIsideBox(left, top, width, height, e.shiftKey);
@@ -374,8 +512,14 @@ document.addEventListener('mousemove', function(e) {
     created = false;
   }
 });
-document.getElementById("main").addEventListener("mousedown", function() { mouseDown = true; });
-document.addEventListener("mouseup", function() { mouseDown = false; });
+document.getElementById("main#" + active_tab).addEventListener("mousedown", function() { mouseDown = true; });
+
+// mouseup
+document.addEventListener("mouseup", function() {
+  mouseDown = false;
+  draggerDown = false;
+  setTimeout(function () { draggerMoved = false; }, 10);
+});
 
 /////////////////////
 ///// FUNCTIONS /////
@@ -384,44 +528,59 @@ document.addEventListener("mouseup", function() { mouseDown = false; });
 ///// ELEMENTS /////
 // create/update clock intervals
 // TODO: synced clocks?? (sync button??)
-var clockInputs = 0;
-var interval = 500, obj = {};
+var obj = {};
 function clock(elem) {
   if (this.classList !== undefined) elem = this;
 
   var number = elem.id.slice(elem.id.indexOf("#") + 1, elem.id.length);
   var input = elem.value;
 
-  var num = input.replace(/[a-zA-Z]+/g, ''); // [\d][\d.]* // \d*[\.]*\d
-  var output = num.split('.');
-  num = output.shift() + (output.length ? '.' + output.join('') : '');
+  var clockElem = document.getElementById('clockInput#' + number).closest('.component');
 
-  var end = "ms";
-  if (input.match(/[a-zA-Z]+$/g) !== null) end = input.match(/[a-zA-Z]+$/g)[0]; // \d // \D+$
+  var num = getNumAdvanced(input);
+  var interval = getInterval(input, num);
 
-  switch (end) {
-    case 's': // seconds
-      interval = num * 1000;
-      break;
-    case 'm': // minutes
-      interval = num * 1000 * 60;
-      break;
-    case 'h': // hours
-      interval = num * 1000 * 60 * 60;
-      break;
-    default: // milli seconds
-      interval = num;
-  }
+  if (elem.classList.contains('textInput')) document.getElementById('clockViewInput#' + number).value = input;
+  else document.getElementById('clockInput#' + number).value = input;
 
-  var signal_light = elem.closest(".display").querySelector(".signal-light");
+  var signal_light = clockElem.querySelector(".signal-light");
 
   clearInterval(obj[number]);
   obj[number] = setInterval(function() {
     signal_light.classList.toggle("on");
-    sendSignal(elem, signal_light.classList.contains("on"));
+    sendSignal(clockElem, signal_light.classList.contains("on"));
+    // document.getElementById('clockProgress#' + number).style.width = (100 / interval) + '%';
+    var title = document.getElementById('clockProgress#' + number).closest('.clockSection').querySelector('h1');
+    if (getLabel(clockElem) == "") title.innerHTML = 'Clock #' + number;
+    else if (getLabel(clockElem) !== title.innerHTML) title.innerHTML = getLabel(clockElem);
+    var input = document.getElementById('clockInput#' + number);
+    var progress = document.getElementById('clockProgress#' + number);
+    if (input == null) {
+      clearInterval(obj[number]);
+      progress.closest('.clockSection').remove();
+      if (document.querySelector('.clockSection') == null) document.getElementById('timers').querySelector('h2').classList.remove('hidden');
+    } else {
+      var num = getNumAdvanced(input.value);
+      progress.style.transition = 'all ' + getInterval(input.value, num) + 'ms linear';
+      if (signal_light.classList.contains("on")) progress.style.width = '0%';
+      else progress.style.width = '100%';
+    }
   }, interval);
 
   if (num == "" || num == 0) clearInterval(obj[number]);
+}
+function createClockSection(elem) {
+  var number = elem.id.slice(elem.id.indexOf("#") + 1, elem.id.length);
+  var section = document.createElement('div');
+  section.classList.add('clockSection');
+  section.innerHTML = '<h1>Clock #' + number + '</h1>' +
+  '<input id="clockViewInput#' + number + '" type="text" value="' + elem.value + '">' +
+  '<div class="progress">' +
+    '<div id="clockProgress#' + number + '" class="fill" style="width: 100%; transition: all 500ms linear 0s;"></div>' +
+  '</div>';
+  if (!document.getElementById('timers').querySelector('h2').classList.contains('hidden')) document.getElementById('timers').querySelector('h2').classList.add('hidden');
+  document.getElementById('timers').appendChild(section);
+  document.getElementById('clockViewInput#' + number).addEventListener('change', clock);
 }
 
 // toggle toggle
@@ -439,6 +598,27 @@ function button(e) {
   else sendSignal(this, false);
 }
 
+// change gate input amounts
+// TODO: fix changing numbers might not always connect lines back (and gat)
+function gate(input, value) {
+  if (input.target !== undefined) input = input.target;
+  var amount = value || Number(input.value);
+  if (amount >= 2 && amount <= 999) {
+    // alert(amount);
+    var component = input.closest('.component');
+    // var query = component.querySelectorAll('.connection');
+    // for (var i = 0; i < query.length; i++) query[i].remove();
+    addConnection(component, component.querySelector('div').classList[0], amount);
+    checkForNoConnections();
+    if (value !== undefined) input.value = amount;
+  } else {
+    amount = 0;
+    var connections = input.closest('.component').querySelectorAll('.connection');
+    for (var j = 0; j < connections.length; j++) if (connections[j].classList.contains('left')) amount++;
+    input.value = amount;
+  }
+}
+
 ///// ...SIGNAL | COMPONENT ACTIONS /////
 
 // power/depower elements
@@ -448,18 +628,17 @@ function activate(id, powered) {
   if (elem.classList[0] == "box") elem = elem.children[0];
   var type = elem.classList[0];
 
-  switch (type) {
-    case "light":
-      if (powered) elem.classList.remove("off");
-      else elem.classList.add("off");
-      break;
-    case "number_display":
-      setTimeout(function () {
-        var activated = [];
-        for (var i = 0; i < connectors.length; i++) {
-          var left = connectors[i].closest('.connection').classList.contains('left');
-          if (left && hasSignal(connectors[i].id)) activated[i] = true;
-        }
+  var activated = false;
+
+  setTimeout(function () {
+    var signal = getSignalMap(elem);
+    switch (type) {
+      case "light":
+        if (powered) elem.classList.remove("off");
+        else elem.classList.add("off");
+        break;
+      case "number_display":
+        activated = signal.left.bools;
         if (activated[0] && activated[1] && activated[2] && activated[3]) elem.querySelector('span').innerHTML = 'F';
         else if (activated[0] && activated[1] && activated[2]) elem.querySelector('span').innerHTML = '7';
         else if (activated[0] && activated[1] && activated[3]) elem.querySelector('span').innerHTML = 'B';
@@ -476,18 +655,10 @@ function activate(id, powered) {
         else if (activated[2]) elem.querySelector('span').innerHTML = '4';
         else if (activated[3]) elem.querySelector('span').innerHTML = '8';
         else elem.querySelector('span').innerHTML = '0';
-      }, 10);
-      break;
-    case "seven_segment":
-      setTimeout(function () {
-        var activated = [];
-        for (var i = 0; i < connectors.length; i++) {
-          var left = connectors[i].closest('.connection').classList.contains('left');
-          if (left && hasSignal(connectors[i].id)) activated[i] = true; // notConnected
-          else activated[i] = false;
-        }
-        for (var j = 0; j < activated.length; j++) {
-          if (activated[j]) {
+        break;
+      case "seven_segment":
+        for (var j = 0; j < signal.left.count; j++) {
+          if (signal.left.bools[j]) {
             elem.querySelector('#number_' + (j + 1)).style.background = 'var(--light-active)';
             elem.querySelector('#number_' + (j + 1)).style.boxShadow = '0px 0px 20px 6px var(--light-active--shadow)';
           } else {
@@ -495,58 +666,117 @@ function activate(id, powered) {
             elem.querySelector('#number_' + (j + 1)).style.boxShadow = null;
           }
         }
-      }, 10);
-      break;
-    case "and":
-      setTimeout(function () {
-        var activated = false;
-        for (var i = 0; i < connectors.length; i++) {
-          var left = connectors[i].closest('.connection').classList.contains('left');
-          if (left && hasSignal(connectors[i].id)) activated = true;
-          else if (left) {
-            activated = false;
-            break;
-          }
-        }
-        // if (activated) elem.classList.add("on");
-        // else elem.classList.remove("on");
+        break;
+      case "seven_segment_decoder":
+        activated = signal.left.bools;
+        if (activated[0] && activated[1] && activated[2] && activated[3]) eo(elem, {true: [0, 4, 5, 6], false: [1, 2, 3]});
+        else if (activated[0] && activated[1] && activated[2]) eo(elem, {true: [0, 1, 3, 4, 5, 6], false: [2]});
+        else if (activated[0] && activated[1] && activated[3]) eo(elem, {true: [1, 2, 3, 4, 6], false: [0, 5]});
+        else if (activated[0] && activated[2] && activated[3]) eo(elem, {true: [2, 3, 4, 5, 6], false: [0, 1]});
+        else if (activated[1] && activated[2] && activated[3]) eo(elem, {true: [0, 1, 2], false: [3, 4, 5, 6]});
+        else if (activated[0] && activated[1]) eo(elem, {true: [0, 3, 4, 5], false: [1, 2, 6]});
+        else if (activated[0] && activated[2]) eo(elem, {true: [0, 1, 2, 4, 5, 6], false: [3]});
+        else if (activated[0] && activated[3]) eo(elem, {true: [0, 1, 2, 3, 5, 6], false: [4]});
+        else if (activated[1] && activated[2]) eo(elem, {true: [0, 2, 3, 4, 5, 6], false: [1]});
+        else if (activated[1] && activated[3]) eo(elem, {true: [0, 2, 3, 5, 6], false: [1, 4]});
+        else if (activated[2] && activated[3]) eo(elem, {true: [0, 1, 2, 3, 6], false: [4, 5]});
+        else if (activated[0]) eo(elem, {true: [0, 1, 2, 3, 4, 5, 6]});
+        else if (activated[1]) eo(elem, {true: [1, 2, 5, 6], false: [0, 3, 4]});
+        else if (activated[2]) eo(elem, {true: [0, 1, 3, 4, 6], false: [2, 5]});
+        else if (activated[3]) eo(elem, {true: [1, 2], false: [0, 3, 4, 5, 6]});
+        else eo(elem, {true: [0, 1, 2, 3, 4, 5], false: [6]});
+        break;
+      // logic gates
+      case "buffer":
+        // TODO: output is not active upon connection drag
+        if (signal.left.trues == 1) activated = true;
         sendSignal(elem, activated);
-      }, 10);
-      break;
-    case "or":
-      setTimeout(function () {
-        var activated = false;
-        for (var i = 0; i < connectors.length; i++) {
-          var left = connectors[i].closest('.connection').classList.contains('left');
-          if (left && hasSignal(connectors[i].id)) {
-            activated = true;
-            break;
-          }
-        }
-        // if (activated) elem.classList.add("on");
-        // else elem.classList.remove("on");
+        enableOutput(elem, activated);
+        break;
+      case "not":
+        if (signal.left.trues == 0) activated = true;
         sendSignal(elem, activated);
-      }, 10);
-      break;
-    case "xor":
-      setTimeout(function () {
-        var activated = 0;
-        for (var i = 0; i < connectors.length; i++) {
-          var left = connectors[i].closest('.connection').classList.contains('left');
-          if (left && hasSignal(connectors[i].id)) activated++;
-        }
-        if (activated == 1) activated = true;
-        else activated = false;
-        // if (activated) elem.classList.add("on");
-        // else elem.classList.remove("on");
+        enableOutput(elem, activated);
+        break;
+      case "and":
+        if (signal.left.trues == signal.left.count) activated = true;
         sendSignal(elem, activated);
-      }, 10);
-      break;
+        enableOutput(elem, activated);
+        break;
+      case "nand":
+        if (signal.left.trues !== signal.left.count) activated = true;
+        sendSignal(elem, activated);
+        enableOutput(elem, activated);
+        break;
+      case "or":
+        if (signal.left.trues > 0) activated = true;
+        sendSignal(elem, activated);
+        enableOutput(elem, activated);
+        break;
+      case "nor":
+        if (signal.left.trues == 0) activated = true;
+        sendSignal(elem, activated);
+        enableOutput(elem, activated);
+        break;
+      case "xor":
+        if (signal.left.trues == 1) activated = true;
+        sendSignal(elem, activated);
+        enableOutput(elem, activated);
+        break;
+      case "xnor":
+        if (signal.left.trues !== 1) activated = true;
+        sendSignal(elem, activated);
+        enableOutput(elem, activated);
+        break;
+
+      case 'transistor':
+        if (signal.top.trues > 0) setStyleQuery(elem.querySelector('.arrow').querySelectorAll('span'), {background: 'var(--light-active)', boxShadow: '0px 0px 20px 6px var(--light-active--shadow)'});
+        else setStyleQuery(elem.querySelector('.arrow').querySelectorAll('span'), {background: null, boxShadow: null});
+
+        if (signal.top.trues > 0 && signal.left.trues > 0) activated = true;
+        sendSignal(elem, activated);
+        enableOutput(elem, activated);
+        break;
+      case 'transistor_inv':
+        if (signal.top.trues == 0) setStyleQuery(elem.querySelector('.arrow').querySelectorAll('span'), {background: 'var(--light-active)', boxShadow: '0px 0px 20px 6px var(--light-active--shadow)'});
+        // if (signal.top.trues == 0) setStyleQuery(elem.querySelector('.arrow').querySelectorAll('span'), {background: 'var(--light-active-inverted)', boxShadow: '0px 0px 20px 6px var(--light-active-inverted--shadow)'});
+        else setStyleQuery(elem.querySelector('.arrow').querySelectorAll('span'), {background: null, boxShadow: null});
+
+        if (signal.top.trues == 0 && signal.left.trues > 0) activated = true;
+        sendSignal(elem, activated);
+        enableOutput(elem, activated);
+        break;
+    }
+  }, 10);
+}
+
+function eo(elem, object) {
+  enableOutput(elem, true, object.true || []);
+  enableOutput(elem, false, object.false || []);
+
+  for (var i = 0; i < object.true.length; i++) {
+    sendSignal(elem, true, object.true[i]);
+  }
+  var obFalse = object.false || [];
+  for (var j = 0; j < obFalse.length; j++) {
+    sendSignal(elem, false, object.false[j]);
   }
 }
+// enable / disable specific output connector
+function enableOutput(elem, enable, output) {
+  output = output || [0];
+  for (var i = 0; i < output.length; i++) {
+    elem = elem.closest('.component').querySelectorAll('.connector')[output[i]];
+    console.log(elem);
+    console.log(enable);
+    if (enable) elem.classList.add("on");
+    else elem.classList.remove("on");
+  }
+}
+
 // TODO: updateSignal vs activate
 
-// update signal (toggle & constant)
+// update signal (toggle & constant & not gate)
 function updateSignal(id) {
   var index = id.indexOf(":");
   var from = id.slice(0, index), to = id.slice(index + 1, id.length);
@@ -555,28 +785,108 @@ function updateSignal(id) {
     to = id;
     id = "connecting";
   }
+  console.log('ID: ' + id);
 
-  var elem = [document.getElementById(from).closest(".component").children[0], document.getElementById(to).closest(".component").children[0]];
+  var elem = [
+    document.getElementById(from).closest(".component").children[0],
+    document.getElementById(to).closest(".component").children[0]
+  ];
 
   for (var i = 0; i < elem.length; i++) {
-    if (elem[i].classList.contains("toggle"))
+    // console.log(elem[i].classList[0]);
+    // console.log(getSignalMap(elem[i]));
+    if (elem[i].classList.contains("toggle")) {
       if (elem[i].children[0].classList.contains("on")) power(i);
-
-    else if (elem[i].classList.contains("constant"))
+    } else if (elem[i].classList.contains("constant")) {
       if (elem[i].children[0].innerText == "1") power(i);
+    // } else if (elem[i].classList.contains("not")) {
+    //   if (getSignalMap(elem[i]).left.trues == 0) power(i);
+    } else if (elem[i].classList.contains("gate")) {
+      // if (elem[i].closest('.component').querySelector('.connector').classList.contains("on")) {
+      if (getSignalMap(elem[i]).right.trues > 0) {
+        var conns = elem[i].closest('.component').querySelectorAll('.connector');
+        var connId = to;
+        if (i == 0) connId = from;
+        // console.log('ID: ' + connId);
+        for (var j = 0; j < conns.length; j++) {
+          // console.log('ind id: ' + conns[j].id);
+          if (conns[j].id == connId && conns[j].closest('.connection').classList.contains('right')) power(i);
+        }
+      }
+    //   // if (getSignalMap(elem[i]).right.trues > 0 && getSignalMap(elem[i]).right.ids.includes(elem[i].closest('.component').querySelector('.connector').id)) power(i);
+    //   // TODO: connectin lever to not gate will activate powerline in between
+    //   if (getSignalMap(elem[i]).right.trues > 0) power(i);
+    //   // if (getSignalMap(elem[i]).right.trues > 0) {
+    //   //   if (i == 0) activate(to, true); else activate(from, true);
+    //   //   document.getElementById(id).classList.add("powered");
+      // }
+    } else if (elem[i].classList.contains("seven_segment_decoder")) {
+      if (getSignalMap(elem[i]).left.trues == 0) {
+        var conns = elem[i].closest('.component').querySelectorAll('.connector');
+        var connId = to;
+        if (i == 0) connId = from;
+        for (var j = 0; j < conns.length; j++) {
+          if (conns[j].id == connId && conns[j].classList.contains('on') && conns[j].closest('.connection').classList.contains('right')) power(i);
+        }
+      }
+    }
   }
 
   function power(i) {
+    console.log(i);
+    console.log(from);
+    console.log(to);
+    console.log(id);
     if (i == 0) activate(to, true); else activate(from, true);
     document.getElementById(id).classList.add("powered");
   }
 }
 
-// send/remove signal from elem to cennected elements
-function sendSignal(elem, powered) {
+// get element connector signals
+function getSignalMap(elem) {
+  elem = elem.closest('.component');
+  var output = { // count = amount of connectors, trues = number of true, bools = [true, false], ids = [conn_1]
+    left: { count: 0, trues: 0, bools: [], ids: [] },
+    right: { count: 0, trues: 0, bools: [], ids: [] },
+    top: { count: 0, trues: 0, bools: [], ids: [] },
+    global: { count: 0, trues: 0, bools: [], ids: [] }
+  };
+  var connections = elem.querySelectorAll('.connection');
+  for (var i = 0; i < connections.length; i++) {
+    var left = connections[i].classList.contains('left');
+    var right = connections[i].classList.contains('right');
+    var top = connections[i].classList.contains('top');
+    var id = connections[i].querySelector('.connector').id;
+    var signal = hasSignal(id) || connections[i].querySelector('.connector').classList.contains('on');
+    if (left) {
+      output.left.bools.push(signal);
+      output.left.ids.push(id);
+      if (signal) output.left.trues++;
+      output.left.count++;
+    } else if (right) {
+      output.right.bools.push(signal);
+      output.right.ids.push(id);
+      if (signal) output.right.trues++;
+      output.right.count++;
+    } else if (top) {
+      output.top.bools.push(signal);
+      output.top.ids.push(id);
+      if (signal) output.top.trues++;
+      output.top.count++;
+    }
+    output.global.bools.push(signal);
+    output.global.ids.push(id);
+    if (signal) output.global.trues++;
+    output.global.count++;
+  }
+  return output;
+}
+
+// send/remove signal from elem to connected elements
+function sendSignal(elem, powered, output) {
   elem = elem.closest(".component");
-  var id = elem.querySelector(".connector").id;
-  var query = document.getElementById("SVGdiv").querySelectorAll(".line");
+  var id = elem.querySelectorAll(".connector")[output || 0].id;
+  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id || lc.to == id) {
@@ -586,6 +896,19 @@ function sendSignal(elem, powered) {
       else query[i].classList.remove("powered");
     }
   }
+}
+
+// easily append element from object
+function appendElem(type, coords, label) {
+  var object = getObjectByType(type);
+  var div = document.createElement("div");
+  var component = appendElement(type, "main#" + active_tab);
+  component.style.top = coords.y + 'px';
+  component.style.left = coords.x + 'px';
+  // component.zIndex = ...
+  if (label !== undefined) addLabel(label, component);
+  addListener(component);
+  return component;
 }
 
 // append element (used for drawer elements)
@@ -602,26 +925,44 @@ function appendElement(type, parentId) {
 
   component.innerHTML = '<div class="' + classList + '">' + object.children + '</div>';
 
-  // TODO: THIS IS NEVER #MAIN!!!
-  // if (parentId == "main") {
-  //   component.classList.add("component");
-  //   addConnection(component, type);
-  //   dragElement(component);
-  //   addListener(component);
-  // } else
-  dragElement(component, true);
-
   document.getElementById(parentId).appendChild(component);
 
-  if (type == 'clock') {
-    document.getElementById('clockInput#temp').id = 'clockInput#' + clockInputs;
-    clockInputs++;
+  // TODO: THIS IS NEVER #MAIN!!!
+  if (parentId.includes("main#")) {
+    component.classList.add("component");
+    addConnection(component, type);
+    dragElement(component);
+    addListener(component);
+    checkForNoConnections();
+  } else {
+    dragElement(component, true);
   }
 
   return component;
 }
 
 ///// SVG /////
+
+// createsvg helper for easier understanding
+function cSVG(from, to) {
+  createSVG(getSignalMap(from.elem)[from.side || 'global'].ids[from.pos || 0], getSignalMap(to.elem)[to.side || 'global'].ids[to.pos || 0]);
+}
+// create svg with start and end id
+function createSVG(connStart, connEnd) {
+  var id = connStart + ':' + connEnd;
+  if (noMatchingLines(id)) { // no lines with the exact same id (same connections)
+    var posTo = getLinePos(document.getElementById(connEnd));
+    var posFrom = getLinePos(document.getElementById(connStart));
+    var svg = document.getElementById("main#" + active_tab).querySelector('.SVGdiv');
+    var originalSVG = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').innerHTML;
+    svg.innerHTML = originalSVG + '<svg class="lineSVG"><path id="' + id + '" d="' + getSVGPositions(posFrom.x, posFrom.y, posTo.x, posTo.y) + '" class="line" /></svg>';
+    addLineBorders();
+    updateSignal(id);
+    // originalSVG = svg.innerHTML;
+    addLineListeners();
+    checkForNoConnections();
+  }
+}
 
 // move / update svg lines
 function moveSVG(parent) {
@@ -630,7 +971,7 @@ function moveSVG(parent) {
     var pos = getLinePos(lines[j]);
     var matching = checkForLine(parent.querySelectorAll(".connector")[j].id);
     for (var i = 0; i < matching.length; i++) {
-      var line = document.getElementsByClassName("line")[matching[i].replace(/\D+/g, '')];
+      var line = document.getElementById("main#" + active_tab).getElementsByClassName("line")[matching[i].replace(/\D+/g, '')];
       var svgPos = getSVGCoords(line);
       if (matching[i].includes("from")) line.setAttribute("d", getSVGPositions(pos.x, pos.y, svgPos.x2, svgPos.y2));
       else if (matching[i].includes("to")) line.setAttribute("d", getSVGPositions(svgPos.x1, svgPos.y1, pos.x, pos.y));
@@ -740,38 +1081,74 @@ function getSVGCoords(svgElem) {
 ///// CONNECTION /////
 
 // add connections to element
-var connections = 0;
-function addConnection(component, type) {
+// var connections = 0;
+function addConnection(component, type, amount) {
   var object = getObjectByType(type);
+  var connectionId = 0;
 
   // get connection amount
-  var leftCount = 0, rightCount = 0;
+  var leftCount = 0, rightCount = 0, topCount = 0, names = {right: [], left: [], top: []};
   for (var i = 0; i < Object.keys(object.connections).length; i++) {
     var connectionObject = object.connections[Object.keys(object.connections)[i]];
-    if (connectionObject.pos == 'right') rightCount++;
-    else if (connectionObject.pos == 'left') leftCount++;
+    if (connectionObject.pos == 'right') {
+      console.log(connectionObject.name);
+      if (connectionObject.name !== undefined) names[connectionObject.pos][rightCount] = connectionObject.name;
+      rightCount++;
+    } else if (connectionObject.pos == 'left') {
+      if (connectionObject.name !== undefined) names[connectionObject.pos][leftCount] = connectionObject.name;
+      leftCount++;
+    } else if (connectionObject.pos == 'top') {
+      if (connectionObject.name !== undefined) names[connectionObject.pos][topCount] = connectionObject.name;
+      topCount++;
+    }
+  }
+
+  if (amount !== undefined) {
+    leftCount = amount;
+    component.style.height = 80 + (amount - 2) * 10 + 'px';
+    component.querySelector('.gate_input').style.marginTop = '50%';
+    component.querySelector('.gate_input').style.marginTop = component.offsetHeight / 2 + 'px';
+
+    var query = component.querySelectorAll('.connection');
+    for (var l = 0; l < query.length; l++) {
+      var id = query[l].querySelector('.connector').id;
+      if (rightCount + l > amount + 1) removeConnected(id);
+      query[l].remove();
+    }
   }
 
   // create connections
   var slicesRight = component.offsetHeight / (rightCount + 1),
       slicesLeft = component.offsetHeight / (leftCount + 1);
-  for (var j = 0; j < rightCount; j++) appendConnection(slicesRight * (j + 1), 'right');
-  for (var k = 0; k < leftCount; k++) appendConnection(slicesLeft * (k + 1), 'left');
+      slicesTop = component.offsetWidth / (topCount + 1);
+  for (var j = 0; j < rightCount; j++) appendConnection(slicesRight * (j + 1), 'right', names.right[j] || null);
+  for (var k = 0; k < leftCount; k++) appendConnection(slicesLeft * (k + 1), 'left', names.left[k] || null);
+  for (var m = 0; m < topCount; m++) appendConnection(slicesTop * (m + 1), 'top', names.top[m] || null);
 
   // append connections
-  function appendConnection(top, direction) {
+  function appendConnection(offset, direction, name) {
     var connection = document.createElement("div");
-    connection.style.top = top + 'px';
+    if (direction == 'right' || direction == 'left') connection.style.top = offset + 'px';
+    else connection.style.left = offset + 'px';
     connection.classList.add("connection", direction);
-    connection.innerHTML = '<div class="connector" id="conn_' + connections + '"></div>';
+    while (document.getElementById('conn_' + connectionId) !== null) connectionId++;
+    connection.innerHTML = '<div class="connector" id="conn_' + connectionId + '"></div>';
+    if (name !== null) {
+      var offsetStyle = 'Y';
+      if (direction == 'top') offsetStyle = 'X';
+      connection.innerHTML += '<div class="conn_label" style="transform: translate' + offsetStyle + '(-50%); ' + direction + ': 16px;">' + name + '</div>';
+    }
     component.appendChild(connection);
-    connections++;
+    // connections++;
   }
+
+  moveSVG(component);
+  activate('conn_' + connectionId);
 }
 
 // check if connector has power
 function hasSignal(id) {
-  var query = document.getElementById("SVGdiv").querySelectorAll(".line");
+  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id || lc.to == id)
@@ -808,7 +1185,7 @@ function elementsIsideBox(left, top, width, height, shift) {
     else if (!shift) query[i].classList.remove("selected");
   }
 
-  var lines = document.querySelectorAll(".lineSVG");
+  var lines = document.getElementById("main#" + active_tab).querySelectorAll(".lineSVG");
   for (var j = 0; j < lines.length; j++) {
     // TODO: Improve selection: only select when on lines, not entire box
     var svgPos = getSVGCoords(lines[j].lastChild);
@@ -853,15 +1230,23 @@ function addLabel(name, component, drawer) {
   component.appendChild(label);
 }
 
-// select elements (TODO: NOT IN USE)
+// get label from element
+function getLabel(elem) {
+  var label = "";
+  if (elem.querySelector('.label') !== null) label = elem.querySelector('.label').innerHTML;
+  return label;
+}
+
+// select elements
 function select(e) {
   var elem = this;
   if (elem.classList.contains("line")) elem = elem.closest(".lineSVG");
   if (elem.classList.contains("component") || elem.classList.contains("lineSVG")) {
-    if (!e.ctrlKey && !e.shiftKey) removeSelection();
+    if (!e.ctrlKey && !e.shiftKey && !mainMoved) removeSelection();
     if (active) {
-      elem.classList.add("selected");
-      if (e.ctrlKey || e.shiftKey) elem.classList.remove("selected");
+      if (elem.classList.contains("selected")) {
+        if (e.ctrlKey || e.shiftKey) elem.classList.remove("selected");
+      } else elem.classList.add("selected");
     }
   }
 }
@@ -881,12 +1266,6 @@ function deleteSelected() {
     removeComponent(query[i]);
   }
 }
-// remove every selected element
-function removeSelection() {
-  var query = document.querySelectorAll(".selected");
-  var length = query.length;
-  for (var i = 0; i < length; i++) query[i].classList.remove("selected");
-}
 // remove component (and connections to/from component)
 function removeComponent(elem) {
   if (elem.classList.contains("lineSVG")) {
@@ -895,16 +1274,22 @@ function removeComponent(elem) {
       checkForNoConnections();
     }, 1);
   } else {
-    var id = elem.querySelector(".connector").id;
-    var query = document.getElementById("SVGdiv").querySelectorAll(".lineSVG");
+    // var id = elem.querySelector(".connector").id;
+    var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".lineSVG");
     for (var i = 0; i < query.length; i++) {
       var lc = getLineConnectors(query[i].lastChild);
-      if (lc.from == id || lc.to == id) {
-        query[i].remove();
-      }
+      var ids = getSignalMap(elem).global.ids;
+      for (var j = 0; j < ids.length; j++) if (lc.from == ids[j] || lc.to == ids[j]) query[i].remove();
+      // TODO: update signal
     }
   }
   elem.remove();
+}
+// remove every selected element
+function removeSelection() {
+  var query = document.querySelectorAll(".selected");
+  var length = query.length;
+  for (var i = 0; i < length; i++) query[i].classList.remove("selected");
 }
 
 ///// LINE | CONNECTIONS /////
@@ -912,7 +1297,7 @@ function removeComponent(elem) {
 // check if any lines is connected to the connector id
 function hasNoConnections(id) {
   var hasNoConnections = true;
-  var query = document.getElementById("SVGdiv").querySelectorAll(".line");
+  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id || lc.to == id) {
@@ -925,7 +1310,7 @@ function hasNoConnections(id) {
 // get all lines connected to connector
 function checkForLine(id) {
   var out = [];
-  var query = document.getElementById("SVGdiv").querySelectorAll(".line");
+  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id) out.push("from" + i);
@@ -933,9 +1318,17 @@ function checkForLine(id) {
   }
   return out;
 }
+// remove all lines connected to a connector
+function removeConnected(id) {
+  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  for (var i = 0; i < query.length; i++) {
+    var lc = getLineConnectors(query[i]);
+    if (lc.from == id || lc.to == id) query[i].closest('.lineSVG').remove();
+  }
+}
 // check if connectors has no connections
 function checkForNoConnections() {
-  var query = document.querySelectorAll(".connector");
+  var query = document.getElementById("main#" + active_tab).querySelectorAll(".connector");
   for (var i = 0; i < query.length; i++) {
     if (query[i].closest(".connection").classList.contains("left") && hasNoConnections(query[i].id)) query[i].classList.add("notConnected");
     else if (query[i].classList.contains("notConnected")) query[i].classList.remove("notConnected");
@@ -943,7 +1336,7 @@ function checkForNoConnections() {
 }
 // add black borders around svg line connections
 function addLineBorders() {
-  var query = document.querySelectorAll(".lineSVG");
+  var query = document.getElementById("main#" + active_tab).querySelectorAll(".lineSVG");
   for (var i = 0; i < query.length; i++) {
     var path = query[i].lastChild.getAttribute("d");
     var style = query[i].lastChild.getAttribute("style");
@@ -973,10 +1366,14 @@ function getLinePos(elmnt) {
   var connection = connector.closest('.connection');
   if (connection.classList.contains("right")) {
     x += elmnt.offsetWidth + connection.offsetWidth + (connector.offsetWidth / 2);
+    y += parseInt(connection.style.top, 10); // elmnt.offsetHeight / 2;
   } else if (connection.classList.contains("left")) {
     x += 0 - connection.offsetWidth - (connector.offsetWidth / 2);
+    y += parseInt(connection.style.top, 10);
+  } else if (connection.classList.contains('top')) {
+    y += 0 - connection.offsetHeight - (connector.offsetHeight / 2);
+    x += parseInt(connection.style.left, 10);
   }
-  y += parseInt(connection.style.top, 10); // elmnt.offsetHeight / 2;
 
   return {x: x, y: y};
 }
@@ -990,7 +1387,7 @@ function getLineConnectors(line) {
 // check if no lines have the same id (to prevent multiple connections to the same components)
 function noMatchingLines(id) {
   var noMatching = true;
-  var query = document.getElementById("SVGdiv").querySelectorAll(".line");
+  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     if (query[i].id == id) {
       noMatching = false;
@@ -998,6 +1395,103 @@ function noMatchingLines(id) {
     }
   }
   return noMatching;
+}
+
+///// TABS /////
+document.getElementById('tabber').querySelector('.tab').addEventListener('click', openTab);
+// create new page and tab
+var tabsId = 1;
+function addTab(name) {
+  // TODO: reorder tabs
+  // TODO: contaxt tab bar: new, delete
+  // var count = document.getElementById('tabber').querySelectorAll('.tab').length;
+
+  var newTab = document.createElement('div');
+  newTab.classList.add('tab');
+  newTab.id = 'tab#' + tabsId;
+  newTab.innerHTML = '<span class="unsaved">' + name + '</span><div id="close"><i class="material-icons tabber" title="Close">close</i></div>';
+  document.getElementById('tabber').querySelector('div').appendChild(newTab);
+  newTab.addEventListener('click', openTab);
+  newTab.querySelector('#close').addEventListener('click', closeTab);
+
+  var newMain = document.createElement('div');
+  newMain.id = 'main#' + tabsId;
+  newMain.classList.add('main', 'hidden');
+  newMain.style.zoom = '1';
+  // center V
+  newMain.style.top = '0';
+  newMain.style.left = '0';
+  newMain.innerHTML = '<div class="selectionBox" class="hidden"></div><div class="SVGdiv"></div>';
+  document.body.appendChild(newMain);
+
+  newMain.addEventListener('click', mainClick);
+  newMain.addEventListener("mousedown", function() { mouseDown = true; });
+  newMain.addEventListener('mousedown', mainDrag);
+  newMain.addEventListener('wheel', wheel);
+
+  active_tab = tabsId;
+  tabsId++;
+  newTab.click();
+
+  home();
+
+  return newTab;
+}
+
+// open a tab
+function openTab(e) {
+  if (!e.target.classList.contains('material-icons')) {
+    active_tab = this.id.slice(4, this.id.length);
+    var newMain = document.getElementById('main#' + active_tab);
+    var main = document.querySelectorAll('.main');
+    for (var i = 0; i < main.length; i++) {
+      if (main[i].id == 'main#' + active_tab) main[i].classList.remove('hidden');
+      else main[i].classList.add('hidden');
+    }
+    var tabs = document.getElementById('tabber').querySelectorAll('.tab');
+    for (var j = 0; j < tabs.length; j++) {
+      if (tabs[j] === this) this.classList.add('active');
+      else tabs[j].classList.remove('active');
+    }
+
+    document.getElementById('zoomSlider').value = newMain.style.zoom * 100;
+    sliderChange();
+    updateMap(document.getElementById('main#' + active_tab), document.querySelector('.map_overlay'), true);
+  }
+}
+function home() {
+  document.getElementById('main#' + active_tab).style.left = '-' + (document.getElementById('main#' + active_tab).offsetWidth / 2 - window.innerWidth / 2) + 'px';
+  document.getElementById('main#' + active_tab).style.top = '-' + (document.getElementById('main#' + active_tab).offsetHeight / 2 - window.innerHeight / 2) + 'px';
+  document.getElementById('zoomSlider').value = 100;
+  sliderChange();
+  updateMap(document.getElementById('main#' + active_tab), document.querySelector('.map_overlay'), true);
+}
+
+// remove page and tab
+function closeTab(e, elem) {
+  if (elem == undefined) elem = this.closest('.tab');
+  console.log(elem);
+  // TODO: remove clock intervals... ++
+  if (confirm('Are you sure you want to delete this tab and remove all of its content?')) {
+    var tabId = elem.id.slice(4, elem.id.length);
+    document.getElementById('main#' + tabId).remove();
+    if (elem.classList.contains('active')) {
+      var id = 0;
+      var tabs = document.getElementById('tabber').querySelectorAll('.tab');
+      for (var i = 0; i < tabs.length; i++) {
+        if (tabs[i] === elem) {
+          id = i + 1;
+          break;
+        }
+      }
+      if (tabs[id] == undefined) id -= 2;
+      console.log(active_tab);
+      console.log(id);
+      active_tab = tabs[id].id.slice(4, tabs[id].id.length);
+      document.getElementById('tab#' + active_tab).click();
+    }
+    elem.remove();
+  }
 }
 
 ///////////////////
@@ -1021,6 +1515,16 @@ function setStyle(elem, left, top, width, height) {
   }
 }
 
+// set multiple styles on a query of elements
+function setStyleQuery(elemQuery, styleObject) {
+  for (var i = 0; i < elemQuery.length; i++) {
+    for (var j = 0; j < Object.keys(styleObject).length; j++) {
+      var key = Object.keys(styleObject)[j];
+      elemQuery[i].style[key] = styleObject[key];
+    }
+  }
+}
+
 // return an object with common styles for easy use (no 'px')
 // TODO: offset or style?
 function getElemStyles(elem) {
@@ -1033,4 +1537,54 @@ function getElemStyles(elem) {
   styles.right = styles.left + styles.width;
   styles.bottom = styles.top + styles.height;
   return styles;
+}
+
+// move element to bottom of parent div
+function moveToTop(elem) {
+
+  elem = elem.closest('.box'); // component
+  var elems = document.querySelectorAll('.component');
+  var selectedZ = Number(elem.style.zIndex);
+  if (elem.style.zIndex == "") selectedZ = elems.length - 1;
+
+  for (var i = 0; i < elems.length; i++) {
+    var currentZ = Number(elems[i].style.zIndex);
+    if (elems[i] === elem) elems[i].style.zIndex = (elems.length - 1);
+    else if (currentZ > selectedZ) elems[i].style.zIndex = currentZ - 1;
+  }
+}
+
+// update grid upon drawer resize
+function updateGrid(amount) {
+  var auto = 'auto';
+  for (var j = 1; j < amount; j++) auto += ' auto';
+  var grid = document.querySelectorAll('.grid');
+  for (var i = 0; i < grid.length; i++) grid[i].style.gridTemplateColumns = auto;
+}
+
+// return value in ms from input (1s = 1000)
+function getInterval(text, num) {
+  var end = "ms", interval = 500;
+  if (text.match(/[a-zA-Z]+$/g) !== null) end = text.match(/[a-zA-Z]+$/g)[0]; // \d // \D+$
+
+  switch (end) {
+    case 's': // seconds
+      interval = num * 1000;
+      break;
+    case 'm': // minutes
+      interval = num * 1000 * 60;
+      break;
+    case 'h': // hours
+      interval = num * 1000 * 60 * 60;
+      break;
+    default: // milli seconds
+      interval = num;
+  }
+  return interval;
+}
+
+// return number with one dot (.) ...
+function getNumAdvanced(input) {
+  var num = input.replace(/[a-zA-Z]+/g, '').split('.'); // [\d][\d.]* // \d*[\.]*\d
+  return num.shift() + (num.length ? '.' + num.join('') : '');
 }

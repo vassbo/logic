@@ -1,5 +1,5 @@
-- Add a gamemode (Like; MakeItTrue)
-(Logic mode, electric mode, game mode)
+- Add a gamemode
+(Logic mode, electric mode, game mode (MakeItTrue), minecraft)
 
 - lined = squared ?
 
@@ -19,3 +19,11 @@
 - replace clientX/Y with pageX/Y
 
 - when selecting, and letting go on an element. Then trying to select is buggy...
+
+- ctrl + a
+
+- quick switch between tabs (ctrl + tab)
+
+- link inputs (inputs with the same names will have the same output)
+
+- solcelle, dioder, motstander
