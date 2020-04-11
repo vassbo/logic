@@ -176,6 +176,7 @@ i.active {
   background: var(--main-color);
   z-index: 9999908;
   display: flex;
+  height: 32px;
 }
 
 #tabber span {
@@ -200,6 +201,7 @@ i.active {
   /* max-width: 200px; */
   border-bottom: 2px solid var(--toolbar-iconcolor);
   cursor: pointer;
+  height: 70%;
 }
 #tabber .tab.active {
   background: var(--transparent-blue--20) !important;
@@ -257,6 +259,9 @@ i.active {
   padding: 6px;
   background: var(--transparent--10);
   text-transform: uppercase;
+  cursor: pointer;
+
+  transition: opacity .2s;
 }
 .section:not(:first-child) {
   margin-top: 12px;
@@ -274,6 +279,9 @@ i.active {
 
   justify-items: center;
   grid-gap: 25px 0;
+
+  transition: grid-gap .2s, opacity .2s;
+  max-height: 999999px;
 }
 
 
@@ -286,7 +294,7 @@ i.active {
   background: var(--main-background);
   /* background: #eee; */
   /* transform: translate(-50%, -50%); */
-  height: calc(100vh - 40px);
+  height: calc(100vh - 40px - 32px);
   width: calc(100vw - 250px);
 
   height: 10000px;
@@ -301,7 +309,7 @@ i.active {
   /* z-index: -1; */
 
   margin-left: 250px;
-  margin-top: 40px;
+  margin-top: calc(40px + 32px);
   /* --zoom-level: 0.625; */
   /* height: calc(100% / var(--zoom-level)); */
   zoom: 100%;
@@ -431,9 +439,9 @@ input[type="range"]::-moz-range-thumb {
 .right_menu {
   position: absolute;
   right: 0;
-  top: 40px;
+  top: calc(40px + 32px);
   width: 300px;
-  height: calc(100vh - 40px - 60px);
+  height: calc(100vh - 40px - 32px - 60px);
   background: white;
   box-shadow: -2px -2px 3px rgba(0, 0, 0, 0.2);
   z-index: 9999907;

@@ -68,7 +68,8 @@ var setting_background = "dotted";
 
 ///// GLOBAL /////
 
-var top_height = document.getElementById("top").offsetHeight;
+var top_height = document.getElementById("top").offsetHeight + document.getElementById('tabber').offsetHeight;
+// var top_height = document.getElementById("top").offsetHeight;
 // var drawer_width = document.getElementById("drawer").offsetWidth;
 function getDrawerWidth() {
   return document.getElementById("drawer").offsetWidth;
@@ -78,6 +79,8 @@ var active = true;
 var mainMoved = false;
 
 var active_tab = 0;
+
+var historyLog = [], historyRedo = [];
 
 /////////////////////
 ///// DRAGGABLE /////
@@ -141,7 +144,7 @@ function dragElement(elmnt, drawer) {
         // TODO: map zoom...
         // clone.style.top = elmnt.offsetTop / mapZoom - getNumber(document.getElementById("main").style.top) - scrollTop / mapZoom + "px";
         // clone.style.left = elmnt.offsetLeft * mapZoom - getNumber(document.getElementById("main").style.left) - getDrawerWidth() + "px";
-        clone.style.top = elmnt.offsetTop - getNumber(document.getElementById("main#" + active_tab).style.top) - scrollTop / mapZoom + "px";
+        clone.style.top = elmnt.offsetTop - getNumber(document.getElementById("main#" + active_tab).style.top) - 32 - scrollTop / mapZoom + "px";
         clone.style.left = elmnt.offsetLeft - getNumber(document.getElementById("main#" + active_tab).style.left) - getDrawerWidth() + "px";
         clone.style.opacity = "0.3";
         clone.style.zIndex = "9999919";
@@ -183,7 +186,7 @@ function dragElement(elmnt, drawer) {
         dragElement(clone);
         addConnection(clone, type);
         checkForNoConnections();
-        document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
+        historyAdd('componentAdd', {elem: clone, type: type, top: clone.style.top, left: clone.style.left, zIndex: clone.style.zIndex}); // history
         clone = undefined;
 
         // TODO: this
@@ -199,9 +202,10 @@ function dragElement(elmnt, drawer) {
     }
 
     if (!drawer) {
-      document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
-
       var component = e.target.closest('.component');
+      // TODO: Add label VVVV
+      historyAdd('componentMove', {elem: component, type: component.children[0].classList[0], top: component.style.top, left: component.style.left, zIndex: component.style.zIndex, label: undefined}); // history
+
       var object = checkSaved('comp_', component);
       object.type = component.children[0].classList[0];
       object.x = getNumber(component.style.left);
@@ -278,7 +282,7 @@ function dragElement(elmnt, drawer) {
               addLineListeners();
               checkForNoConnections();
 
-              document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
+              historyAdd('connectorAdd', {id: id, svg: svg}); // history
               // save to localStorage
               var startElem = startingConnect.closest('.component');
               var endElem = target.closest('.component');
@@ -373,6 +377,8 @@ document.addEventListener('mousemove', function(e) {
     drawer.style.width = e.clientX + 'px';
     document.getElementById('main#' + active_tab).style.marginLeft = e.clientX + 'px';
     document.querySelector('.map_overlay').style.left = e.clientX + 5 + 'px';
+    document.getElementById('tabber').style.left = e.clientX + 5 + 'px';
+    document.getElementById('tabber').style.width = 'calc(100vw - ' + (e.clientX + 5) + 'px)';
     if (e.clientX <= 220) updateGrid(1);
     else if (e.clientX <= 350) updateGrid(2);
     else if (e.clientX <= 450) updateGrid(3);
@@ -395,6 +401,8 @@ dragger.addEventListener('click', function() {
     updateGrid(2);
     document.getElementById('main#' + active_tab).style.marginLeft = pos + 'px';
     document.querySelector('.map_overlay').style.left = pos + 5 + 'px';
+    document.getElementById('tabber').style.left = pos + 5 + 'px';
+    document.getElementById('tabber').style.width = 'calc(100vw - ' + (pos + 5) + 'px)';
   }
 });
 
@@ -746,8 +754,208 @@ function activate(id, powered) {
         sendSignal(elem, activated);
         enableOutput(elem, activated);
         break;
+      case 'gated_latch':
+        if (signal.global.labels.write_enable) {
+          if (signal.global.labels.data_in) activated = true;
+          sendSignal(elem, activated);
+          enableOutput(elem, activated);
+        }
+        break;
+      case 'gated_latch_grid':
+        if (signal.global.labels.row && signal.global.labels.column) {
+          if (signal.global.labels.write_enable) {
+            if (signal.left.bools[0]) activated = true;
+            // sendSignal(elem, activated);
+            // enableOutput(elem, activated);
+            elem.querySelector('.memory').innerHTML = activated;
+          }
+          if (signal.global.labels.read_enable) {
+            if (elem.querySelector('.memory').innerHTML == 'true') activated = true;
+            else activated = false;
+            console.log('Memory read: ' + activated);
+            sendSignal(elem, activated);
+            enableOutput(elem, activated);
+          } else {
+            sendSignal(elem, false);
+            enableOutput(elem, false);
+          }
+        }
+        break;
+
+      case '2_4':
+        if (signal.global.labels.e) {
+          var out = 0;
+          if (signal.left.bools[0] && signal.left.bools[1]) out = 3;
+          else if (signal.left.bools[0]) out = 2;
+          else if (signal.left.bools[1]) out = 1;
+          for (var i = 0; i <= 3; i++) {
+            sendSignal(elem, false, i);
+            enableOutput(elem, false, i);
+          }
+          sendSignal(elem, true, out);
+          enableOutput(elem, true, out);
+        } else {
+          for (var k = 0; k <= 3; k++) {
+            sendSignal(elem, false, k);
+            enableOutput(elem, false, k);
+          }
+        }
+        break;
+      case 'multiplexer':
+        for (var m = 0; m <= 15; m++) { // function to make false
+          sendSignal(elem, false, m);
+          enableOutput(elem, false, m);
+        }
+        var binary = '';
+        for (var l = 3; l >= 0; l -= 1) {
+          if (signal.left.bools[l]) binary += '1';
+          else binary += '0';
+        }
+        // var b = parseInt( a.split('').reverse().join(''), 2 );
+        console.log(binary);
+        var b = parseInt(binary, 2);
+        console.log(b);
+        sendSignal(elem, true, b + 4); // pos == botton
+        enableOutput(elem, true, b + 4);
+        break;
+      case 'latch_grid':
+        var activeInput = {column: 0, row: 0};
+        for (var i = 0; i < 16; i++) {
+          if (signal.top.bools[i]) activeInput.column = i;
+          if (signal.left.bools[i]) activeInput.row = i;
+        }
+        if (signal.global.labels.write_enable) {
+          if (signal.global.labels.data_in) activated = true;
+          // resetMemory(type, elem);
+          elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML = activated;
+        }
+        if (signal.global.labels.read_enable) {
+          if (elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML == 'true') activated = true;
+          else activated = false;
+          console.log('Memory read: ' + activated);
+          sendSignal(elem, activated);
+          enableOutput(elem, activated);
+        } else {
+          sendSignal(elem, false);
+          enableOutput(elem, false);
+        }
+        break;
+      case '256_bit':
+        var activeInput = {column: '', row: ''};
+        for (var n = 0; n <= 3; n++) {
+          if (signal.left.bools[n]) activeInput.column += '1';
+          else activeInput.column += '0';
+          if (signal.left.bools[n + 4]) activeInput.row += '1';
+          else activeInput.row += '0';
+        }
+        activeInput.column = parseInt(activeInput.column, 2);
+        activeInput.row = parseInt(activeInput.row, 2);
+
+        if (signal.global.labels.write_enable) {
+          if (signal.global.labels.data_in) activated = true;
+          elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML = activated;
+        }
+        if (signal.global.labels.read_enable) {
+          if (elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML == 'true') activated = true;
+          else activated = false;
+          console.log('Memory read: ' + activated);
+          sendSignal(elem, activated);
+          enableOutput(elem, activated);
+        } else {
+          sendSignal(elem, false);
+          enableOutput(elem, false);
+        }
+        break;
+      case '256_byte':
+        var activeInput = {column: '', row: ''};
+        for (var n = 11; n >= 8; n -= 1) {
+          if (signal.left.bools[n]) activeInput.column += '1';
+          else activeInput.column += '0';
+          if (signal.left.bools[n + 4]) activeInput.row += '1';
+          else activeInput.row += '0';
+        }
+        console.log(activeInput);
+        // 0_0 -> 7_255
+        activeInput.column = parseInt(activeInput.column, 2);
+        activeInput.row = parseInt(activeInput.row, 2);
+
+        if (signal.global.labels.write_enable) {
+          for (var i = 0; i < 8; i++) {
+            if (signal.left.bools[i]) activated = true;
+            else activated = false;
+            console.log(activated);
+            console.log(i + ':' + activeInput.column + '_' + activeInput.row);
+            elem.getElementsByClassName(i + ':' + activeInput.column + '_' + activeInput.row)[0].innerHTML = activated;
+            console.log(elem.getElementsByClassName(i + ':' + activeInput.column + '_' + activeInput.row)[0]);
+            console.log(elem.getElementsByClassName(i + ':' + activeInput.column + '_' + activeInput.row)[0].innerHTML);
+          }
+        }
+        if (signal.global.labels.read_enable) {
+          readPrevActive = true;
+          for (var i = 0; i < 8; i++) {
+            console.log(i + ':' + activeInput.column + '_' + activeInput.row);
+            console.log(elem.getElementsByClassName(i + ':' + activeInput.column + '_' + activeInput.row)[0]);
+            if (elem.getElementsByClassName(i + ':' + activeInput.column + '_' + activeInput.row)[0].innerHTML == 'true') activated = true;
+            else activated = false;
+            console.log('Memory read: ' + activated);
+            sendSignal(elem, activated, i);
+            enableOutput(elem, activated, i);
+          }
+        } else if (readPrevActive) {
+          readPrevActive = false;
+          sendSignal(elem, false);
+          enableOutput(elem, false);
+        }
+        break;
+      case 'register':
+        // var activeInput = {column: '', row: ''};
+        // for (var n = 0; n <= 3; n++) {
+        //   if (signal.left.bools[n]) activeInput.column += '1';
+        //   else activeInput.column += '0';
+        //   if (signal.left.bools[n + 4]) activeInput.row += '1';
+        //   else activeInput.row += '0';
+        // }
+        // activeInput.column = parseInt(activeInput.column, 2);
+        // activeInput.row = parseInt(activeInput.row, 2);
+
+        if (signal.global.labels.write_enable) {
+          for (var i = 0; i < 8; i++) {
+            if (signal.left.bools[i]) activated = true;
+            else activated = false;
+            elem.getElementsByClassName(i + '_0')[0].innerHTML = activated;
+          }
+        }
+        if (signal.global.labels.read_enable) {
+          // if (elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML == 'true') activated = true;
+          // else activated = false;
+          // console.log('Memory read: ' + activated);
+          // sendSignal(elem, activated);
+          // enableOutput(elem, activated);
+          for (var i = 0; i < 8; i++) {
+            if (elem.getElementsByClassName(i + '_0')[0].innerHTML == 'true') activated = true;
+            else activated = false;
+            // elem.getElementsByClassName(i + '_0')[0].innerHTML = activated;
+            sendSignal(elem, activated, i);
+            enableOutput(elem, activated, i);
+          }
+        } else {
+          sendSignal(elem, false);
+          enableOutput(elem, false);
+        }
+        break;
     }
   }, 10);
+}
+var readPrevActive = false; // TODO: this dont work with muliple components of same and different types
+
+// function to reset all memory in a component (move me!!)
+function resetMemory(type, elem) {
+  var object = getObjectByType(type);
+  for (var i = 0; i < object.memory.column; i++) {
+    for (var j = 0; j < object.memory.row; j++) {
+      document.getElementById(i + '_' + j).innerHTML = false;
+    }
+  }
 }
 
 function eo(elem, object) {
@@ -849,13 +1057,15 @@ function getSignalMap(elem) {
     left: { count: 0, trues: 0, bools: [], ids: [] },
     right: { count: 0, trues: 0, bools: [], ids: [] },
     top: { count: 0, trues: 0, bools: [], ids: [] },
-    global: { count: 0, trues: 0, bools: [], ids: [] }
+    bottom: { count: 0, trues: 0, bools: [], ids: [] },
+    global: { count: 0, trues: 0, bools: [], ids: [], labels: {} }
   };
   var connections = elem.querySelectorAll('.connection');
   for (var i = 0; i < connections.length; i++) {
     var left = connections[i].classList.contains('left');
     var right = connections[i].classList.contains('right');
     var top = connections[i].classList.contains('top');
+    var bottom = connections[i].classList.contains('bottom');
     var id = connections[i].querySelector('.connector').id;
     var signal = hasSignal(id) || connections[i].querySelector('.connector').classList.contains('on');
     if (left) {
@@ -868,6 +1078,11 @@ function getSignalMap(elem) {
       output.right.ids.push(id);
       if (signal) output.right.trues++;
       output.right.count++;
+    } else if (bottom) {
+      output.bottom.bools.push(signal);
+      output.bottom.ids.push(id);
+      if (signal) output.bottom.trues++;
+      output.bottom.count++;
     } else if (top) {
       output.top.bools.push(signal);
       output.top.ids.push(id);
@@ -878,12 +1093,17 @@ function getSignalMap(elem) {
     output.global.ids.push(id);
     if (signal) output.global.trues++;
     output.global.count++;
+    if (connections[i].querySelector('.conn_label') !== null) {
+      var label = connections[i].querySelector('.conn_label').innerHTML.toLowerCase().replace(' ', '_');
+      output.global.labels[label] = false;
+      if (signal) output.global.labels[label] = true;
+    }
   }
   return output;
 }
 
 // send/remove signal from elem to connected elements
-function sendSignal(elem, powered, output) {
+function sendSignal(elem, powered, output) { // TODO: , side
   elem = elem.closest(".component");
   var id = elem.querySelectorAll(".connector")[output || 0].id;
   var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
@@ -899,20 +1119,21 @@ function sendSignal(elem, powered, output) {
 }
 
 // easily append element from object
-function appendElem(type, coords, label) {
+function appendElem(type, coords, label, tabId, loaded) {
+  if (tabId == undefined) tabId = active_tab;
   var object = getObjectByType(type);
   var div = document.createElement("div");
-  var component = appendElement(type, "main#" + active_tab);
+  var component = appendElement(type, "main#" + tabId, loaded);
   component.style.top = coords.y + 'px';
   component.style.left = coords.x + 'px';
   // component.zIndex = ...
   if (label !== undefined) addLabel(label, component);
-  addListener(component);
+  // addListener(component); // <-- duplicate listener??? VV
   return component;
 }
 
 // append element (used for drawer elements)
-function appendElement(type, parentId) {
+function appendElement(type, parentId, loaded) {
   // if (parentId == undefined) parentId = "main";
   var component = document.createElement("div");
   var object = getObjectByType(type);
@@ -923,13 +1144,40 @@ function appendElement(type, parentId) {
   if (object.innerClasses !== undefined)
     for (var l = 0; l < object.innerClasses.length; l++) classList += ' ' + object.innerClasses[l];
 
+  if (object.memory !== undefined) {
+    for (var i = 0; i < object.memory.column; i++) {
+      for (var j = 0; j < object.memory.row; j++) {
+        var id = i + '_' + j;
+        if (object.memory.repeat !== undefined) {
+          for (var r = 0; r < object.memory.repeat; r++) {
+            object.children += '<div class="' + r + ':' + id + ' memory hidden">false</div>';
+          }
+        } else {
+          object.children += '<div class="' + id + ' memory hidden">false</div>';
+        }
+      }
+    }
+  }
+
   component.innerHTML = '<div class="' + classList + '">' + object.children + '</div>';
 
   document.getElementById(parentId).appendChild(component);
 
+  if (loaded === true) {
+    if (type == "clock") {
+      console.log(123);
+      var clockInput = 0;
+      while (document.getElementById('clockInput#' + clockInput) !== null) clockInput++;
+      component.querySelector(".clock_input").id = "clockInput#" + clockInput;
+    }
+    // if (clone.querySelector(".textInput") !== null) clone.querySelector(".textInput").removeAttribute('tabindex');
+  }
+
   // TODO: THIS IS NEVER #MAIN!!!
   if (parentId.includes("main#")) {
     component.classList.add("component");
+    document.getElementById(parentId).classList.remove('hidden');
+    // console.log(component.offsetHeight);
     addConnection(component, type);
     dragElement(component);
     addListener(component);
@@ -1087,7 +1335,7 @@ function addConnection(component, type, amount) {
   var connectionId = 0;
 
   // get connection amount
-  var leftCount = 0, rightCount = 0, topCount = 0, names = {right: [], left: [], top: []};
+  var leftCount = 0, rightCount = 0, topCount = 0, bottomCount = 0, names = {right: [], left: [], top: [], bottom: []};
   for (var i = 0; i < Object.keys(object.connections).length; i++) {
     var connectionObject = object.connections[Object.keys(object.connections)[i]];
     if (connectionObject.pos == 'right') {
@@ -1100,6 +1348,9 @@ function addConnection(component, type, amount) {
     } else if (connectionObject.pos == 'top') {
       if (connectionObject.name !== undefined) names[connectionObject.pos][topCount] = connectionObject.name;
       topCount++;
+    } else if (connectionObject.pos == 'bottom') {
+      if (connectionObject.name !== undefined) names[connectionObject.pos][bottomCount] = connectionObject.name;
+      bottomCount++;
     }
   }
 
@@ -1118,12 +1369,16 @@ function addConnection(component, type, amount) {
   }
 
   // create connections
+  console.log(component);
+  console.log(component.offsetHeight);
   var slicesRight = component.offsetHeight / (rightCount + 1),
-      slicesLeft = component.offsetHeight / (leftCount + 1);
-      slicesTop = component.offsetWidth / (topCount + 1);
+      slicesLeft = component.offsetHeight / (leftCount + 1),
+      slicesTop = component.offsetWidth / (topCount + 1),
+      slicesBottom = component.offsetWidth / (bottomCount + 1);
   for (var j = 0; j < rightCount; j++) appendConnection(slicesRight * (j + 1), 'right', names.right[j] || null);
   for (var k = 0; k < leftCount; k++) appendConnection(slicesLeft * (k + 1), 'left', names.left[k] || null);
   for (var m = 0; m < topCount; m++) appendConnection(slicesTop * (m + 1), 'top', names.top[m] || null);
+  for (var n = 0; n < bottomCount; n++) appendConnection(slicesBottom * (n + 1), 'bottom', names.bottom[n] || null);
 
   // append connections
   function appendConnection(offset, direction, name) {
@@ -1135,7 +1390,7 @@ function addConnection(component, type, amount) {
     connection.innerHTML = '<div class="connector" id="conn_' + connectionId + '"></div>';
     if (name !== null) {
       var offsetStyle = 'Y';
-      if (direction == 'top') offsetStyle = 'X';
+      if (direction == 'top' || direction == 'bottom') offsetStyle = 'X';
       connection.innerHTML += '<div class="conn_label" style="transform: translate' + offsetStyle + '(-50%); ' + direction + ': 16px;">' + name + '</div>';
     }
     component.appendChild(connection);
@@ -1181,8 +1436,9 @@ function elementsIsideBox(left, top, width, height, shift) {
   for (var i = 0; i < query.length; i++) {
     var c = getElemStyles(query[i]);
     if (c.left >= left && c.top >= top && c.left <= right && c.top <= bottom || c.right >= left && c.bottom >= top && c.left <= right && c.top <= bottom)
-      query[i].classList.add("selected");
-    else if (!shift) query[i].classList.remove("selected");
+      // query[i].classList.add("selected");
+      addSelection(query[i]);
+    else if (!shift) removeSelectionIcons(query[i]);
   }
 
   var lines = document.getElementById("main#" + active_tab).querySelectorAll(".lineSVG");
@@ -1246,8 +1502,29 @@ function select(e) {
     if (active) {
       if (elem.classList.contains("selected")) {
         if (e.ctrlKey || e.shiftKey) elem.classList.remove("selected");
-      } else elem.classList.add("selected");
+      } else addSelection(elem);
     }
+  }
+}
+function addSelection(elem)  {
+  elem.classList.add("selected");
+  getIcon('delete').removeAttribute('disabled');
+  if (!elem.classList.contains("lineSVG")) {
+    getIcon('filter_none').removeAttribute('disabled');
+    getIcon('rotate_right').removeAttribute('disabled');
+    getIcon('rotate_left').removeAttribute('disabled');
+    getIcon('post_add').removeAttribute('disabled');
+  }
+}
+// TODO: removing selection with ctrl will not disable icons!
+function removeSelectionIcons(elem)  {
+  elem.classList.remove("selected");
+  if (document.querySelectorAll('.selected').length == 0) {
+    getIcon('delete').setAttribute('disabled', '');
+    getIcon('filter_none').setAttribute('disabled', '');
+    getIcon('rotate_right').setAttribute('disabled', '');
+    getIcon('rotate_left').setAttribute('disabled', '');
+    getIcon('post_add').setAttribute('disabled', '');
   }
 }
 
@@ -1289,7 +1566,10 @@ function removeComponent(elem) {
 function removeSelection() {
   var query = document.querySelectorAll(".selected");
   var length = query.length;
-  for (var i = 0; i < length; i++) query[i].classList.remove("selected");
+  for (var i = 0; i < length; i++) {
+    // query[i].classList.remove("selected");
+    removeSelectionIcons(query[i]);
+  }
 }
 
 ///// LINE | CONNECTIONS /////
@@ -1373,6 +1653,9 @@ function getLinePos(elmnt) {
   } else if (connection.classList.contains('top')) {
     y += 0 - connection.offsetHeight - (connector.offsetHeight / 2);
     x += parseInt(connection.style.left, 10);
+  } else if (connection.classList.contains('bottom')) {
+    y += elmnt.offsetHeight + connection.offsetHeight + (connector.offsetHeight / 2);
+    x += parseInt(connection.style.left, 10);
   }
 
   return {x: x, y: y};
@@ -1401,7 +1684,7 @@ function noMatchingLines(id) {
 document.getElementById('tabber').querySelector('.tab').addEventListener('click', openTab);
 // create new page and tab
 var tabsId = 1;
-function addTab(name) {
+function addTab(name, active) {
   // TODO: reorder tabs
   // TODO: contaxt tab bar: new, delete
   // var count = document.getElementById('tabber').querySelectorAll('.tab').length;
@@ -1429,11 +1712,12 @@ function addTab(name) {
   newMain.addEventListener('mousedown', mainDrag);
   newMain.addEventListener('wheel', wheel);
 
-  active_tab = tabsId;
+  if (active !== false) {
+    active_tab = tabsId;
+    newTab.click();
+    home();
+  }
   tabsId++;
-  newTab.click();
-
-  home();
 
   return newTab;
 }
@@ -1493,6 +1777,27 @@ function closeTab(e, elem) {
     elem.remove();
   }
 }
+
+// history
+function historyAdd(type, values) {
+  document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
+  console.log(historyLog);
+
+  historyLog.push({type: type, values: values});
+  if (historyLog.length > 0) getIcon('undo').removeAttribute('disabled');
+
+  // clear redo
+
+  console.log(historyLog);
+
+  // componentAdd
+  // componentMove
+  // connectorAdd
+
+  // elem: component, type, top, left, zIndex
+  // id: id, svg: svg
+}
+// getIcon('undo').setAttribute('disabled', '');
 
 ///////////////////
 ///// HELPERS /////

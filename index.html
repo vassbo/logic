@@ -16,7 +16,7 @@
   <div id="top">
     <div id="main_title"><a href="#">Logic Simulator</a></div>
     <div id="toolbar" class="noselect">
-      <i class="material-icons" title="Create new [ctrl+n]">insert_drive_file</i>
+      <!-- <i class="material-icons" title="Create new [ctrl+n]">insert_drive_file</i> -->
       <i class="material-icons" title="Save [ctrl+s]">save</i>
       <i class="material-icons" title="Export [ctrl+e]">cloud_download</i>
       <i class="material-icons" title="Open file [ctrl+o]">folder_open</i>
@@ -41,6 +41,9 @@
       <i class="material-icons" title="Generate truth table [ctrl+g]">receipt</i>
       <i class="material-icons" title="View timers">access_time</i>
       <!-- <i class="material-icons" title="Component stats" disabled>memory</i> -->
+
+      <span class="seperator"></span>
+      <i class="material-icons" title="View timers">bug_report</i>
 
       <!-- widgets, memory, style, tune, category, layers, apps -->
       <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">storage</i> -->
@@ -74,6 +77,11 @@
     </div>
   </div>
 
+
+  <!-- loading feedback -->
+  <div class="feedback hidden">
+
+  </div>
 
   <!-- debug -->
   <div class="results hidden" style="position: fixed;top: 43px;left: 260px;z-index:20;pointer-events:none;">
@@ -216,8 +224,14 @@
   <!-- info -->
   <div id="info" class="card hidden">
     <div id="close"><i class="material-icons" title="Close">close</i></div>
-    <h1>Info</h1>
-    <p></p>
+    <h1>Info/About</h1>
+    <p style="margin-top:10px;">
+      Logic Simulator created by <strong>Kristoffer Vassbø</strong><br>
+      Support me on Patreon<br>
+      Do you have a Bug Report or Feature Request or something else?<br>
+      Contact me on Twitter / <a href="mailto:kristoffervassbo@gmail.com">Email</a> / social media...
+      <!-- TODO: custom <a> style -->
+    </p>
   </div>
 
 
@@ -244,6 +258,7 @@
       <li class="menu-option">Delete</li>
       <li class="menu-option">Cut</li>
       <li class="menu-option">Copy</li>
+      <li class="menu-option">Duplicate</li>
       <!-- <li class="menu-option">Save As</li> -->
       <li class="menu-option">Documentation</li>
       <li id="inspect_context" class="menu-option" disabled>Inspect</li>
@@ -258,8 +273,8 @@
   </div>
 
   <script src="assets/js/script.js"></script>
-  <script src="assets/js/load.js"></script>
   <script src="assets/js/zoom.js"></script>
+  <script src="assets/js/load.js"></script>
   <script src="assets/js/context.js"></script>
 </body>
 </html>

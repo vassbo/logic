@@ -27,3 +27,7 @@
 - link inputs (inputs with the same names will have the same output)
 
 - solcelle, dioder, motstander
+
+- connectong svgs will connect them in the middle og "hover" size
+
+(https://www.youtube.com/watch?v=1I5ZMmrOfnA&list=PL8dPuuaLjXtNlUrzyH5r6jN9ulIgZBpdo&index=6)
