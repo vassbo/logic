@@ -3,6 +3,10 @@
 
 - lined = squared ?
 
+- components: speaker....
+- rename tabs
+- clear storage
+
 - ctrl + shift will not deselect anything before selecting with blue box
 
 - move cursor on main drag

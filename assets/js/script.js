@@ -192,11 +192,11 @@ function dragElement(elmnt, drawer) {
         // TODO: this
         var component = e.target.closest('.component');
         var object = checkSaved('comp_', component);
-        object.type = component.children[0].classList[0];
-        object.x = getNumber(component.style.left);
-        object.y = getNumber(component.style.top);
-        object.component = component;
-        if (component.querySelector('label') > 0) object.label = component.querySelector('label').innerHTML;
+        object.object.type = component.children[0].classList[0];
+        object.object.x = getNumber(component.style.left);
+        object.object.y = getNumber(component.style.top);
+        object.object.component = component;
+        if (component.querySelector('label') > 0) object.object.label = component.querySelector('label').innerHTML;
         // output amount + labels | on / off
       } else if (clone !== undefined) clone.remove();
     }
@@ -207,11 +207,11 @@ function dragElement(elmnt, drawer) {
       historyAdd('componentMove', {elem: component, type: component.children[0].classList[0], top: component.style.top, left: component.style.left, zIndex: component.style.zIndex, label: undefined}); // history
 
       var object = checkSaved('comp_', component);
-      object.type = component.children[0].classList[0];
-      object.x = getNumber(component.style.left);
-      object.y = getNumber(component.style.top);
-      object.component = component;
-      if (component.querySelector('label') > 0) object.label = component.querySelector('label').innerHTML;
+      object.object.type = component.children[0].classList[0];
+      object.object.x = getNumber(component.style.left);
+      object.object.y = getNumber(component.style.top);
+      object.object.component = component;
+      if (component.querySelector('label') > 0) object.object.label = component.querySelector('label').innerHTML;
       // output amount + labels | on / off
     }
 
@@ -292,9 +292,13 @@ function dragElement(elmnt, drawer) {
                 if (startElem == saves[tabName][name].component) startElem = name;
                 if (endElem == saves[tabName][name].component) endElem = name;
               }
-              var object = checkSaved('conn_');
-              object.from = {elem: startElem};
-              object.to = {elem: endElem};
+              // get right/bottom
+              var object = checkSaved('conn_', startElem);
+              // saves[tabName].components[pos];
+              if (object.object.connections == undefined) object.object.connections = {};
+              object.object.connections[checkSaved('conn_', endElem).pos] = {}
+              // object.from = {elem: startElem};
+              // object.to = {elem: endElem};
               // side, pos
             } else if (moved) svg.innerHTML = originalSVG;
           }
@@ -379,6 +383,7 @@ document.addEventListener('mousemove', function(e) {
     document.querySelector('.map_overlay').style.left = e.clientX + 5 + 'px';
     document.getElementById('tabber').style.left = e.clientX + 5 + 'px';
     document.getElementById('tabber').style.width = 'calc(100vw - ' + (e.clientX + 5) + 'px)';
+    document.getElementById('tabber').querySelector('div').style.maxWidth = 'calc(100vw - ' + (e.clientX + 5) + 'px - 44px)';
     if (e.clientX <= 220) updateGrid(1);
     else if (e.clientX <= 350) updateGrid(2);
     else if (e.clientX <= 450) updateGrid(3);
@@ -403,6 +408,7 @@ dragger.addEventListener('click', function() {
     document.querySelector('.map_overlay').style.left = pos + 5 + 'px';
     document.getElementById('tabber').style.left = pos + 5 + 'px';
     document.getElementById('tabber').style.width = 'calc(100vw - ' + (pos + 5) + 'px)';
+    document.getElementById('tabber').querySelector('div').style.maxWidth = 'calc(100vw - ' + (pos + 5) + 'px - 44px)';
   }
 });
 
@@ -1144,6 +1150,8 @@ function appendElement(type, parentId, loaded) {
   if (object.innerClasses !== undefined)
     for (var l = 0; l < object.innerClasses.length; l++) classList += ' ' + object.innerClasses[l];
 
+  if (object.inspect !== undefined) classList += ' inspect';
+
   if (object.memory !== undefined) {
     for (var i = 0; i < object.memory.column; i++) {
       for (var j = 0; j < object.memory.row; j++) {
@@ -1170,7 +1178,7 @@ function appendElement(type, parentId, loaded) {
       while (document.getElementById('clockInput#' + clockInput) !== null) clockInput++;
       component.querySelector(".clock_input").id = "clockInput#" + clockInput;
     }
-    // if (clone.querySelector(".textInput") !== null) clone.querySelector(".textInput").removeAttribute('tabindex');
+    if (component.querySelector(".textInput") !== null) component.querySelector(".textInput").removeAttribute('tabindex');
   }
 
   // TODO: THIS IS NEVER #MAIN!!!
@@ -1335,27 +1343,31 @@ function addConnection(component, type, amount) {
   var connectionId = 0;
 
   // get connection amount
-  var leftCount = 0, rightCount = 0, topCount = 0, bottomCount = 0, names = {right: [], left: [], top: [], bottom: []};
+  var count = {left: 0, right: 0, top: 0, bottom: 0}, names = {right: [], left: [], top: [], bottom: []};
   for (var i = 0; i < Object.keys(object.connections).length; i++) {
-    var connectionObject = object.connections[Object.keys(object.connections)[i]];
-    if (connectionObject.pos == 'right') {
-      console.log(connectionObject.name);
-      if (connectionObject.name !== undefined) names[connectionObject.pos][rightCount] = connectionObject.name;
-      rightCount++;
-    } else if (connectionObject.pos == 'left') {
-      if (connectionObject.name !== undefined) names[connectionObject.pos][leftCount] = connectionObject.name;
-      leftCount++;
-    } else if (connectionObject.pos == 'top') {
-      if (connectionObject.name !== undefined) names[connectionObject.pos][topCount] = connectionObject.name;
-      topCount++;
-    } else if (connectionObject.pos == 'bottom') {
-      if (connectionObject.name !== undefined) names[connectionObject.pos][bottomCount] = connectionObject.name;
-      bottomCount++;
+    var key = Object.keys(object.connections)[i];
+    var connectionObject = object.connections[key];
+    count[key] = connectionObject.amount || 1;
+    if (connectionObject.name !== undefined) {
+      // ['test', 'test2', 'test3', 'testings']
+      // ['#$i+']
+      // ['First', '$i']
+      for (var n = 0; n < connectionObject.name.length; n++) {
+        var name = connectionObject.name[n];
+        if (name.includes('$i+')) {
+          for (var j = 0; j < count[key]; j++)
+            names[key][j] = name.slice(0, name.indexOf('$i+')) + (j + 1) + name.slice(name.indexOf('$i+') + 3, name.length);
+        } else if (name.includes('$i')) {
+          for (var k = 0; k < count[key]; k++)
+            names[key][k] = name.slice(0, name.indexOf('$i')) + k + name.slice(name.indexOf('$i') + 2, name.length);
+        } else if (name.includes('@')) names[key][name.slice(1, name.indexOf(':')) - 1] = name.slice(name.indexOf(':') + 1, name.length);
+        else if (name !== null) names[key][n] = name;
+      }
     }
   }
 
   if (amount !== undefined) {
-    leftCount = amount;
+    count.left = amount;
     component.style.height = 80 + (amount - 2) * 10 + 'px';
     component.querySelector('.gate_input').style.marginTop = '50%';
     component.querySelector('.gate_input').style.marginTop = component.offsetHeight / 2 + 'px';
@@ -1363,7 +1375,7 @@ function addConnection(component, type, amount) {
     var query = component.querySelectorAll('.connection');
     for (var l = 0; l < query.length; l++) {
       var id = query[l].querySelector('.connector').id;
-      if (rightCount + l > amount + 1) removeConnected(id);
+      if (count.right + l > amount + 1) removeConnected(id);
       query[l].remove();
     }
   }
@@ -1371,14 +1383,14 @@ function addConnection(component, type, amount) {
   // create connections
   console.log(component);
   console.log(component.offsetHeight);
-  var slicesRight = component.offsetHeight / (rightCount + 1),
-      slicesLeft = component.offsetHeight / (leftCount + 1),
-      slicesTop = component.offsetWidth / (topCount + 1),
-      slicesBottom = component.offsetWidth / (bottomCount + 1);
-  for (var j = 0; j < rightCount; j++) appendConnection(slicesRight * (j + 1), 'right', names.right[j] || null);
-  for (var k = 0; k < leftCount; k++) appendConnection(slicesLeft * (k + 1), 'left', names.left[k] || null);
-  for (var m = 0; m < topCount; m++) appendConnection(slicesTop * (m + 1), 'top', names.top[m] || null);
-  for (var n = 0; n < bottomCount; n++) appendConnection(slicesBottom * (n + 1), 'bottom', names.bottom[n] || null);
+  var slicesRight = component.offsetHeight / (count.right + 1),
+      slicesLeft = component.offsetHeight / (count.left + 1),
+      slicesTop = component.offsetWidth / (count.top + 1),
+      slicesBottom = component.offsetWidth / (count.bottom + 1);
+  for (var j = 0; j < count.right; j++) appendConnection(slicesRight * (j + 1), 'right', names.right[j] || null);
+  for (var k = 0; k < count.left; k++) appendConnection(slicesLeft * (k + 1), 'left', names.left[k] || null);
+  for (var m = 0; m < count.top; m++) appendConnection(slicesTop * (m + 1), 'top', names.top[m] || null);
+  for (var n = 0; n < count.bottom; n++) appendConnection(slicesBottom * (n + 1), 'bottom', names.bottom[n] || null);
 
   // append connections
   function appendConnection(offset, direction, name) {

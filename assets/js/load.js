@@ -1,955 +1,6 @@
 
 // TODO: add documentation
-var components = {
-  inputs: {
-    name: 'Inputs',
-    toggle: {
-      name: 'Toggle Switch',
-      classes: ['box'],
-      children: '<div class="btn-light"></div>',
-      connections: {
-        0: {
-          pos: 'right',
-          // name: 'output' // ... (description) TODO: <--
-        }
-      }
-    },
-    button: {
-      name: 'Push Button',
-      documentation: 'Just a button, nothing special.',
-      classes: ['box'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'right',
-        }
-      }
-    },
-    clock: {
-      name: 'Clock',
-      documentation: 'The clock is a timer.....<br><br>ms = milli seconds<br>s = seconds<br>m = minutes<br>h = hours<br><br>e.g. 1s == 1000ms',
-      classes: ['box'],
-      children: '<div class="display"><input class="clock_input textInput" id="clockInput#0" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div>',
-      connections: {
-        0: {
-          pos: 'right',
-        }
-      }
-    },
-    high_constant: {
-      name: 'High constant',
-      classes: ['box'],
-      innerClasses: ['constant', 'noselect'],
-      children: '<span>1</span>',
-      connections: {
-        0: {
-          pos: 'right',
-        }
-      }
-    },
-    low_constant: {
-      name: 'Low constant',
-      classes: ['box'],
-      innerClasses: ['constant', 'noselect'],
-      children: '<span>0</span>',
-      connections: {
-        0: {
-          pos: 'right',
-        }
-      }
-    }
-  },
-  outputs: {
-    name: 'Outputs',
-    light: {
-      name: 'Light Bulb',
-      classes: ['box', 'round'],
-      innerClasses: ['off'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'left',
-        }
-      }
-    },
-    number_display: {
-      name: '4-Bit Digit',
-      classes: ['box'],
-      innerClasses: ['constant', 'noselect'],
-      children: '<span>0</span>',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left',
-        },
-        2: {
-          pos: 'left',
-        },
-        3: {
-          pos: 'left',
-        }
-      }
-    },
-    seven_segment: {
-      name: 'Seven Segment Display',
-      classes: ['box', 'big'],
-      children: '<div id="number_1"></div><div id="number_2"></div><div id="number_3"></div><div id="number_4"></div><div id="number_5"></div><div id="number_6"></div><div id="number_7"></div>',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left',
-        },
-        2: {
-          pos: 'left',
-        },
-        3: {
-          pos: 'left',
-        },
-        4: {
-          pos: 'left',
-        },
-        5: {
-          pos: 'left',
-        },
-        6: {
-          pos: 'left',
-        }
-      }
-    }
-  },
-  logic_gates: {
-    name: 'Logic Gates',
-    buffer: {
-      name: 'Buffer',
-      classes: ['box', 'bufferc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'right'
-        }
-      }
-    },
-    not: {
-      name: 'NOT Gate',
-      classes: ['box', 'notc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'right'
-        }
-      }
-    },
-    and: {
-      name: 'AND Gate',
-      classes: ['box', 'andc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">', // id="gateInput#0"
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-    nand: {
-      name: 'NAND Gate',
-      classes: ['box', 'andc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">', // id="gateInput#0"
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-    or: {
-      name: 'OR Gate',
-      classes: ['box', 'orc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-    nor: {
-      name: 'NOR Gate',
-      classes: ['box', 'orc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-    xor: {
-      name: 'XOR Gate',
-      classes: ['box', 'xorc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-    xnor: {
-      name: 'XNOR Gate',
-      classes: ['box', 'xorc'],
-      innerClasses: ['gate', 'inspect'],
-      children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">',
-      connections: {
-        0: {
-          pos: 'left',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-  },
-  flip_flops: {
-    name: 'Flip-Flops'
-  },
-  latches: {
-    name: 'Latches',
-    gated_latch: {
-      name: 'Gated Latch',
-      classes: ['box', 'latch'],
-      innerClasses: ['inspect'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'left',
-          name: 'Data in'
-        },
-        1: {
-          pos: 'left',
-          name: 'Write enable'
-        },
-        2: {
-          pos: 'right',
-          name: 'Data out'
-        }
-      }
-    },
-    gated_latch_grid: {
-      name: 'Gated Latch Grid',
-      classes: ['box', 'latch'],
-      innerClasses: ['inspect'],
-      children: '',
-      memory: {column: 1, row: 1},
-      connections: {
-        0: {
-          pos: 'right',
-          name: 'Data out'
-        },
-        1: {
-          pos: 'left',
-          name: 'Data in' // Data in / out
-        },
-        2: {
-          pos: 'left',
-          name: 'Write enable'
-        },
-        3: {
-          pos: 'left',
-          name: 'Read enable'
-        },
-        4: {
-          pos: 'left',
-          name: 'Row'
-        },
-        5: {
-          pos: 'left',
-          name: 'Column'
-        }
-        // 2: {
-        //   pos: 'right',
-        //   name: 'Data out'
-        // }
-      }
-    }
-  },
-  other: {
-    name: 'Other',
-    transistor: {
-      name: 'Transistor', // Tri-state
-      classes: ['box'],
-      innerClasses: ['inspect'], // 'gate',
-      children: '<div class="arrow"><span></span><span></span><span></span></div>',
-      connections: {
-        0: {
-          pos: 'top',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-    transistor_inv: {
-      name: 'Transistor Inverted',
-      classes: ['box'],
-      innerClasses: ['inspect'], // 'gate',
-      children: '<div class="arrow"><span></span><span></span><span></span><span></span></div>',
-      connections: {
-        0: {
-          pos: 'top',
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'right'
-        }
-      }
-    },
-    seven_segment_decoder: {
-      name: 'Seven Segment Display Decoder',
-      classes: ['box', 'big'],
-      innerClasses: ['inspect'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'left',
-          name: '8'
-        },
-        1: {
-          pos: 'left',
-          name: '4'
-        },
-        2: {
-          pos: 'left',
-          name: '2'
-        },
-        3: {
-          pos: 'left',
-          name: '1'
-        },
-        4: {
-          pos: 'right',
-        },
-        5: {
-          pos: 'right',
-        },
-        6: {
-          pos: 'right',
-        },
-        7: {
-          pos: 'right',
-        },
-        8: {
-          pos: 'right',
-        },
-        9: {
-          pos: 'right',
-        },
-        10: {
-          pos: 'right',
-        },
-      }
-    },
-    multiplexer: {
-      name: 'Multiplexer',
-      classes: ['box', 'long'],
-      innerClasses: ['inspect'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'left'
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'left'
-        },
-        3: {
-          pos: 'left'
-        },
-        4: {
-          pos: 'bottom',
-          name: '0'
-        },
-        5: {
-          pos: 'bottom',
-          name: '1'
-        },
-        6: {
-          pos: 'bottom',
-          name: '2'
-        },
-        7: {
-          pos: 'bottom',
-          name: '3'
-        },
-        8: {
-          pos: 'bottom',
-          name: '4'
-        },
-        9: {
-          pos: 'bottom',
-          name: '5'
-        },
-        10: {
-          pos: 'bottom',
-          name: '6'
-        },
-        11: {
-          pos: 'bottom',
-          name: '7'
-        },
-        12: {
-          pos: 'bottom',
-          name: '8'
-        },
-        13: {
-          pos: 'bottom',
-          name: '9'
-        },
-        14: {
-          pos: 'bottom',
-          name: '10'
-        },
-        15: {
-          pos: 'bottom',
-          name: '11'
-        },
-        16: {
-          pos: 'bottom',
-          name: '12'
-        },
-        17: {
-          pos: 'bottom',
-          name: '13'
-        },
-        18: {
-          pos: 'bottom',
-          name: '14'
-        },
-        19: {
-          pos: 'bottom',
-          name: '15'
-        }
-      }
-    },
-    '256_bit': {
-      name: '256-bit Memory',
-      classes: ['box', 'chip'],
-      innerClasses: ['inspect'],
-      children: '',
-      memory: {row: 16, column: 16},
-      connections: {
-        0: {
-          pos: 'left',
-          name: '1 Col'
-        },
-        1: {
-          pos: 'left',
-          name: '2 Col'
-        },
-        2: {
-          pos: 'left',
-          name: '4 Col'
-        },
-        3: {
-          pos: 'left',
-          name: '8 Col'
-        },
-        4: {
-          pos: 'left',
-          name: '1 Row'
-        },
-        5: {
-          pos: 'left',
-          name: '2 Row'
-        },
-        6: {
-          pos: 'left',
-          name: '4 Row'
-        },
-        7: {
-          pos: 'left',
-          name: '8 Row'
-        },
-        8: {
-          pos: 'left',
-          name: 'Data in' // data
-        },
-        9: {
-          pos: 'left',
-          name: 'Write enable'
-        },
-        10: {
-          pos: 'left',
-          name: 'Read enable'
-        },
-        11: {
-          pos: 'right',
-          name: 'Data out'
-        }
-      }
-    },
-    '256_byte': {
-      name: '256-byte RAM',
-      classes: ['box', 'chip', 'chip_bigger'],
-      innerClasses: ['inspect'],
-      children: '',
-      memory: {column: 16, row: 16, repeat: 8}, // 32 * 64 | 8 * 256
-      connections: {
-        // TODO: same output as input
-        0: {
-          pos: 'left',
-          name: '8-bit Data'
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'left'
-        },
-        3: {
-          pos: 'left'
-        },
-        4: {
-          pos: 'left'
-        },
-        5: {
-          pos: 'left'
-        },
-        6: {
-          pos: 'left'
-        },
-        7: {
-          pos: 'left'
-        },
-        8: {
-          pos: 'left',
-          name: '1 Col'
-        },
-        9: {
-          pos: 'left',
-          name: '2 Col'
-        },
-        10: {
-          pos: 'left',
-          name: '4 Col'
-        },
-        11: {
-          pos: 'left',
-          name: '8 Col'
-        },
-        12: {
-          pos: 'left',
-          name: '1 Row'
-        },
-        13: {
-          pos: 'left',
-          name: '2 Row'
-        },
-        14: {
-          pos: 'left',
-          name: '4 Row'
-        },
-        15: {
-          pos: 'left',
-          name: '8 Row'
-        },
-        16: {
-          pos: 'left',
-          name: 'Write enable'
-        },
-        17: {
-          pos: 'left',
-          name: 'Read enable'
-        }
-      }
-    },
-    register: {
-      name: 'Register',
-      classes: ['box', 'big'],
-      innerClasses: ['inspect'],
-      children: '',
-      memory: {column: 8, row: 1},
-      connections: {
-        // TODO: same output as input
-        0: {
-          pos: 'left',
-          name: 'In'
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'left'
-        },
-        3: {
-          pos: 'left'
-        },
-        4: {
-          pos: 'left'
-        },
-        5: {
-          pos: 'left'
-        },
-        6: {
-          pos: 'left'
-        },
-        7: {
-          pos: 'left'
-        },
-        8: {
-          pos: 'left',
-          name: 'Write enable'
-        },
-        9: {
-          pos: 'left',
-          name: 'Read enable'
-        },
-        10: {
-          pos: 'right',
-          name: 'Out'
-        },
-        11: {
-          pos: 'right'
-        },
-        12: {
-          pos: 'right'
-        },
-        13: {
-          pos: 'right'
-        },
-        14: {
-          pos: 'right'
-        },
-        15: {
-          pos: 'right'
-        },
-        16: {
-          pos: 'right'
-        },
-        17: {
-          pos: 'right'
-        }
-      }
-    }
-  },
-  custom: {
-    name: 'Custom'
-  },
-  decoders: {
-    name: 'Decoders',
-    '2_4': {
-      name: '2 to 4 Decoder',
-      classes: ['box'],
-      innerClasses: ['inspect'],
-      children: '',
-      connections: {
-        0: {
-          pos: 'left'
-        },
-        1: {
-          pos: 'left'
-        },
-        2: {
-          pos: 'left',
-          name: 'E'
-        },
-        3: {
-          pos: 'right'
-        },
-        4: {
-          pos: 'right'
-        },
-        5: {
-          pos: 'right'
-        },
-        6: {
-          pos: 'right'
-        }
-      }
-    },
-    // '4_16': {
-    //   name: '4 to 16 Decoder',
-    //   classes: ['box'],
-    //   innerClasses: ['inspect'],
-    //   children: '',
-    //   connections: {
-    //     0: {
-    //       pos: 'left'
-    //     },
-    //     1: {
-    //       pos: 'left'
-    //     },
-    //     2: {
-    //       pos: 'left'
-    //     },
-    //     3: {
-    //       pos: 'left'
-    //     },
-    //     4: {
-    //       pos: 'right',
-    //       name: '0'
-    //     },
-    //     5: {
-    //       pos: 'right',
-    //       name: '1'
-    //     },
-    //     6: {
-    //       pos: 'right',
-    //       name: '2'
-    //     },
-    //     7: {
-    //       pos: 'right',
-    //       name: '3'
-    //     },
-    //     8: {
-    //       pos: 'right',
-    //       name: '4'
-    //     },
-    //     9: {
-    //       pos: 'right',
-    //       name: '5'
-    //     },
-    //     10: {
-    //       pos: 'right',
-    //       name: '6'
-    //     },
-    //     11: {
-    //       pos: 'right',
-    //       name: '7'
-    //     },
-    //     12: {
-    //       pos: 'right',
-    //       name: '8'
-    //     },
-    //     13: {
-    //       pos: 'right',
-    //       name: '9'
-    //     },
-    //     14: {
-    //       pos: 'right',
-    //       name: '10'
-    //     },
-    //     15: {
-    //       pos: 'right',
-    //       name: '11'
-    //     },
-    //     16: {
-    //       pos: 'right',
-    //       name: '12'
-    //     },
-    //     17: {
-    //       pos: 'right',
-    //       name: '13'
-    //     },
-    //     18: {
-    //       pos: 'right',
-    //       name: '14'
-    //     },
-    //     19: {
-    //       pos: 'right',
-    //       name: '15'
-    //     }
-    //   }
-    // }
-  },
-  not_in_drawer: {
-    // TODO: not in drawer
-    name: 'test',
-    latch_grid: {
-      name: 'latch_grid',
-      classes: ['box', 'big_sqare'],
-      innerClasses: ['inspect'],
-      children: '',
-      memory: {row: 16, column: 16},
-      connections: {
-        // top: {
-        //   amount: 16,
-        //   name: [false, 'Hello']
-        // }
-        0: {
-          pos: 'left',
-          name: '0',
-          required: true // show red / notConnected
-        },
-        1: {
-          pos: 'left',
-          name: '1'
-        },
-        2: {
-          pos: 'left',
-          name: '2'
-        },
-        3: {
-          pos: 'left',
-          name: '3'
-        },
-        4: {
-          pos: 'left',
-          name: '4'
-        },
-        5: {
-          pos: 'left',
-          name: '5'
-        },
-        6: {
-          pos: 'left',
-          name: '6'
-        },
-        7: {
-          pos: 'left',
-          name: '7'
-        },
-        8: {
-          pos: 'left',
-          name: '8'
-        },
-        9: {
-          pos: 'left',
-          name: '9'
-        },
-        10: {
-          pos: 'left',
-          name: '10'
-        },
-        11: {
-          pos: 'left',
-          name: '11'
-        },
-        12: {
-          pos: 'left',
-          name: '12'
-        },
-        13: {
-          pos: 'left',
-          name: '13'
-        },
-        14: {
-          pos: 'left',
-          name: '14'
-        },
-        15: {
-          pos: 'left',
-          name: '15'
-        },
-        16: {
-          pos: 'top'
-        },
-        17: {
-          pos: 'top'
-        },
-        18: {
-          pos: 'top'
-        },
-        19: {
-          pos: 'top'
-        },
-        20: {
-          pos: 'top'
-        },
-        21: {
-          pos: 'top'
-        },
-        22: {
-          pos: 'top'
-        },
-        23: {
-          pos: 'top'
-        },
-        24: {
-          pos: 'top'
-        },
-        25: {
-          pos: 'top'
-        },
-        26: {
-          pos: 'top'
-        },
-        27: {
-          pos: 'top'
-        },
-        28: {
-          pos: 'top'
-        },
-        29: {
-          pos: 'top'
-        },
-        30: {
-          pos: 'top'
-        },
-        31: {
-          pos: 'top'
-        },
-        32: {
-          pos: 'right',
-          name: 'Data out'
-        },
-        33: {
-          pos: 'left',
-          name: 'Data in'
-        },
-        34: {
-          pos: 'left',
-          name: 'Write enable'
-        },
-        35: {
-          pos: 'left',
-          name: 'Read enable'
-        }
-      }
-    }
-  }
-};
+
 
 // append elements to drawer
 for (var i = 0; i < Object.keys(components).length; i++) {
@@ -1369,6 +420,20 @@ function changeSelect(id, new_id) {
 //   }
 // };
 
+// var saves = {
+//   activeTab: 'main',
+//   main: {
+//     zoom: 1,
+//     top: 0,
+//     left: 0,
+//     description: '', // <<-- ??????
+//     components: {
+//       0: {type: 'toggle', x: 5100, y: 5200, label: 'ayy', connections: {1: {}}},
+//       1: {type: 'light', x: 5400, y: 5200}
+//     }
+//   }
+// };
+
 var saves = {};
 if (localStorage.saves !== "undefined") {
   saves = JSON.parse(localStorage.saves);
@@ -1403,18 +468,46 @@ function loadObj(tab, tabId) {
     console.log(saves[tab].top);
     if (elem == 'zoom') currentMain.style[elem] = val;
     else if (elem == 'top' || elem == 'left') currentMain.style[elem] = val + 'px';
-    else if (elem.includes('comp')) {
-      createdElems[elem] = appendElem(val.type, {x: val.x, y: val.y}, val.label || undefined, tabId, true);
-      val.component = createdElems[elem];
-    } else if (elem.includes('conn')) {
-      var fromObj = {elem: createdElems[val.from.elem]};
-      if (val.from.side) fromObj.side = val.from.side;
-      if (val.from.pos) fromObj.pos = val.from.pos;
-      var toObj = {elem: createdElems[val.to.elem]};
-      if (val.to.side) toObj.side = val.to.side;
-      if (val.to.pos) toObj.pos = val.to.pos;
-      cSVG(fromObj, toObj);
+    else if (elem == 'components') {
+      var conns = {};
+      // append elements
+      for (var j = 0; j < Object.keys(val).length; j++) {
+        var pos = Object.keys(val)[j];
+        var cObject = val[pos];
+        createdElems[pos] = appendElem(cObject.type, {x: cObject.x, y: cObject.y}, cObject.label || undefined, tabId, true);
+        cObject.component = createdElems[pos];
+        if (cObject.connections !== undefined) conns[pos] = cObject.connections;
+      }
+      // add connections
+      for (var j = 0; j < Object.keys(createdElems).length; j++) {
+        var key = Object.keys(createdElems)[j];
+        if (conns[key] !== undefined) {
+          var side = conns[key].side || 'left';
+          var pos = conns[key].pos || 0;
+          var fromSide = conns[key].fromSide || 'right';
+          var fromPos = conns[key].fromPos || 0;
+          for (var c = 0; c < Object.keys(conns[key]).length; c++) {
+            var connKey = Object.keys(conns[key])[c];
+            var conn = conns[key][connKey];
+            if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
+              cSVG({elem: createdElems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: createdElems[connKey], side: conn.side || side, pos: conn.pos || pos});
+            }
+          }
+        }
+      }
     }
+    // else if (elem.includes('comp')) {
+    //   createdElems[elem] = appendElem(val.type, {x: val.x, y: val.y}, val.label || undefined, tabId, true);
+    //   val.component = createdElems[elem];
+    // } else if (elem.includes('conn')) {
+    //   var fromObj = {elem: createdElems[val.from.elem]};
+    //   if (val.from.side) fromObj.side = val.from.side;
+    //   if (val.from.pos) fromObj.pos = val.from.pos;
+    //   var toObj = {elem: createdElems[val.to.elem]};
+    //   if (val.to.side) toObj.side = val.to.side;
+    //   if (val.to.pos) toObj.pos = val.to.pos;
+    //   cSVG(fromObj, toObj);
+    // }
   }
 }
 
@@ -1423,6 +516,7 @@ function checkSaved(type, component, tabId) {
   var tabName = document.getElementById('tab#' + tabId).querySelector('span').innerHTML;
   var main = document.getElementById('main#' + tabId);
   if (saves[tabName] == undefined) saves[tabName] = {};
+  if (saves[tabName].components == undefined) saves[tabName].components = {};
   // TODO: update this upon zoom and move
   saves[tabName].zoom = main.style.zoom;
   saves[tabName].left = getNumber(main.style.left);
@@ -1430,19 +524,22 @@ function checkSaved(type, component, tabId) {
 
   if (type !== undefined) {
     var pos = 0;
-    for (var i = 0; i < Object.keys(saves[tabName]).length; i++) {
-      var name = Object.keys(saves[tabName])[i];
+    for (var i = 0; i < Object.keys(saves[tabName].components).length; i++) {
+      var name = Object.keys(saves[tabName].components)[i];
       if (component !== undefined) {
-        if (saves[tabName][name].component !== undefined) {
-          if (saves[tabName][name].component === component) {
+        if (saves[tabName].components[name].component !== undefined) {
+          if (saves[tabName].components[name].component === component) {
             break;
           }
         }
       }
-      if (name.includes(type)) pos++;
+      // if (name.includes(type)) pos++;
+      pos++;
     }
-    saves[tabName][type + pos] = {};
-    return saves[tabName][type + pos];
+    // saves[tabName[type + pos] = {};
+    // return saves[tabName][type + pos];
+    if (saves[tabName].components[pos] == undefined) saves[tabName].components[pos] = {};
+    return {object: saves[tabName].components[pos], pos: pos};
   }
 }
 
@@ -1468,6 +565,11 @@ function save(e, exportFile) {
     saves[tabName].zoom = main.style.zoom;
     saves[tabName].left = getNumber(main.style.left);
     saves[tabName].top = getNumber(main.style.top);
+    // remove all component elems (only remove in export and not in "saves" var)
+    // for (var i = 0; i < Object.keys(saves[tabName].components).length; i++) {
+    //   var cObject = saves[tabName].components[Object.keys(saves[tabName].components)[i]];
+    //   if (cObject.component !== undefined) delete cObject.component;
+    // }
     saves.activeTab = active_tab;
     localStorage.saves = JSON.stringify(saves);
   }

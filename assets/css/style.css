@@ -224,6 +224,34 @@ i.active {
   padding: 3.3px 5px 4.5px 2.5px;
 }
 
+/* scrollbar */
+.scroller::-webkit-scrollbar {
+  /* width: 5px; */
+  height: 4px;
+}
+.scroller::-webkit-scrollbar-track {
+  background: var(--transparent-blue--20);
+}
+.scroller::-webkit-scrollbar-thumb {
+  background: rgba(63, 126, 180, 0.5);
+}
+.scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(63, 126, 180, 0.4);
+}
+
+/* ::-webkit-scrollbar {
+  width: 6px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--transparent-blue--20);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(63, 126, 180, 0.5);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(63, 126, 180, 0.4);
+} */
 
 /* drawer */
 

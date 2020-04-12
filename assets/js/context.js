@@ -99,143 +99,23 @@ function menuClick(e) {
         break;
       case "Inspect":
         // var t, t1, t2, l, tr, tr1, tr2, tr3, tr4, tr5, tr6, tr7;
-        addTab(type + ' | Inspect').querySelector('span').classList.remove('unsaved');
-        switch (type) {
-          case 'buffer':
-            var t = appendElem('toggle', {x: 4650, y: 4930}, 'Input');
-            var l = appendElem('light', {x: 4970, y: 4930}, 'Output');
-            cSVG({elem: t}, {elem: l});
-            break;
-          case 'not':
-            var t = appendElem('toggle', {x: 4650, y: 4850}, 'Input');
-            var c = appendElem('high_constant', {x: 4650, y: 5000});
-            var tr = appendElem('transistor_inv', {x: 4810, y: 5000});
-            var l = appendElem('light', {x: 4970, y: 5000}, 'Output');
-            cSVG({elem: t}, {elem: tr, side: 'top'});
-            cSVG({elem: c}, {elem: tr, side: 'left'});
-            cSVG({elem: tr, side: 'right'}, {elem: l});
-            break;
-          case 'and':
-            var c = appendElem('high_constant', {x: 4600, y: 5000});
-            var tr1 = appendElem('transistor', {x: 4800, y: 5000});
-            var tr2 = appendElem('transistor', {x: 5000, y: 5000});
-            var t1 = appendElem('toggle', {x: 4700, y: 4800}, 'Input #1');
-            var t2 = appendElem('toggle', {x: 4900, y: 4800}, 'Input #2');
-            var l = appendElem('light', {x: 5200, y: 5000}, 'Output');
-            cSVG({elem: c}, {elem: tr1, side: 'left'});
-            cSVG({elem: tr1, side: 'right'}, {elem: tr2, side: 'left'});
-            cSVG({elem: tr2, side: 'right'}, {elem: l});
-            cSVG({elem: t1}, {elem: tr1, side: 'top'});
-            cSVG({elem: t2}, {elem: tr2, side: 'top'});
-            break;
-          case 'nand':
-            var c = appendElem('high_constant', {x: 4600, y: 5100});
-            var tr1 = appendElem('transistor', {x: 4800, y: 5000});
-            var tr2 = appendElem('transistor', {x: 5000, y: 5000});
-            var tr3 = appendElem('transistor_inv', {x: 5150, y: 5100});
-            var t1 = appendElem('toggle', {x: 4700, y: 4800}, 'Input #1');
-            var t2 = appendElem('toggle', {x: 4900, y: 4800}, 'Input #2');
-            var l = appendElem('light', {x: 5300, y: 5000}, 'Output');
-            cSVG({elem: c}, {elem: tr1, side: 'left'});
-            cSVG({elem: c}, {elem: tr3, side: 'left'});
-            cSVG({elem: tr1, side: 'right'}, {elem: tr2, side: 'left'});
-            cSVG({elem: tr2, side: 'right'}, {elem: tr3, side: 'top'});
-            cSVG({elem: t1}, {elem: tr1, side: 'top'});
-            cSVG({elem: t2}, {elem: tr2, side: 'top'});
-            cSVG({elem: tr3, side: 'right'}, {elem: l});
-            break;
-          case 'or':
-            var c = appendElem('high_constant', {x: 4500, y: 5000});
-            var tr1 = appendElem('transistor', {x: 4800, y: 4942});
-            var tr2 = appendElem('transistor', {x: 5000, y: 5000});
-            var t1 = appendElem('toggle', {x: 4700, y: 4800}, 'Input #1');
-            var t2 = appendElem('toggle', {x: 4900, y: 4800}, 'Input #2');
-            var l = appendElem('light', {x: 5200, y: 5000}, 'Output');
-            cSVG({elem: c}, {elem: tr1, side: 'left'});
-            cSVG({elem: c}, {elem: tr2, side: 'left'});
-            cSVG({elem: tr2, side: 'right'}, {elem: l});
-            cSVG({elem: tr1, side: 'right'}, {elem: tr2, side: 'top'});
-            cSVG({elem: t1}, {elem: tr1, side: 'top'});
-            cSVG({elem: t2}, {elem: tr2, side: 'top'});
-            break;
-          case 'nor':
-            var c = appendElem('high_constant', {x: 4500, y: 5000});
-            var tr1 = appendElem('transistor', {x: 4800, y: 4942});
-            var tr2 = appendElem('transistor_inv', {x: 5000, y: 5000});
-            var t1 = appendElem('toggle', {x: 4700, y: 4800}, 'Input #1');
-            var t2 = appendElem('toggle', {x: 4900, y: 4800}, 'Input #2');
-            var l = appendElem('light', {x: 5200, y: 5000}, 'Output');
-            cSVG({elem: c}, {elem: tr1, side: 'left'});
-            cSVG({elem: c}, {elem: tr2, side: 'left'});
-            cSVG({elem: tr2, side: 'right'}, {elem: l});
-            cSVG({elem: tr1, side: 'right'}, {elem: tr2, side: 'top'});
-            cSVG({elem: t1}, {elem: tr1, side: 'top'});
-            cSVG({elem: t2}, {elem: tr2, side: 'top'});
-            break;
-          case 'xor':
-            // var nand = appendElem('nand', {x: 4850, y: 4800});
-            // var or = appendElem('or', {x: 4850, y: 5000});
-            // var and = appendElem('and', {x: 5100, y: 4900});
-            // var t1 = appendElem('toggle', {x: 4360, y: 4900}, 'Input #1');
-            // var t2 = appendElem('toggle', {x: 4680, y: 4900}, 'Input #2');
-            // var l = appendElem('light', {x: 5300, y: 4900}, 'Output');
-            // cSVG({elem: t1}, {elem: nand, side: 'left'});
-            // cSVG({elem: t1}, {elem: or, side: 'left', pos: 1});
-            // cSVG({elem: t2}, {elem: nand, side: 'left', pos: 1});
-            // cSVG({elem: t2}, {elem: or, side: 'left'});
-            // cSVG({elem: nand, side: 'right'}, {elem: and, side: 'left'});
-            // cSVG({elem: or, side: 'right'}, {elem: and, side: 'left', pos: 1});
-            // cSVG({elem: and, side: 'right'}, {elem: l});
+        addTab(type + ' | Inspect').querySelector('span').classList.remove('unsaved'); // display name instead of type/id
+        loadComponent(getObjectByType(type).inspect);
 
-            var t1 = appendElem('toggle', {x: 4170, y: 4840}, 'Input #1');
-            var t2 = appendElem('toggle', {x: 4590, y: 4840}, 'Input #2');
-            var l = appendElem('light', {x: 5350, y: 5101}, 'Output');
-            var c1 = appendElem('high_constant', {x: 4500, y: 4750});
-            var c2 = appendElem('high_constant', {x: 4800, y: 4840});
-            var c3 = appendElem('high_constant', {x: 4430, y: 5043});
-            var tr1 = appendElem('transistor', {x: 4650, y: 4650});
-            var tr2 = appendElem('transistor', {x: 4800, y: 4650});
-            var tr3 = appendElem('transistor', {x: 5000, y: 4840}); // x: 5010
-            var tr4 = appendElem('transistor', {x: 4590, y: 4985}); // y: 5000?
-            var tr5 = appendElem('transistor', {x: 4800, y: 5043});
-            var tr6 = appendElem('transistor', {x: 5180, y: 5101});
-            var tr7 = appendElem('transistor_inv', {x: 4900, y: 4750}); // x: 4910
-            cSVG({elem: t1}, {elem: tr1, side: 'top'});
-            cSVG({elem: t1}, {elem: tr4, side: 'top'});
-            cSVG({elem: t2}, {elem: tr2, side: 'top'});
-            cSVG({elem: t2}, {elem: tr5, side: 'top'});
-            cSVG({elem: tr1, side: 'right'}, {elem: tr2, side: 'left'});
-            cSVG({elem: tr2, side: 'right'}, {elem: tr7, side: 'top'});
-            cSVG({elem: tr3, side: 'right'}, {elem: tr6, side: 'left'});
-            cSVG({elem: tr4, side: 'right'}, {elem: tr5, side: 'top'});
-            cSVG({elem: tr5, side: 'right'}, {elem: tr6, side: 'top'});
-            cSVG({elem: tr6, side: 'right'}, {elem: l});
-            cSVG({elem: tr7, side: 'right'}, {elem: tr3, side: 'top'});
-            cSVG({elem: c1}, {elem: tr1, side: 'left'});
-            cSVG({elem: c1}, {elem: tr7, side: 'left'});
-            cSVG({elem: c2}, {elem: tr3, side: 'left'});
-            cSVG({elem: c3}, {elem: tr4, side: 'left'});
-            cSVG({elem: c3}, {elem: tr5, side: 'left'});
-            break;
-          case 'xnor':
-            var nand = appendElem('nand', {x: 4850, y: 4800});
-            var or = appendElem('or', {x: 4850, y: 5000});
-            var and = appendElem('and', {x: 5100, y: 4900});
-            var t1 = appendElem('toggle', {x: 4360, y: 4900}, 'Input #1');
-            var t2 = appendElem('toggle', {x: 4680, y: 4900}, 'Input #2');
-            var c = appendElem('high_constant', {x: 5100, y: 5000});
-            var tr = appendElem('transistor_inv', {x: 5250, y: 4958});
-            var l = appendElem('light', {x: 5400, y: 4958}, 'Output');
-            cSVG({elem: t1}, {elem: nand, side: 'left'});
-            cSVG({elem: t1}, {elem: or, side: 'left', pos: 1});
-            cSVG({elem: t2}, {elem: nand, side: 'left', pos: 1});
-            cSVG({elem: t2}, {elem: or, side: 'left'});
-            cSVG({elem: nand, side: 'right'}, {elem: and, side: 'left'});
-            cSVG({elem: or, side: 'right'}, {elem: and, side: 'left', pos: 1});
-            cSVG({elem: and, side: 'right'}, {elem: tr, side: 'top'});
-            cSVG({elem: c}, {elem: tr, side: 'left'});
-            cSVG({elem: tr, side: 'right'}, {elem: l});
-            break;
+        switch (type) {
+          // case 'and':
+          //   var c = appendElem('high_constant', {x: 4600, y: 5000});
+          //   var tr1 = appendElem('transistor', {x: 4800, y: 5000});
+          //   var tr2 = appendElem('transistor', {x: 5000, y: 5000});
+          //   var t1 = appendElem('toggle', {x: 4700, y: 4800}, 'Input #1');
+          //   var t2 = appendElem('toggle', {x: 4900, y: 4800}, 'Input #2');
+          //   var l = appendElem('light', {x: 5200, y: 5000}, 'Output');
+          //   cSVG({elem: c}, {elem: tr1, side: 'left'});
+          //   cSVG({elem: tr1, side: 'right'}, {elem: tr2, side: 'left'});
+          //   cSVG({elem: tr2, side: 'right'}, {elem: l});
+          //   cSVG({elem: t1}, {elem: tr1, side: 'top'});
+          //   cSVG({elem: t2}, {elem: tr2, side: 'top'});
+          //   break;
 
           case 'seven_segment_decoder':
             var t1 = appendElem('toggle', {x: 4550, y: 4700}, '8');
@@ -535,43 +415,86 @@ function menuClick(e) {
               break;
 
           case '2_4':
-            var t1 = appendElem('toggle', {x: 4353, y: 4729}, '1');
-            var t2 = appendElem('toggle', {x: 4353, y: 4841}, '2');
-            var t3 = appendElem('toggle', {x: 4353, y: 4947}, 'E');
-            var not1 = appendElem('not', {x: 4732, y: 4729});
-            var not2 = appendElem('not', {x: 4732, y: 4841});
-            var and1 = appendElem('and', {x: 4935, y: 4734});
-            var and2 = appendElem('and', {x: 4935, y: 4841});
-            var and3 = appendElem('and', {x: 4935, y: 4948});
-            var and4 = appendElem('and', {x: 4935, y: 5056});
-            var l1 = appendElem('light', {x: 5161, y: 4739}, 'Output #1');
-            var l2 = appendElem('light', {x: 5161, y: 4846}, 'Output #2');
-            var l3 = appendElem('light', {x: 5161, y: 4953}, 'Output #3');
-            var l4 = appendElem('light', {x: 5161, y: 5061}, 'Output #4');
+            // loadComponent(componentTemplates['2_4']);
 
-            gate(and1.querySelector('.textInput'), 3);
-            gate(and2.querySelector('.textInput'), 3);
-            gate(and3.querySelector('.textInput'), 3);
-            gate(and4.querySelector('.textInput'), 3);
+            // var t1 = appendElem('toggle', {x: 4353, y: 4729}, '1');
+            // var t2 = appendElem('toggle', {x: 4353, y: 4841}, '2');
+            // var t3 = appendElem('toggle', {x: 4353, y: 4947}, 'E');
+            // var not1 = appendElem('not', {x: 4732, y: 4729});
+            // var not2 = appendElem('not', {x: 4732, y: 4841});
+            // var and1 = appendElem('and', {x: 4935, y: 4734});
+            // var and2 = appendElem('and', {x: 4935, y: 4841});
+            // var and3 = appendElem('and', {x: 4935, y: 4948});
+            // var and4 = appendElem('and', {x: 4935, y: 5056});
+            // var l1 = appendElem('light', {x: 5161, y: 4739}, 'Output #1');
+            // var l2 = appendElem('light', {x: 5161, y: 4846}, 'Output #2');
+            // var l3 = appendElem('light', {x: 5161, y: 4953}, 'Output #3');
+            // var l4 = appendElem('light', {x: 5161, y: 5061}, 'Output #4');
+            //
+            // gate(and1.querySelector('.textInput'), 3);
+            // gate(and2.querySelector('.textInput'), 3);
+            // gate(and3.querySelector('.textInput'), 3);
+            // gate(and4.querySelector('.textInput'), 3);
+            //
+            // cSVG({elem: t1}, {elem: and2, side: 'left'});
+            // cSVG({elem: t1}, {elem: and4, side: 'left', pos: 1});
+            // cSVG({elem: t1}, {elem: not1, side: 'left'});
+            //
+            // cSVG({elem: t2}, {elem: and3, side: 'left'});
+            // cSVG({elem: t2}, {elem: and4, side: 'left'});
+            // cSVG({elem: t2}, {elem: not2, side: 'left'});
+            //
+            // cSVG({elem: t3}, {elem: and1, side: 'left', pos: 2});
+            // cSVG({elem: t3}, {elem: and2, side: 'left', pos: 2});
+            // cSVG({elem: t3}, {elem: and3, side: 'left', pos: 2});
+            // cSVG({elem: t3}, {elem: and4, side: 'left', pos: 2});
+            //
+            // cSVG({elem: not1, side: 'right'}, {elem: and1, side: 'left'});
+            // cSVG({elem: not1, side: 'right'}, {elem: and3, side: 'left', pos: 1});
+            //
+            // cSVG({elem: not2, side: 'right'}, {elem: and1, side: 'left', pos: 1});
+            // cSVG({elem: not2, side: 'right'}, {elem: and2, side: 'left', pos: 1});
+            //
+            // cSVG({elem: and1, side: 'right'}, {elem: l1});
+            // cSVG({elem: and2, side: 'right'}, {elem: l2});
+            // cSVG({elem: and3, side: 'right'}, {elem: l3});
+            // cSVG({elem: and4, side: 'right'}, {elem: l4});
 
-            cSVG({elem: t1}, {elem: and2, side: 'left'});
-            cSVG({elem: t1}, {elem: and4, side: 'left', pos: 1});
-            cSVG({elem: t1}, {elem: not1, side: 'left'});
-            cSVG({elem: t2}, {elem: and3, side: 'left'});
-            cSVG({elem: t2}, {elem: and4, side: 'left'});
-            cSVG({elem: t2}, {elem: not2, side: 'left'});
-            cSVG({elem: t3}, {elem: and1, side: 'left', pos: 2});
-            cSVG({elem: t3}, {elem: and2, side: 'left', pos: 2});
-            cSVG({elem: t3}, {elem: and3, side: 'left', pos: 2});
-            cSVG({elem: t3}, {elem: and4, side: 'left', pos: 2});
-            cSVG({elem: not1, side: 'right'}, {elem: and1, side: 'left'});
-            cSVG({elem: not1, side: 'right'}, {elem: and3, side: 'left', pos: 1});
-            cSVG({elem: not2, side: 'right'}, {elem: and1, side: 'left', pos: 1});
-            cSVG({elem: not2, side: 'right'}, {elem: and2, side: 'left', pos: 1});
-            cSVG({elem: and1, side: 'right'}, {elem: l1});
-            cSVG({elem: and2, side: 'right'}, {elem: l2});
-            cSVG({elem: and3, side: 'right'}, {elem: l3});
-            cSVG({elem: and4, side: 'right'}, {elem: l4});
+            // ----------------
+
+            // var object = {
+            //   "comp_0": {
+            //     "type": "toggle",
+            //     "x": 358,
+            //     "y": 57,
+            //     "label": '1'
+            //   },
+            //   "comp_1": {
+            //     "type": "light",
+            //     "x": 683,
+            //     "y": 269,
+            //     "component": {}
+            //   },
+            //   "conn_0": {
+            //     "from": { "elem": "comp_0" },
+            //     "to": { "elem": "comp_1" }
+            //   },
+            //
+            //   0: {
+            //     type: "toggle",
+            //     x: 358,
+            //     y: 57,
+            //     label: 'Input',
+            //     connections: [
+            //       { elem: 1 }
+            //     ]
+            //   },
+            //   1: {
+            //     type: "light",
+            //     x: 683,
+            //     y: 269
+            //   }
+            // }
             break;
 
           case 'multiplexer': // 4_16
@@ -653,14 +576,81 @@ function menuClick(e) {
               cSVG({elem: latch, side: 'right'}, {elem: output});
             }
             break;
-          default:
-            alert('Inspect: ' + type);
         }
         break;
       default:
         alert(e.target.innerText);
     }
   }
+}
+
+
+function loadComponent(component) {
+  var elems = {}, conns = {};
+  // create components
+  for (var i = 0; i < Object.keys(component).length; i++) {
+    var key = Object.keys(component)[i]
+    var object = component[key];
+    // console.log(object);
+    if (key.includes('grid')) {
+      // for (var row = 0; row < object.rows; row++) {
+      //   for (var col = 0; col < object.cols; col++) {
+      //
+      //   }
+      // }
+    } else if (key.includes('vert') || key.includes('hor')) {
+      var start = getNumber(key);
+      var vert = 0, hor = 0;
+      if (key.includes('vert')) vert = object.spacing;
+      else hor = object.spacing;
+      for (var v = 0; v < object.repeat; v++) {
+        var label = undefined;
+        if (object.label !== undefined) label = getCustomLabel(object.label, object.repeat)[v];
+        elems[v + start] = appendElem(object.type, {x: object.x + hor * v, y: object.y + vert * v}, label); // get names: $i+
+        if (object.connections !== undefined) conns[v + start] = object.connections[v];
+        if (object.inputs !== undefined) gate(elems[v + start].querySelector('.textInput'), object.inputs[v]);
+      }
+    } else {
+      elems[key] = appendElem(object.type, {x: object.x, y: object.y}, object.label || undefined);
+      conns[key] = object.connections;
+      if (object.inputs !== undefined) gate(elems[key].querySelector('.textInput'), object.inputs);
+    }
+  }
+  // add connections
+  for (var j = 0; j < Object.keys(elems).length; j++) {
+    var key = Object.keys(elems)[j];
+    if (conns[key] !== undefined) {
+      var side = conns[key].side || 'left';
+      var pos = conns[key].pos || 0;
+      var fromSide = conns[key].fromSide || 'right';
+      var fromPos = conns[key].fromPos || 0;
+      for (var c = 0; c < Object.keys(conns[key]).length; c++) {
+        var connKey = Object.keys(conns[key])[c];
+        var conn = conns[key][connKey];
+        if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
+          cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: elems[connKey], side: conn.side || side, pos: conn.pos || pos});
+        }
+      }
+    }
+  }
+}
+
+
+// move to script.js..?
+function getCustomLabel(label, amount) {
+  console.log('LABEL: ' + label);
+  var labels = [];
+  for (var i = 0; i < label.length; i++) {
+    if (label[i].includes('$i+')) {
+      for (var j = 0; j < amount; j++)
+        labels[j] = label[i].slice(0, label[i].indexOf('$i+')) + (j + 1) + label[i].slice(label[i].indexOf('$i+') + 3, label[i].length);
+    } else if (label[i].includes('$i')) {
+      for (var k = 0; k < amount; k++)
+        labels[k] = label[i].slice(0, label[i].indexOf('$i')) + k + label[i].slice(label[i].indexOf('$i') + 2, label[i].length);
+    } else if (label[i].includes('@')) labels[label[i].slice(1, label[i].indexOf(':')) - 1] = label[i].slice(label[i].indexOf(':') + 1, label[i].length);
+    else if (label[i] !== null) labels[i] = label[i];
+  }
+  return labels;
 }
 
 

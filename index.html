@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
   <meta name="description" content="An online Logic Simulator. Create virtual circuits with this advanced online logic simulator. Including integrated circuits, clock, gates, ram, seven segment display, and much more. You can inspect the components to see how they are built up, or create your own!">
-  <meta name="keywords" content="Logic, Simulator, Simulation, JavaScript, Virtual, Circuits, Online, Advanced, Integrated Circuits, Toggle, Button, Clock, Seven Segment Display, Decoder, RAM, Gates, AND, OR, NOR, NOT, XOR, Transistor, Inspect, Custom Components, Component, Latch, Light Switch, Electronic, Material, Easy, Free, No Ads"> <!-- Open Source -->
+  <meta name="keywords" content="Logic, Simulator, Open Source, Simulation, JavaScript, Virtual, Circuits, Online, Advanced, Integrated Circuits, Toggle, Button, Clock, Seven Segment Display, Decoder, RAM, Gates, AND, OR, NOR, NOT, XOR, Transistor, Inspect, Custom Components, Component, Latch, Light Switch, Electronic, Material, Easy, Free, No Ads">
   <meta name="author" content="Kristoffer Vassbø">
   <title>Logic Simulation</title>
 
@@ -21,8 +21,8 @@
     <div id="main_title"><a href="#">Logic Simulator</a></div>
     <div id="toolbar" class="noselect">
       <!-- <i class="material-icons" title="Create new [ctrl+n]">insert_drive_file</i> -->
-      <i class="material-icons" title="Save [ctrl+s]">save</i>
-      <i class="material-icons" title="Export [ctrl+e]">cloud_download</i>
+      <i class="material-icons" title="Save to local storage [ctrl+s]">save</i>
+      <i class="material-icons" title="Export selected tab(s) [ctrl+e]">cloud_download</i>
       <i class="material-icons" title="Open file [ctrl+o]">folder_open</i>
       <!-- <i class="material-icons" title="Print [ctrl+p]">print</i> -->
       <span class="seperator"></span>
@@ -70,7 +70,7 @@
   <div id="tabber">
     <i class="material-icons right tabber" title="Add tab">add</i>
 
-    <div style="overflow-x: auto; max-width: calc(100vw - 250px - 44px);display: flex;">
+    <div class="scroller" style="overflow-x:auto;overflow-y:hidden;max-width:calc(100vw - 250px - 44px);display:flex;">
       <div class="tab active" id="tab#0">
         <span style="margin-right:0;">main</span>
       </div>
@@ -231,9 +231,10 @@
     <h1>About</h1>
     <p style="margin-top:10px;">
       Logic Simulator <em>beta 0.6</em> - created by <strong>Kristoffer Vassbø</strong><br>
+      <a href="https://github.com/Vassbo/logic" target="_blank">Source Code</a><br>
       Support me on Patreon - comming...<br><br>
       Do you have a Bug Report or Feature Request or something else?<br>
-      Contact me on <a href="mailto:kristoffervassbo@gmail.com">Email</a> or social media - comming...
+      Open an <a href="https://github.com/Vassbo/logic/issues" target="_blank">issue on Github</a>, contact me on <a href="mailto:kristoffervassbo@gmail.com">Email</a> or social media - comming...
       <!-- TODO: custom <a> style -->
     </p>
   </div>
@@ -278,6 +279,7 @@
 
   <script src="assets/js/script.js"></script>
   <script src="assets/js/zoom.js"></script>
+  <script src="assets/js/components.js"></script>
   <script src="assets/js/load.js"></script>
   <script src="assets/js/context.js"></script>
 </body>
