@@ -1,6 +1,6 @@
 {
-    "name": "LogicX",
-    "short_name": "LogicX",
+    "name": "Logic Simulator",
+    "short_name": "Logics",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
