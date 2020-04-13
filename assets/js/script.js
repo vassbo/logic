@@ -1,6 +1,7 @@
 
-// TODO: ZOOM
 // TODO: add components
+
+// TODO: store state (on/off/timer....) + (input values: clock/gate inputs)
 
 // TODO: delete saves + integrated circuits/components from lcal storage in settings
 
@@ -186,14 +187,14 @@ function dragElement(elmnt, drawer) {
 
         addListener(clone);
         dragElement(clone);
-        addConnection(clone, type);
+        addConnectors(clone, type);
         checkForNoConnections();
-        historyAdd('componentAdd', {elem: clone, type: type, top: clone.style.top, left: clone.style.left, zIndex: clone.style.zIndex}); // history
+        historyAdd('componentAdd', {elem: clone, type: type, x: clone.style.left, y: clone.style.top, zIndex: clone.style.zIndex}); // history
         clone = undefined;
 
         // TODO: this
         var component = e.target.closest('.component');
-        var object = checkSaved('comp_', component);
+        var object = checkSaved(component);
         object.object.type = component.children[0].classList[0];
         object.object.x = getNumber(component.style.left);
         object.object.y = getNumber(component.style.top);
@@ -206,9 +207,9 @@ function dragElement(elmnt, drawer) {
     if (!drawer) {
       var component = e.target.closest('.component');
       // TODO: Add label VVVV
-      historyAdd('componentMove', {elem: component, type: component.children[0].classList[0], top: component.style.top, left: component.style.left, zIndex: component.style.zIndex, label: undefined}); // history
+      historyAdd('componentMove', {elem: component, type: component.children[0].classList[0], x: component.style.left, y: component.style.top, zIndex: component.style.zIndex, label: undefined}); // history
 
-      var object = checkSaved('comp_', component);
+      var object = checkSaved(component);
       object.object.type = component.children[0].classList[0];
       object.object.x = getNumber(component.style.left);
       object.object.y = getNumber(component.style.top);
@@ -295,13 +296,37 @@ function dragElement(elmnt, drawer) {
                 if (endElem == saves[tabName][name].component) endElem = name;
               }
               // get right/bottom
-              var object = checkSaved('conn_', startElem);
-              // saves[tabName].components[pos];
-              if (object.object.connections == undefined) object.object.connections = {};
-              object.object.connections[checkSaved('conn_', endElem).pos] = {}
-              // object.from = {elem: startElem};
-              // object.to = {elem: endElem};
-              // side, pos
+              var object = checkSaved(startElem);
+              if (object.object.connection == undefined) object.object.connection = {};
+              if (object.object.connection.connections == undefined) object.object.connection.connections = [];
+              var connObj = {id: checkSaved(endElem).pos};
+
+              // assign additional values
+              var map = getSignalMap(target);
+              for (var j = 0; j < map.global.ids.length; j++) {
+                if (map.global.ids[j] == target.id) {
+                  if (map.global.sides[j] !== 'left') connObj.side = map.global.sides[j];
+                  for (var k = 0; k < map[map.global.sides[j]].ids.length; k++) {
+                    if (map[map.global.sides[j]].ids[k] == target.id) {
+                      if (k > 0) connObj.pos = k;
+                    }
+                  }
+                }
+              }
+              var fromMap = getSignalMap(startingConnect);
+              console.log(fromMap);
+              for (var j = 0; j < fromMap.global.ids.length; j++) {
+                if (fromMap.global.ids[j] == startingConnect.id) {
+                  if (fromMap.global.sides[j] !== 'right') connObj.fromSide = fromMap.global.sides[j];
+                  for (var k = 0; k < fromMap[fromMap.global.sides[j]].ids.length; k++) {
+                    if (fromMap[fromMap.global.sides[j]].ids[k] == startingConnect.id) {
+                      if (k > 0) connObj.fromPos = k;
+                    }
+                  }
+                }
+              }
+
+              object.object.connection.connections.push(connObj);
             } else if (moved) svg.innerHTML = originalSVG;
           }
         }
@@ -553,6 +578,8 @@ function clock(elem) {
 
   var clockElem = document.getElementById('clockInput#' + number).closest('.component');
 
+  store(clockElem, 'input', input);
+
   var num = getNumAdvanced(input);
   var interval = getInterval(input, num);
 
@@ -605,6 +632,8 @@ function toggle() {
     if (!this.children[0].classList.contains("on")) this.children[0].classList.add("on");
     else this.children[0].classList.remove("on");
     sendSignal(this, this.children[0].classList.contains("on"));
+    // store(this, {powered: true});
+    store(this.closest('.component'), 'powered', this.children[0].classList.contains("on"));
   }
 }
 
@@ -624,9 +653,10 @@ function gate(input, value) {
     var component = input.closest('.component');
     // var query = component.querySelectorAll('.connection');
     // for (var i = 0; i < query.length; i++) query[i].remove();
-    addConnection(component, component.querySelector('div').classList[0], amount);
+    addConnectors(component, component.querySelector('div').classList[0], amount);
     checkForNoConnections();
     if (value !== undefined) input.value = amount;
+    store(component, 'input', amount);
   } else {
     amount = 0;
     var connections = input.closest('.component').querySelectorAll('.connection');
@@ -1066,37 +1096,22 @@ function getSignalMap(elem) {
     right: { count: 0, trues: 0, bools: [], ids: [] },
     top: { count: 0, trues: 0, bools: [], ids: [] },
     bottom: { count: 0, trues: 0, bools: [], ids: [] },
-    global: { count: 0, trues: 0, bools: [], ids: [], labels: {} }
+    global: { count: 0, trues: 0, bools: [], ids: [], sides: [], labels: {} }
   };
   var connections = elem.querySelectorAll('.connection');
   for (var i = 0; i < connections.length; i++) {
-    var left = connections[i].classList.contains('left');
-    var right = connections[i].classList.contains('right');
-    var top = connections[i].classList.contains('top');
-    var bottom = connections[i].classList.contains('bottom');
+    var sides = ['left', 'right', 'top', 'bottom'], side = '';
+    for (var j = 0; j < sides.length; j++) if (connections[i].classList.contains(sides[j])) side = sides[j];
+
     var id = connections[i].querySelector('.connector').id;
     var signal = hasSignal(id) || connections[i].querySelector('.connector').classList.contains('on');
-    if (left) {
-      output.left.bools.push(signal);
-      output.left.ids.push(id);
-      if (signal) output.left.trues++;
-      output.left.count++;
-    } else if (right) {
-      output.right.bools.push(signal);
-      output.right.ids.push(id);
-      if (signal) output.right.trues++;
-      output.right.count++;
-    } else if (bottom) {
-      output.bottom.bools.push(signal);
-      output.bottom.ids.push(id);
-      if (signal) output.bottom.trues++;
-      output.bottom.count++;
-    } else if (top) {
-      output.top.bools.push(signal);
-      output.top.ids.push(id);
-      if (signal) output.top.trues++;
-      output.top.count++;
-    }
+
+    output[side].bools.push(signal);
+    output[side].ids.push(id);
+    if (signal) output[side].trues++;
+    output[side].count++;
+
+    output.global.sides.push(side);
     output.global.bools.push(signal);
     output.global.ids.push(id);
     if (signal) output.global.trues++;
@@ -1127,21 +1142,22 @@ function sendSignal(elem, powered, output) { // TODO: , side
 }
 
 // easily append element from object
-function appendElem(type, coords, label, tabId, loaded) {
+function appendElem(object, tabId, loaded) { // remove "loaded" // just send object?
   if (tabId == undefined) tabId = active_tab;
-  var object = getObjectByType(type);
+  // var object = getObjectByType(type);
   var div = document.createElement("div");
-  var component = appendElement(type, "main#" + tabId, loaded);
-  component.style.top = coords.y + 'px';
-  component.style.left = coords.x + 'px';
+  var component = appendElement(object.type, "main#" + tabId, {input: object.input, powered: object.powered}, loaded);
+  component.style.top = object.y + 'px';
+  component.style.left = object.x + 'px';
   // component.zIndex = ...
-  if (label !== undefined) addLabel(label, component);
+  if (object.label !== undefined) addLabel(object.label, component);
+  if (component.querySelector('.gate_input') !== null) gate(component.querySelector('.textInput'), object.input);
   // addListener(component); // <-- duplicate listener??? VV
   return component;
 }
 
 // append element (used for drawer elements)
-function appendElement(type, parentId, loaded) {
+function appendElement(type, parentId, state, loaded) {
   // if (parentId == undefined) parentId = "main";
   var component = document.createElement("div");
   var object = getObjectByType(type);
@@ -1172,6 +1188,12 @@ function appendElement(type, parentId, loaded) {
 
   component.innerHTML = '<div class="' + classList + '">' + object.children + '</div>';
 
+  if (state !== undefined) {
+    console.log(state);
+    if (state.input !== undefined) component.querySelector('.textInput').value = state.input;
+    if (state.powered !== undefined) if (state.powered) component.classList.add('powered');
+  }
+
   document.getElementById(parentId).appendChild(component);
 
   if (loaded === true) {
@@ -1189,7 +1211,7 @@ function appendElement(type, parentId, loaded) {
     component.classList.add("component");
     document.getElementById(parentId).classList.remove('hidden');
     // console.log(component.offsetHeight);
-    addConnection(component, type);
+    addConnectors(component, type);
     dragElement(component);
     addListener(component);
     checkForNoConnections();
@@ -1339,17 +1361,17 @@ function getSVGCoords(svgElem) {
 
 ///// CONNECTION /////
 
-// add connections to element
-// var connections = 0;
-function addConnection(component, type, amount) {
+// add connectors to element
+// var connectors = 0;
+function addConnectors(component, type, amount) {
   var object = getObjectByType(type);
   var connectionId = 0;
 
-  // get connection amount
+  // get connector amount
   var count = {left: 0, right: 0, top: 0, bottom: 0}, names = {right: [], left: [], top: [], bottom: []};
-  for (var i = 0; i < Object.keys(object.connections).length; i++) {
-    var key = Object.keys(object.connections)[i];
-    var connectionObject = object.connections[key];
+  for (var i = 0; i < Object.keys(object.connectors).length; i++) {
+    var key = Object.keys(object.connectors)[i];
+    var connectionObject = object.connectors[key];
     count[key] = connectionObject.amount || 1;
     if (connectionObject.name !== undefined) {
       // ['test', 'test2', 'test3', 'testings']
@@ -1383,20 +1405,20 @@ function addConnection(component, type, amount) {
     }
   }
 
-  // create connections
+  // create connector
   console.log(component);
   console.log(component.offsetHeight);
   var slicesRight = component.offsetHeight / (count.right + 1),
       slicesLeft = component.offsetHeight / (count.left + 1),
       slicesTop = component.offsetWidth / (count.top + 1),
       slicesBottom = component.offsetWidth / (count.bottom + 1);
-  for (var j = 0; j < count.right; j++) appendConnection(slicesRight * (j + 1), 'right', names.right[j] || null);
-  for (var k = 0; k < count.left; k++) appendConnection(slicesLeft * (k + 1), 'left', names.left[k] || null);
-  for (var m = 0; m < count.top; m++) appendConnection(slicesTop * (m + 1), 'top', names.top[m] || null);
-  for (var n = 0; n < count.bottom; n++) appendConnection(slicesBottom * (n + 1), 'bottom', names.bottom[n] || null);
+  for (var j = 0; j < count.right; j++) appendConnector(slicesRight * (j + 1), 'right', names.right[j] || null);
+  for (var k = 0; k < count.left; k++) appendConnector(slicesLeft * (k + 1), 'left', names.left[k] || null);
+  for (var m = 0; m < count.top; m++) appendConnector(slicesTop * (m + 1), 'top', names.top[m] || null);
+  for (var n = 0; n < count.bottom; n++) appendConnector(slicesBottom * (n + 1), 'bottom', names.bottom[n] || null);
 
-  // append connections
-  function appendConnection(offset, direction, name) {
+  // append connector
+  function appendConnector(offset, direction, name) {
     var connection = document.createElement("div");
     if (direction == 'right' || direction == 'left') connection.style.top = offset + 'px';
     else connection.style.left = offset + 'px';
@@ -1409,7 +1431,7 @@ function addConnection(component, type, amount) {
       connection.innerHTML += '<div class="conn_label" style="transform: translate' + offsetStyle + '(-50%); ' + direction + ': 16px;">' + name + '</div>';
     }
     component.appendChild(connection);
-    // connections++;
+    // connectors++;
   }
 
   moveSVG(component);
@@ -1565,6 +1587,7 @@ function removeComponent(elem) {
     setTimeout(function () {
       checkForNoConnections();
     }, 1);
+    removeStoredConnections(store(document.getElementById(getLineConnectors(elem.lastChild).to).closest('.component')).key);
   } else {
     // var id = elem.querySelector(".connector").id;
     var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".lineSVG");
@@ -1574,7 +1597,9 @@ function removeComponent(elem) {
       for (var j = 0; j < ids.length; j++) if (lc.from == ids[j] || lc.to == ids[j]) query[i].remove();
       // TODO: update signal
     }
+    removeStoredConnections(store(elem).key);
   }
+  store(elem, 'delete');
   elem.remove();
 }
 // remove every selected element
@@ -1813,6 +1838,68 @@ function historyAdd(type, values) {
   // id: id, svg: svg
 }
 // getIcon('undo').setAttribute('disabled', '');
+
+///// saves...
+
+// store a value inside its own object
+function store(elem, id, value) {
+  var object = {}, name = '';
+  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+  for (var i = 0; i < Object.keys(saves[tabName].components).length; i++) {
+    console.log(saves[tabName].components.component);
+    name = Object.keys(saves[tabName].components)[i];
+    if (saves[tabName].components[name].component === elem) {
+      if (id == 'delete') delete saves[tabName].components[name];
+      else if (id !== undefined) saves[tabName].components[name][id] = value;
+      object = saves[tabName].components[name];
+      break;
+    }
+  }
+  return {object: object, key: name};
+}
+
+// remove all connections connected to an element
+function removeStoredConnections(key) {
+  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+  var compObj = saves[tabName].components;
+  var compKeys = Object.keys(compObj);
+  console.log('KEY');
+  console.log(key);
+  for (var i = 0; i < compKeys.length; i++) {
+    var conn = compObj[compKeys[i]].connection;
+    if (conn !== undefined) {
+      for (var j = 0; j < conn.connections.length; j++) {
+        if (conn.connections[j].id == key) {
+          conn.connections.splice(j, 1);
+          j--;
+        }
+      }
+      // for (var j = 0; j < Object.keys(conn).length; j++) {
+      //   var connKey = Object.keys(conn)[j];
+      //   var connObj = conn[connKey];
+      //   if (connKey == key) delete conn[connKey];
+      // }
+    }
+  }
+}
+
+// select / deselect all, or return amount selected
+function selector(action) {
+  var selected = 0;
+  var components = document.getElementById('main#' + active_tab).querySelectorAll('.component');
+  for (var i = 0; i < components.length; i++) {
+    if (action == 'select') components[i].classList.add('selected');
+    if (action == 'deselect') components[i].classList.remove('selected');
+    if (components[i].classList.contains('selected')) selected++;
+  }
+  var lines = document.getElementById('main#' + active_tab).querySelectorAll('.lineSVG');
+  for (var j = 0; j < lines.length; j++) {
+    if (action == 'select') lines[j].classList.add('selected');
+    if (action == 'deselect') lines[j].classList.remove('selected');
+    if (lines[j].classList.contains('selected')) selected++;
+  }
+  if (action == 'count') return selected >= components.length + lines.length;
+}
 
 ///////////////////
 ///// HELPERS /////

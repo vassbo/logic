@@ -135,23 +135,6 @@ function getComponent(target) {
 }
 
 
-// move to script...
-function selector(action) {
-  var selected = 0;
-  var components = document.getElementById('main#' + active_tab).querySelectorAll('.component');
-  for (var i = 0; i < components.length; i++) {
-    if (action == 'select') components[i].classList.add('selected');
-    if (action == 'deselect') components[i].classList.remove('selected');
-    if (components[i].classList.contains('selected')) selected++;
-  }
-  var lines = document.getElementById('main#' + active_tab).querySelectorAll('.lineSVG');
-  for (var j = 0; j < lines.length; j++) {
-    if (action == 'select') lines[j].classList.add('selected');
-    if (action == 'deselect') lines[j].classList.remove('selected');
-    if (lines[j].classList.contains('selected')) selected++;
-  }
-  if (action == 'count') return selected >= components.length + lines.length;
-}
 
 ///// CLICKED /////
 
@@ -164,7 +147,8 @@ function menuClick(e) {
 
     switch (e.target.innerText) {
       case "Delete":
-        contextElem.remove();
+        // contextElem.remove();
+        removeComponent(contextElem);
         break;
       case "Add Label":
         var val = "";
@@ -705,13 +689,13 @@ function loadComponent(component) {
       for (var v = 0; v < object.repeat; v++) {
         var label = undefined;
         if (object.label !== undefined) label = getCustomLabel(object.label, object.repeat)[v];
-        elems[v + start] = appendElem(object.type, {x: object.x + hor * v, y: object.y + vert * v}, label); // get names: $i+
-        if (object.connections !== undefined) conns[v + start] = object.connections[v];
+        elems[v + start] = appendElem({type: object.type, x: object.x + hor * v, y: object.y + vert * v, label: label}); // get names: $i+
+        if (object.connection !== undefined) conns[v + start] = object.connection[v];
         if (object.inputs !== undefined) gate(elems[v + start].querySelector('.textInput'), object.inputs[v]);
       }
     } else {
-      elems[key] = appendElem(object.type, {x: object.x, y: object.y}, object.label || undefined);
-      conns[key] = object.connections;
+      elems[key] = appendElem(object);
+      conns[key] = object.connection;
       if (object.inputs !== undefined) gate(elems[key].querySelector('.textInput'), object.inputs);
     }
   }
@@ -723,12 +707,16 @@ function loadComponent(component) {
       var pos = conns[key].pos || 0;
       var fromSide = conns[key].fromSide || 'right';
       var fromPos = conns[key].fromPos || 0;
-      for (var c = 0; c < Object.keys(conns[key]).length; c++) {
-        var connKey = Object.keys(conns[key])[c];
-        var conn = conns[key][connKey];
-        if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
-          cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: elems[connKey], side: conn.side || side, pos: conn.pos || pos});
-        }
+      // for (var c = 0; c < Object.keys(conns[key]).length; c++) {
+      //   var connKey = Object.keys(conns[key])[c];
+      //   var conn = conns[key][connKey];
+      //   if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
+      //     cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: elems[connKey], side: conn.side || side, pos: conn.pos || pos});
+      //   }
+      // }
+      for (var c = 0; c < conns[key].connections.length; c++) {
+        var conn = conns[key].connections[c];
+        cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: elems[conn.id], side: conn.side || side, pos: conn.pos || pos});
       }
     }
   }
@@ -763,7 +751,7 @@ function createGrid(grid, type, typeStyle, startPos, idLetter, doLabel) {
       if (doLabel === true) label = countLabel;
       console.log('LABEL: ' + label);
       countLabel++;
-      var elem = appendElem(type, {x: startPos.x + ((typeStyle.width + typeStyle.width / 2) * (col + 1)), y: startPos.y + ((typeStyle.height + typeStyle.height / 2) * (row + 1))}, label);
+      var elem = appendElem({type: type, x: startPos.x + ((typeStyle.width + typeStyle.width / 2) * (col + 1)), y: startPos.y + ((typeStyle.height + typeStyle.height / 2) * (row + 1)), label: label});
       objects[idLetter + ('0' + col).slice(-2) + ('0' + row).slice(-2)] = elem;
     }
   }

@@ -112,7 +112,7 @@ function btnClick() {
         if (historyRedo.length > 0) {
           var r = historyRedo[historyRedo.length - 1];
           if (r.type == 'componentAdd') { // history
-            var newElem = appendElem(r.values.type, {x: r.values.left, y: r.values.top}, r.values.label || undefined);
+            var newElem = appendElem(r.values);
             for (var i = 0; i < historyLog.length; i++) {
               if (historyLog[i].values.elem === r.values.elem) historyLog[i].values.elem = newElem;
             }
@@ -157,6 +157,7 @@ function btnClick() {
         break;
 
       case 'bug_report':
+        // outdated
         var query = document.getElementById('main#' + active_tab).querySelectorAll('.component');
         var output = '';
         var counter = {};
@@ -198,8 +199,8 @@ function btnClick() {
             }
             if (toFrom !== false) {
               // var side = '';
-              // if (getSignalMap(component).left.count == 0) side = ', side: ' + connectors[l].closest('.connection').classList[1];
-              var side = ", side: '" + connectors[l].closest('.connection').classList[1] + "'";
+              // if (getSignalMap(component).left.count == 0) side = ', side: ' + connectors[l].closest('.').classList[1];
+              var side = ", side: '" + connectors[l].closest('.').classList[1] + "'";
               var pos = '';
               if (l - 1 > 0) pos = ", pos: " + (l - 1);
               if (toFrom == 'from') from = "{elem: " + typeId + side + pos + "}";
@@ -472,9 +473,9 @@ function loadObj(tab, tabId) {
       for (var j = 0; j < Object.keys(val).length; j++) {
         var pos = Object.keys(val)[j];
         var cObject = val[pos];
-        createdElems[pos] = appendElem(cObject.type, {x: cObject.x, y: cObject.y}, cObject.label || undefined, tabId, true);
+        createdElems[pos] = appendElem(cObject, tabId, true);
         cObject.component = createdElems[pos];
-        if (cObject.connections !== undefined) conns[pos] = cObject.connections;
+        if (cObject.connection !== undefined) conns[pos] = cObject.connection;
       }
       // add connections
       for (var j = 0; j < Object.keys(createdElems).length; j++) {
@@ -484,18 +485,29 @@ function loadObj(tab, tabId) {
           var pos = conns[key].pos || 0;
           var fromSide = conns[key].fromSide || 'right';
           var fromPos = conns[key].fromPos || 0;
-          for (var c = 0; c < Object.keys(conns[key]).length; c++) {
-            var connKey = Object.keys(conns[key])[c];
-            var conn = conns[key][connKey];
-            if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
-              cSVG({elem: createdElems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: createdElems[connKey], side: conn.side || side, pos: conn.pos || pos});
-            }
+          // for (var c = 0; c < Object.keys(conns[key]).length; c++) {
+          //   var connKey = Object.keys(conns[key])[c];
+          //   var conn = conns[key][connKey];
+          //   if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
+          //     cSVG({elem: createdElems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: createdElems[connKey], side: conn.side || side, pos: conn.pos || pos});
+          //   }
+          // }
+          for (var c = 0; c < conns[key].connections.length; c++) {
+            var conn = conns[key].connections[c];
+            cSVG({elem: createdElems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: createdElems[conn.id], side: conn.side || side, pos: conn.pos || pos});
           }
         }
       }
+      // power powered
+      var powered = document.querySelectorAll('.powered');
+      for (var j = 0; j < powered.length; j++) {
+        if (!powered[j].classList.contains('line')) powered[j].children[0].click();
+        // powered[j].classList.remove('powered');
+      }
+      selector('deselect');
     }
     // else if (elem.includes('comp')) {
-    //   createdElems[elem] = appendElem(val.type, {x: val.x, y: val.y}, val.label || undefined, tabId, true);
+    //   createdElems[elem] = appendElem(val, tabId, true);
     //   val.component = createdElems[elem];
     // } else if (elem.includes('conn')) {
     //   var fromObj = {elem: createdElems[val.from.elem]};
@@ -509,7 +521,7 @@ function loadObj(tab, tabId) {
   }
 }
 
-function checkSaved(type, component, tabId) {
+function checkSaved(component, tabId) {
   if (tabId == undefined) tabId = active_tab;
   var tabName = document.getElementById('tab#' + tabId).querySelector('span').innerHTML;
   var main = document.getElementById('main#' + tabId);
@@ -520,7 +532,7 @@ function checkSaved(type, component, tabId) {
   saves[tabName].left = getNumber(main.style.left);
   saves[tabName].top = getNumber(main.style.top);
 
-  if (type !== undefined) {
+  if (component !== null) {
     var pos = 0;
     for (var i = 0; i < Object.keys(saves[tabName].components).length; i++) {
       var name = Object.keys(saves[tabName].components)[i];
@@ -531,11 +543,8 @@ function checkSaved(type, component, tabId) {
           }
         }
       }
-      // if (name.includes(type)) pos++;
       pos++;
     }
-    // saves[tabName[type + pos] = {};
-    // return saves[tabName][type + pos];
     if (saves[tabName].components[pos] == undefined) saves[tabName].components[pos] = {};
     return {object: saves[tabName].components[pos], pos: pos};
   }
@@ -559,7 +568,7 @@ function save(e, exportFile) {
     document.getElementById('tab#' + tabId).querySelector('span').classList.remove('unsaved');
     var tabName = document.getElementById('tab#' + tabId).querySelector('span').innerHTML;
     var main = document.getElementById('main#' + tabId);
-    checkSaved(undefined, null, tabId);
+    checkSaved(null, tabId);
     saves[tabName].zoom = main.style.zoom;
     saves[tabName].left = getNumber(main.style.left);
     saves[tabName].top = getNumber(main.style.top);
