@@ -1,7 +1,49 @@
 
 ///// MAIN /////
 
-var menu = document.getElementById("menuMain");
+var context = {
+  default: [
+    {text: 'Save'},
+    {text: 'Settings'},
+    {text: 'Info'}
+  ],
+  // select all and paste -> only inside main
+  main: [
+    // {activated: '.main'}
+    // {text: 'Back'},
+    // {text: 'Reload'},
+    {text: 'Save'},
+    {text: 'Select all'}, // TODO: Show "Select none" when all is selected
+    // {text: 'Cut selected'},
+    // {text: 'Copy selected'},
+    {text: 'Paste', disabled: true},
+    // {text: 'Save as'},
+    // {text: 'Inspect'},
+  ],
+  tab: [
+    // {activated: '.tab'}
+    {text: 'Delete'},
+    {text: 'Export'},
+    {text: 'Create integrated circuit'},
+  ],
+  // TODO: show this anywhere(instead of default) when elems are selected
+  component: [
+    {text: 'Add Label', id: 'contextLabel'},
+    {text: 'Delete'},
+    {text: 'Cut'},
+    {text: 'Copy'},
+    {text: 'Duplicate'},
+    // {text: 'Save As'},
+    {text: 'Documentation', id: 'doc_context', disabled: true},
+    {text: 'Inspect', id: 'inspect_context', disabled: true}
+  ],
+  componentDrawer: [
+    {text: 'Documentation', id: 'doc_context', disabled: true},
+    {text: 'Inspect', id: 'inspect_context', disabled: true}
+  ]
+};
+
+var menu = document.getElementById("contextMenu");
 var menuVisible = false;
 
 function toggleMenu(command) {
@@ -19,39 +61,72 @@ function setPosition(origin) {
   menu.style.top = origin.top + "px";
 }
 
-window.addEventListener("click", function(e) { if (menuVisible) {
-  if (menu.querySelector('#inspect_context') !== null) menu.querySelector('#inspect_context').setAttribute('disabled', '');
-  toggleMenu("hide");
-}
+window.addEventListener("click", function(e) {
+  if (menuVisible) {
+    // if (menu.querySelector('#inspect_context') !== null) menu.querySelector('#inspect_context').setAttribute('disabled', '');
+    // if (menu.querySelector('#doc_context') !== null) menu.querySelector('#doc_context').setAttribute('disabled', '');
+    toggleMenu("hide");
+  }
 });
 
 var contextElem;
 window.addEventListener("contextmenu", function(e) {
   // console.log(e.target.closest("div").id);
-  if (!e.target.closest("div").id.includes("menu")) {
+  if (e.target.closest("div").id !== "contextMenu") {
     if (menuVisible) toggleMenu("hide");
     e.preventDefault();
-    var origin = { left: e.pageX, top: e.pageY };
+    var origin = {left: e.pageX, top: e.pageY};
 
     if (getComponent(e.target) === true) { // target is a component
-      menu = document.getElementById("menuComponent");
+      setMenu('component');
       contextElem = e.target.closest(".component");
       if (contextElem.getElementsByClassName("label").length > 0) document.getElementById("contextLabel").innerHTML = "Edit Label";
       else document.getElementById("contextLabel").innerHTML = "Add Label";
       var classList = contextElem.querySelector('div').classList;
       if (classList.contains('inspect')) menu.querySelector('#inspect_context').removeAttribute('disabled');
       else menu.querySelector('#inspect_context').setAttribute('disabled', '');
+      if (classList.contains('documentation')) menu.querySelector('#doc_context').removeAttribute('disabled');
+      else menu.querySelector('#doc_context').setAttribute('disabled', '');
+
     } else if (getComponent(e.target) == 'drawer') { // target is a component inside the drawer
-      menu = document.getElementById("menuDrawerComponent");
+      setMenu('componentDrawer');
       contextElem = e.target.closest(".box");
       var classList = contextElem.querySelector('div').classList;
       if (classList.contains('inspect')) menu.querySelector('#inspect_context').removeAttribute('disabled');
       else menu.querySelector('#inspect_context').setAttribute('disabled', '');
-    } else menu = document.getElementById("menuMain"); // default context menu
+      if (classList.contains('documentation')) menu.querySelector('#doc_context').removeAttribute('disabled');
+      else menu.querySelector('#doc_context').setAttribute('disabled', '');
+
+    } else if (e.target.closest('.main') !== null) setMenu('main'); // context inside main
+    else if (e.target.closest('.tab') !== null) setMenu('tab'); // context on tabs
+    else setMenu('default'); // default context menu
 
     setPosition(origin);
   } else toggleMenu("hide");
 });
+
+function setMenu(id) {
+  for (var i = 0; i < Object.keys(context).length; i++) {
+    var key = Object.keys(context)[i];
+    if (key === id) {
+      var html = '';
+      for (var j = 0; j < context[key].length; j++) {
+        var attr = '';
+        if (context[key][j].id !== undefined) attr = ' id="' + context[key][j].id + '"';
+        if (context[key][j].disabled !== undefined) attr += ' disabled';
+        var text = context[key][j].text;
+
+        if (text == 'Select all') if (selector('count')) text = 'Deselect all';
+
+        html += '<li class="menu-option"' + attr + '>' + text + '</li>';
+      }
+      menu.querySelector('ul').innerHTML = html;
+      var options = document.getElementById('contextMenu').querySelectorAll("li");
+      for (var o = 0; o < options.length; o++) options[o].addEventListener("click", menuClick);
+      break;
+    }
+  }
+}
 
 function getComponent(target) {
   if (target.classList.contains("box") && target.classList.contains("component") || target.closest(".box") && target.closest(".component")) return true;
@@ -59,12 +134,30 @@ function getComponent(target) {
   else return false;
 }
 
+
+// move to script...
+function selector(action) {
+  var selected = 0;
+  var components = document.getElementById('main#' + active_tab).querySelectorAll('.component');
+  for (var i = 0; i < components.length; i++) {
+    if (action == 'select') components[i].classList.add('selected');
+    if (action == 'deselect') components[i].classList.remove('selected');
+    if (components[i].classList.contains('selected')) selected++;
+  }
+  var lines = document.getElementById('main#' + active_tab).querySelectorAll('.lineSVG');
+  for (var j = 0; j < lines.length; j++) {
+    if (action == 'select') lines[j].classList.add('selected');
+    if (action == 'deselect') lines[j].classList.remove('selected');
+    if (lines[j].classList.contains('selected')) selected++;
+  }
+  if (action == 'count') return selected >= components.length + lines.length;
+}
+
 ///// CLICKED /////
 
-var options = document.querySelectorAll(".menu-option");
-for (var i = 0; i < options.length; i++) options[i].addEventListener("click", menuClick);
 function menuClick(e) {
-  var type = contextElem.firstChild.classList[0];
+  var type = e.target;
+  if (contextElem !== undefined) type = contextElem.firstChild.classList[0];
   var object = getObjectByType(type);
 
   if (!e.target.hasAttribute('disabled')) {
@@ -89,6 +182,12 @@ function menuClick(e) {
             label.remove();
           }
         }
+        break;
+      case 'Select all':
+        selector('select');
+        break;
+      case 'Deselect all':
+        selector('deselect');
         break;
       case "Documentation":
         document.getElementById("dark").classList.remove("hidden");

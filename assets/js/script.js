@@ -2,6 +2,8 @@
 // TODO: ZOOM
 // TODO: add components
 
+// TODO: delete saves + integrated circuits/components from lcal storage in settings
+
 // TODO: "legg på linje"
 
 // TODO: Settings:
@@ -1151,6 +1153,7 @@ function appendElement(type, parentId, loaded) {
     for (var l = 0; l < object.innerClasses.length; l++) classList += ' ' + object.innerClasses[l];
 
   if (object.inspect !== undefined) classList += ' inspect';
+  if (object.documentation !== undefined) classList += ' documentation';
 
   if (object.memory !== undefined) {
     for (var i = 0; i < object.memory.column; i++) {

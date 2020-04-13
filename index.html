@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="hPlCYMCm_AK8Qa7GmHKeNjKDENMYKF351Kcgu-dl9a8">
 
+  <!-- You can technically make a whole computer! -->
   <meta name="description" content="An online Logic Simulator. Create virtual circuits with this advanced online logic simulator. Including integrated circuits, clock, gates, ram, seven segment display, and much more. You can inspect the components to see how they are built up, or create your own!">
   <meta name="keywords" content="Logic, Simulator, Open Source, Simulation, JavaScript, Virtual, Circuits, Online, Advanced, Integrated Circuits, Toggle, Button, Clock, Seven Segment Display, Decoder, RAM, Gates, AND, OR, NOR, NOT, XOR, Transistor, Inspect, Custom Components, Component, Latch, Light Switch, Electronic, Material, Easy, Free, No Ads">
   <meta name="author" content="Kristoffer Vassbø">
@@ -40,7 +41,8 @@
       <i class="material-icons" title="Duplicate selected [ctrl+d]" disabled>filter_none</i>
       <i class="material-icons" title="Rotate selected right (90°) [ctrl+r]" disabled>rotate_right</i>
       <i class="material-icons" title="Rotate selected left (-90°) [ctrl+shift+r]" disabled>rotate_left</i>
-      <i class="material-icons" title="Create integrated circuit (by selection) [ctrl+i]" disabled>post_add</i> <!-- receipt -->
+      <!-- this is always on and will create for the whole tab if nothing is selected! VVV -->
+      <i class="material-icons" title="Create integrated circuit (by selection) [ctrl+i]">post_add</i> <!-- receipt -->
 
       <span class="seperator"></span>
       <i class="material-icons" title="Generate truth table [ctrl+g]">receipt</i>
@@ -241,40 +243,12 @@
   </div>
 
 
-
   <!-- TODO: WIP context menus -->
-  <div id="menuMain" class="menu">
+  <div id="contextMenu" class="menu">
     <ul class="menu-options">
-      <!-- <li class="menu-option">Back</li> -->
-      <!-- <li class="menu-option">Reload</li> -->
       <li class="menu-option">Save</li>
-      <li class="menu-option">Select all</li> <!-- TODO: Show "Select none" when all is selected -->
-      <!-- <li class="menu-option">Cut Selected</li>
-      <li class="menu-option">Copy Selected</li> -->
-      <li class="menu-option" disabled>Paste</li>
-      <!-- <li class="menu-option">Save As</li> -->
-      <!-- <li class="menu-option">Inspect</li> -->
-    </ul>
-  </div>
-
-  <!-- TODO: show this when elems are selected -->
-  <div id="menuComponent" class="menu">
-    <ul class="menu-options">
-      <li class="menu-option" id="contextLabel">Add Label</li>
-      <li class="menu-option">Delete</li>
-      <li class="menu-option">Cut</li>
-      <li class="menu-option">Copy</li>
-      <li class="menu-option">Duplicate</li>
-      <!-- <li class="menu-option">Save As</li> -->
-      <li class="menu-option">Documentation</li>
-      <li id="inspect_context" class="menu-option" disabled>Inspect</li>
-    </ul>
-  </div>
-
-  <div id="menuDrawerComponent" class="menu">
-    <ul class="menu-options">
-      <li class="menu-option">Documentation</li>
-      <li id="inspect_context" class="menu-option" disabled>Inspect</li>
+      <li class="menu-option">Settings</li>
+      <li class="menu-option">Info</li>
     </ul>
   </div>
 

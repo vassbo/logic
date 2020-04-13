@@ -1,6 +1,4 @@
 
-// TODO: add documentation
-
 
 // append elements to drawer
 for (var i = 0; i < Object.keys(components).length; i++) {

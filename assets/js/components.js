@@ -1,6 +1,7 @@
 var componentsTemplate = {
   'toggle': { // id / type
     name: 'Toggle', // display name
+    documentation: 'Just a button, nothing special.', // additional info that might help the user
     classes: ['box'], // main classes
     innerClasses: [], // classes (mainly used for styling)
     children: '', // add elements inside object
@@ -31,31 +32,35 @@ var componentsTemplate = {
   },
 };
 
+// TODO: add documentation
+
 var components = {
   inputs: {
     name: 'Inputs',
     toggle: {
       name: 'Toggle Switch',
+      documentation: "Click on me to toggle my states, I can be on or off.",
       classes: ['box'],
       children: '<div class="btn-light"></div>',
       connections: {right: {}}
     },
     button: {
       name: 'Push Button',
-      documentation: 'Just a button, nothing special.',
+      documentation: "Just a button, nothing special.",
       classes: ['box'],
       children: '',
       connections: {right: {}}
     },
     clock: {
       name: 'Clock',
-      documentation: 'The clock is a timer.....<br><br>ms = milli seconds<br>s = seconds<br>m = minutes<br>h = hours<br><br>e.g. 1s == 1000ms',
+      documentation: "The clock is a timer.....<br><br>ms = milli seconds<br>s = seconds<br>m = minutes<br>h = hours<br><br>e.g. 1s == 1000ms",
       classes: ['box'],
       children: '<div class="display"><input class="clock_input textInput" id="clockInput#0" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div>',
       connections: {right: {}}
     },
     high_constant: {
       name: 'High constant',
+      documentation: "I will be active forever, and you can't disable me! Muwhahahaha!!",
       classes: ['box'],
       innerClasses: ['constant', 'noselect'],
       children: '<span>1</span>',
@@ -63,6 +68,7 @@ var components = {
     },
     low_constant: {
       name: 'Low constant',
+      documentation: "What's the point of me, really??",
       classes: ['box'],
       innerClasses: ['constant', 'noselect'],
       children: '<span>0</span>',
