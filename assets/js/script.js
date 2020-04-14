@@ -93,7 +93,7 @@ var connectorPosX, connectorPosY, startingConnect;
 var moved = false; // connection drag move
 var clone;
 function dragElement(elmnt, drawer) {
-  var cursor = { movedX: 0, movedY: 0, x: 0, y: 0 };
+  var cursor = {movedX: 0, movedY: 0, x: 0, y: 0};
 
   elmnt.onmousedown = dragMouseDown;
   function dragMouseDown(e) {
@@ -141,14 +141,14 @@ function dragElement(elmnt, drawer) {
         clone = elmnt.cloneNode(true);
         clone.classList.add("component", "ghostElem");
         clone.querySelector(".label").remove();
-        document.getElementById("main#" + active_tab).appendChild(clone);
+        activeMain().appendChild(clone);
 
         var scrollTop = document.getElementById('drawer').scrollTop;
         // TODO: map zoom...
         // clone.style.top = elmnt.offsetTop / mapZoom - getNumber(document.getElementById("main").style.top) - scrollTop / mapZoom + "px";
         // clone.style.left = elmnt.offsetLeft * mapZoom - getNumber(document.getElementById("main").style.left) - getDrawerWidth() + "px";
-        clone.style.top = elmnt.offsetTop - getNumber(document.getElementById("main#" + active_tab).style.top) - 32 - scrollTop / mapZoom + "px";
-        clone.style.left = elmnt.offsetLeft - getNumber(document.getElementById("main#" + active_tab).style.left) - getDrawerWidth() + "px";
+        clone.style.top = elmnt.offsetTop - getNumber(activeMain().style.top) - 32 - scrollTop / mapZoom + "px";
+        clone.style.left = elmnt.offsetLeft - getNumber(activeMain().style.left) - getDrawerWidth() + "px";
         clone.style.opacity = "0.3";
         clone.style.zIndex = "9999919";
       }
@@ -171,7 +171,7 @@ function dragElement(elmnt, drawer) {
     setTimeout(function() { active = true; }, 10);
 
     if (drawer) {
-      if (e.pageX > getDrawerWidth() && e.pageY > top_height) {
+      if (e.pageX > getDrawerWidth() && e.pageX < window.innerWidth && e.pageY > top_height && e.pageY < window.innerHeight) {
         clone.style.opacity = null;
         clone.style.zIndex = document.querySelectorAll('.component').length - 1;
         clone.classList.remove('ghostElem');
@@ -224,21 +224,21 @@ function dragElement(elmnt, drawer) {
   }
 
   var first = true;
-  var svg = document.getElementById("main#" + active_tab).querySelector('.SVGdiv');
-  var originalSVG = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').innerHTML;
+  var svg = activeMain().querySelector('.SVGdiv');
+  var originalSVG = activeMain().querySelector('.SVGdiv').innerHTML;
   var storePrevious = svg, allMatchingConnectors = [];
   function dragConnector(e) {
     moved = true;
     backgroundCanBeDragged = false;
     if (hasNoConnections(startingConnect.id) || !startingConnect.closest(".connection").classList.contains("left")) { // if it has no connection || has a connector thats not left
-      var targetX = (e.pageX - document.getElementById("drawer").offsetWidth) / mapZoom - getNumber(document.getElementById("main#" + active_tab).style.left);
-      var targetY = (e.pageY - document.getElementById("top").offsetHeight) / mapZoom - getNumber(document.getElementById("main#" + active_tab).style.top);
+      var targetX = (e.pageX - document.getElementById("drawer").offsetWidth) / mapZoom - getNumber(activeMain().style.left);
+      var targetY = (e.pageY - document.getElementById("top").offsetHeight - document.getElementById('tabber').offsetHeight) / mapZoom - getNumber(activeMain().style.top);
       var posFrom = getLinePos(startingConnect);
 
       // TODO: move like a robe....
       if (first) {
         first = false;
-        originalSVG = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').innerHTML;
+        originalSVG = activeMain().querySelector('.SVGdiv').innerHTML;
         svg.innerHTML = originalSVG + '<svg class="lineSVG"><path id="connecting" style="opacity:0.5;" d="' + getSVGPositions(posFrom.x, posFrom.y, targetX, targetY) + '" class="line" /></svg>';
         addLineBorders();
         updateSignal(startingConnect.id);
@@ -289,11 +289,11 @@ function dragElement(elmnt, drawer) {
               // save to localStorage
               var startElem = startingConnect.closest('.component');
               var endElem = target.closest('.component');
-              var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
-              for (var i = 0; i < Object.keys(saves[tabName]).length; i++) {
-                var name = Object.keys(saves[tabName])[i];
-                if (startElem == saves[tabName][name].component) startElem = name;
-                if (endElem == saves[tabName][name].component) endElem = name;
+              var tabObj = tabObject();
+              for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
+                var name = Object.keys(tabObj.components)[i];
+                if (startElem == tabObj.components[name].component) startElem = name;
+                if (endElem == tabObj.components[name].component) endElem = name;
               }
               // get right/bottom
               var object = checkSaved(startElem);
@@ -378,7 +378,7 @@ function sliderChange() {
   var percent = document.getElementById('zoomSlider').value;
 
   // zoom main
-  var elem = document.getElementById('main#' + active_tab);
+  var elem = activeMain();
 
   var zoomFactor = minZoom / 100;
 
@@ -392,7 +392,7 @@ function sliderChange() {
 
   // update
   checkMainPos();
-  updateMap(document.getElementById('main#' + active_tab), document.querySelector('.map_overlay'), false); // update minimap
+  updateMap(activeMain(), document.querySelector('.map_overlay'), false); // update minimap
 
   if (percent.length <= 2) percent = '&nbsp;&nbsp;' + percent;
   document.getElementById('zoomValue').innerHTML = percent + '%';
@@ -406,7 +406,7 @@ document.addEventListener('mousemove', function(e) {
     dragger.style.left = e.clientX + 'px';
     var drawer = document.getElementById('drawer');
     drawer.style.width = e.clientX + 'px';
-    document.getElementById('main#' + active_tab).style.marginLeft = e.clientX + 'px';
+    activeMain().style.marginLeft = e.clientX + 'px';
     document.querySelector('.map_overlay').style.left = e.clientX + 5 + 'px';
     document.getElementById('tabber').style.left = e.clientX + 5 + 'px';
     document.getElementById('tabber').style.width = 'calc(100vw - ' + (e.clientX + 5) + 'px)';
@@ -431,7 +431,7 @@ dragger.addEventListener('click', function() {
     dragger.style.left = pos + 'px';
     drawer.style.width = pos + 'px';
     updateGrid(2);
-    document.getElementById('main#' + active_tab).style.marginLeft = pos + 'px';
+    activeMain().style.marginLeft = pos + 'px';
     document.querySelector('.map_overlay').style.left = pos + 5 + 'px';
     document.getElementById('tabber').style.left = pos + 5 + 'px';
     document.getElementById('tabber').style.width = 'calc(100vw - ' + (pos + 5) + 'px)';
@@ -442,7 +442,7 @@ dragger.addEventListener('click', function() {
 // add line listeners
 function addLineListeners() {
   setTimeout(function () {
-    var query = document.getElementById("main#" + active_tab).querySelectorAll(".line");
+    var query = activeMain().querySelectorAll(".line");
     for (var i = 0; i < query.length; i++) query[i].addEventListener('click', select);
   }, 50);
 }
@@ -487,7 +487,7 @@ document.addEventListener("keydown", function(e) {
 });
 
 // remove selection on main click
-document.getElementById("main#" + active_tab).addEventListener('click', mainClick);
+activeMain().addEventListener('click', mainClick);
 function mainClick(e) {
   if (e.target.id.includes("main#") || e.target.classList.contains("lineSVG")) if (!e.ctrlKey && !mainMoved) removeSelection();
 }
@@ -514,8 +514,9 @@ document.addEventListener('mousemove', function(e) {
 // add / update / remove blue selection box
 // TODO: mapZoom
 var created = false, boxLeft = 0, boxTop = 0, mouseDown = false;
+var tabLeft = 0;
 document.addEventListener('mousemove', function(e) {
-  var selectionBox = document.getElementById('main#' + active_tab).querySelector('.selectionBox');
+  var selectionBox = activeMain().querySelector('.selectionBox');
   if (mouseDown && e.ctrlKey) {
     if (!created) {
       selectionBox.style.opacity = "1";
@@ -538,8 +539,8 @@ document.addEventListener('mousemove', function(e) {
       height = boxTop - e.pageY;
     }
 
-    left -= getNumber(document.getElementById("main#" + active_tab).style.left);
-    top -= getNumber(document.getElementById("main#" + active_tab).style.top);
+    left -= getNumber(activeMain().style.left);
+    top -= getNumber(activeMain().style.top);
     setStyle(selectionBox, left, top, width, height);
 
     elementsIsideBox(left, top, width, height, e.shiftKey);
@@ -551,14 +552,241 @@ document.addEventListener('mousemove', function(e) {
       selectionBox.removeAttribute("style");
     }, 152);
     created = false;
+  } else if (tabDown) { // dragTabMouseDown
+    var scroller = document.querySelector('.scroller');
+    // var left = e.pageX - tabLeft;
+    // console.log(left);
+    // console.log(tabElem);
+    // console.log(tabStart);
+    // tabElem.style.position = 'absolute';
+    // TODO: snap in place && switch places
+    var tabs = [];
+    var query = document.querySelectorAll('.tab');
+    var thisPos = 0;
+    var count = 0;
+    var placeholderPos = 0;
+    for (var i = 0; i < query.length; i++) {
+      var object = {};
+      if (!query[i].classList.contains('placeholder')) {
+        object.elem = query[i];
+        // object.initialLeft = query[i].style.left || 0;
+        // object.id = query[i].id;
+        object.width = query[i].offsetWidth;
+        if (query[i] === tabElem) {
+          if (i == 0) thisPos = i;
+          else thisPos = i - 1;
+        }
+        object.left = count;
+        count += (object.width + 4);
+        tabs.push(object);
+      } else {
+        // if (i == 0) thisPos = i;
+        // else thisPos = i - 1;
+        // thisPos = i - 1;
+        placeholderPos = i;
+      }
+    }
+
+    var clone = scroller.querySelector('.placeholder');
+    if (clone == null) {
+      clone = tabElem.cloneNode(true);
+      console.log('INSERT');
+      console.log(clone);
+      console.log(scroller.querySelectorAll('.tab')[thisPos + 1]);
+      if (scroller.querySelectorAll('.tab')[thisPos + 1] == undefined) scroller.insertBefore(clone, scroller.querySelectorAll('.tab')[thisPos]);
+      else scroller.insertBefore(clone, scroller.querySelectorAll('.tab')[thisPos + 1]);
+      clone.classList.add('placeholder');
+      clone.removeAttribute('id');
+      clone.style.visibility = 'hidden';
+    }
+    // console.log(clone);
+
+    tabElem.style.transition = 'left 0s'; // TODO: transition
+    tabElem.style.position = 'absolute';
+    tabElem.classList.add('helper');
+
+    // console.log(tabs);
+    // console.log(tabs[thisPos].left);
+    // var newPos = (e.pageX - getDrawerWidth() - 5) - (tabStart - getDrawerWidth() - 5);
+    var newPos = tabs[thisPos].left + (e.pageX - getDrawerWidth() - 5) - (tabStart - getDrawerWidth() - 5);
+    var changedNewPos = newPos;
+    // var scrollerWidth = document.querySelector('.scroller').offsetWidth - tabElem.offsetWidth - 4; // - self - margin
+    // if (newPos < 0 - tabs[thisPos].left) changedNewPos = 0 - tabs[thisPos].left;
+    // else if (newPos > scrollerWidth - tabs[thisPos].left) changedNewPos = scrollerWidth - tabs[thisPos].left;
+    var scrollerWidth = document.querySelector('.scroller').offsetWidth - scroller.querySelector('.placeholder').offsetWidth - 4; // - self - margin
+    if (newPos < 0) changedNewPos = 0;
+    else if (newPos > scrollerWidth) changedNewPos = scrollerWidth;
+
+    var snapping = 20;
+    // if (newPos >= tabs[thisPos].left + -20 && newPos <= tabs[thisPos].left + 20) changedNewPos = tabs[thisPos].left;
+
+    if (placeholderPos > 0) {
+      if (newPos >= tabs[placeholderPos - 1].left - snapping && newPos <= tabs[placeholderPos - 1].left + snapping) {
+        moveChildren(placeholderPos, placeholderPos - 1);
+      }
+    } else if (thisPos > 0) {
+      if (newPos >= tabs[thisPos - 1].left - snapping && newPos <= tabs[thisPos - 1].left + snapping) {
+        // changedNewPos = tabs[thisPos - 1].left - tabs[thisPos].left;
+        // tabs[thisPos - 1].elem.style.left = tabs[thisPos].width + 2 + 'px';
+
+        // tabs = moveArray(tabs, thisPos, thisPos - 1);
+        moveChildren(thisPos, thisPos - 1);
+      // } else {
+      //   // tabs[thisPos - 1].elem.style.left = tabs[thisPos - 1].initialLeft + 'px';
+      //   tabs[thisPos - 1].elem.style.left = '0px';
+      }
+    }
+    if (placeholderPos + 1 < tabs.length) {
+      if (newPos >= tabs[placeholderPos + 1].left - snapping && newPos <= tabs[placeholderPos + 1].left + snapping) {
+        moveChildren(placeholderPos, placeholderPos + 1);
+      }
+    } else if (thisPos + 1 < tabs.length) {
+      // console.log(newPos);
+      // console.log(tabs[thisPos + 1].left);
+      if (newPos >= tabs[thisPos + 1].left - snapping && newPos <= tabs[thisPos + 1].left + snapping) {
+        // changedNewPos = tabs[thisPos + 1].width + 4;
+        // tabs[thisPos + 1].elem.style.left = 0 - tabs[thisPos].width - 2 + 'px'; // WIP <<<--- make snapping to right work, reoder array/children...
+
+        // tabs = moveArray(tabs, thisPos, thisPos + 1);
+        moveChildren(thisPos, thisPos + 1);
+      // } else {
+      //   tabs[thisPos + 1].elem.style.left = '0px';
+      }
+    }
+    tabElem.style.left = changedNewPos + 'px';
+    tabElem.style.zIndex = '99999';
+
+    function moveChildren(oldPos, newPos) {
+      var tabElems = document.querySelectorAll('.tab');
+      console.log('CHILDREN: (' + oldPos + ' => ' + newPos + ')');
+      console.log(tabElems);
+      var newChildren = [], childValue = scroller.querySelector('.placeholder'); // childValue = tabElems[oldPos];
+      for (var i = 0; i < tabElems.length; i++) {
+        console.log(tabElems[i]);
+        // if (tabElems[i + 1] !== tabElem) {
+        var elem = tabElems[i];
+        if (i < tabElems.length) { // i + 1 / i - 1
+          if (newPos < oldPos) {
+            // if (i == newPos) elem = childValue;
+            // // else if (i - 1 == newPos && i + 2 == tabElems.length) elem = tabElems[i];
+            // else if (i - 1 == newPos) elem = tabElems[i - 1];
+            // else if (i > newPos) elem = tabElems[i + 1];
+
+            if (i == newPos) elem = childValue;
+            // else if (i - 1 == newPos && i + 2 == tabElems.length) elem = tabElems[i];
+            else if (i - 1 == newPos) elem = tabElems[i];
+            else if (i > newPos) elem = tabElems[i];
+          } else {
+            // if (i == newPos) elem = childValue;
+            // else if (i == oldPos) elem = tabElems[i + 1]; // i + 2
+            // else if (i - 2 == oldPos) elem = tabElems[i + 1];
+            // else if (i > oldPos) elem = tabElems[i + 1];
+
+            if (i == newPos) elem = childValue;
+            else if (i == oldPos) elem = tabElems[i + 1]; // i + 2
+            else if (i - 2 == oldPos) elem = tabElems[i];
+            else if (i > oldPos) elem = tabElems[i];
+          }
+          if (!elem.classList.contains('helper')) newChildren.push(elem);
+        }
+        // }
+        // console.log(i);
+        // console.log(tabElems[i].id);
+        // document.querySelectorAll('.tab')[i].innerHTML = newChildren[i].innerHTML;
+        // document.querySelectorAll('.tab')[i].id = newChildren[i].id; // + class + style left
+      }
+      console.log(newChildren);
+      var ph = false; // placeholder
+      console.log('ORDER:');
+      // TODO: reorder tabs (WIP)
+      // TODO: reorder tabs (WIP)
+      // TODO: reorder tabs (WIP) + save reordered tabs
+      for (var i = 0; i < newChildren.length; i++) {
+        console.log(newChildren[i]);
+        var pos = i;
+        // if (newChildren[pos].classList.contains('helper')) tabStart = tabs[i + 1].left;
+        if (newChildren[pos].classList.contains('helper') || ph) {
+          pos++;
+          ph = true;
+        }
+        console.log('POS: ' + pos);
+        if (i + 1 >= newChildren.length) scroller.appendChild(newChildren[i]);
+        else scroller.insertBefore(newChildren[i], document.querySelectorAll('.tab')[pos]);
+        // document.querySelectorAll('.tab')[i].innerHTML = newChildren[i].innerHTML;
+        // document.querySelectorAll('.tab')[i].id = newChildren[i].id; // + class + style left
+      }
+      // tabStart = tabs[thisPos].left + e.pageX;
+      tabStart = newPos + scroller.offsetWidth; // - 4;
+    }
+
+    // function moveArray(array, oldPos, newPos) {
+    //   var newArray = [], value = array[oldPos];
+    //   for (var i = 0; i < array.length; i++) {
+    //     if (newPos < oldPos) {
+    //       if (i == newPos) newArray.push(value);
+    //       else if (i == newPos + 1) newArray.push(array[i - 1]);
+    //       else newArray.push(array[i]);
+    //     } else {
+    //       if (i == newPos) newArray.push(value);
+    //       else if (i - 1 == oldPos || i == oldPos) newArray.push(array[i + 1]);
+    //       else newArray.push(array[i]);
+    //     }
+    //   }
+    //
+    //   var tabElems = document.querySelectorAll('.tab');
+    //   var newChildren = [], childValue = tabElems[oldPos];
+    //   for (var i = 0; i < tabElems.length; i++) {
+    //     if (newPos < oldPos) {
+    //       if (i == newPos) newChildren.push(childValue);
+    //       else if (i == newPos + 1) newChildren.push(tabElems[i - 1]);
+    //       else newChildren.push(tabElems[i]);
+    //     } else {
+    //       if (i == newPos) newChildren.push(childValue);
+    //       else if (i - 1 == oldPos || i == oldPos) newChildren.push(tabElems[i + 1]);
+    //       else newChildren.push(tabElems[i]);
+    //     }
+    //     // console.log(i);
+    //     // console.log(tabElems[i].id);
+    //     // document.querySelectorAll('.tab')[i].innerHTML = newChildren[i].innerHTML;
+    //     // document.querySelectorAll('.tab')[i].id = newChildren[i].id; // + class + style left
+    //   }
+    //   console.log(newChildren);
+    //   for (var i = 0; i < newChildren.length; i++) {
+    //     document.querySelectorAll('.tab')[i].innerHTML = newChildren[i].innerHTML;
+    //     document.querySelectorAll('.tab')[i].id = newChildren[i].id; // + class + style left
+    //   }
+    //   // console.log(tabElems);
+    //   // console.log(newChildren);
+    //   // var newHTML = '';
+    //   // document.querySelector('.scroller').innerHTML = '';
+    //   // for (var i = 0; i < newChildren.length; i++) {
+    //   //   console.log(newChildren[i]);
+    //   //   // document.querySelector('.scroller').innerHTML.appendChild(newChildren[i]);
+    //   //   document.querySelector('.scroller').innerHTML += newChildren[i].toString();
+    //   //   // newHTML += newChildren[i];
+    //   // }
+    //
+    //   return newArray;
+    // }
   }
 });
-document.getElementById("main#" + active_tab).addEventListener("mousedown", function() { mouseDown = true; });
+activeMain().addEventListener("mousedown", function() { mouseDown = true; });
 
 // mouseup
 document.addEventListener("mouseup", function() {
   mouseDown = false;
   draggerDown = false;
+  if (tabDown && document.querySelector('.scroller').querySelector('.helper') !== null) {
+    // tabElem.style.transition = '';
+    // tabElem.style.zIndex = '';
+    // tabElem.style.position = '';
+    tabElem.removeAttribute('style');
+    tabElem.classList.remove('helper');
+    var scroller = document.querySelector('.scroller');
+    scroller.insertBefore(tabElem, scroller.querySelector('.placeholder'));
+    scroller.querySelector('.placeholder').remove();
+  }
+  tabDown = false;
   setTimeout(function () { draggerMoved = false; }, 10);
 });
 
@@ -1129,7 +1357,7 @@ function getSignalMap(elem) {
 function sendSignal(elem, powered, output) { // TODO: , side
   elem = elem.closest(".component");
   var id = elem.querySelectorAll(".connector")[output || 0].id;
-  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  var query = activeMain().querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id || lc.to == id) {
@@ -1234,8 +1462,8 @@ function createSVG(connStart, connEnd) {
   if (noMatchingLines(id)) { // no lines with the exact same id (same connections)
     var posTo = getLinePos(document.getElementById(connEnd));
     var posFrom = getLinePos(document.getElementById(connStart));
-    var svg = document.getElementById("main#" + active_tab).querySelector('.SVGdiv');
-    var originalSVG = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').innerHTML;
+    var svg = activeMain().querySelector('.SVGdiv');
+    var originalSVG = activeMain().querySelector('.SVGdiv').innerHTML;
     svg.innerHTML = originalSVG + '<svg class="lineSVG"><path id="' + id + '" d="' + getSVGPositions(posFrom.x, posFrom.y, posTo.x, posTo.y) + '" class="line" /></svg>';
     addLineBorders();
     updateSignal(id);
@@ -1252,7 +1480,7 @@ function moveSVG(parent) {
     var pos = getLinePos(lines[j]);
     var matching = checkForLine(parent.querySelectorAll(".connector")[j].id);
     for (var i = 0; i < matching.length; i++) {
-      var line = document.getElementById("main#" + active_tab).getElementsByClassName("line")[matching[i].replace(/\D+/g, '')];
+      var line = activeMain().getElementsByClassName("line")[matching[i].replace(/\D+/g, '')];
       var svgPos = getSVGCoords(line);
       if (matching[i].includes("from")) line.setAttribute("d", getSVGPositions(pos.x, pos.y, svgPos.x2, svgPos.y2));
       else if (matching[i].includes("to")) line.setAttribute("d", getSVGPositions(svgPos.x1, svgPos.y1, pos.x, pos.y));
@@ -1440,7 +1668,7 @@ function addConnectors(component, type, amount) {
 
 // check if connector has power
 function hasSignal(id) {
-  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  var query = activeMain().querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id || lc.to == id)
@@ -1478,7 +1706,7 @@ function elementsIsideBox(left, top, width, height, shift) {
     else if (!shift) removeSelectionIcons(query[i]);
   }
 
-  var lines = document.getElementById("main#" + active_tab).querySelectorAll(".lineSVG");
+  var lines = activeMain().querySelectorAll(".lineSVG");
   for (var j = 0; j < lines.length; j++) {
     // TODO: Improve selection: only select when on lines, not entire box
     var svgPos = getSVGCoords(lines[j].lastChild);
@@ -1590,7 +1818,7 @@ function removeComponent(elem) {
     removeStoredConnections(store(document.getElementById(getLineConnectors(elem.lastChild).to).closest('.component')).key);
   } else {
     // var id = elem.querySelector(".connector").id;
-    var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".lineSVG");
+    var query = activeMain().querySelector('.SVGdiv').querySelectorAll(".lineSVG");
     for (var i = 0; i < query.length; i++) {
       var lc = getLineConnectors(query[i].lastChild);
       var ids = getSignalMap(elem).global.ids;
@@ -1617,7 +1845,7 @@ function removeSelection() {
 // check if any lines is connected to the connector id
 function hasNoConnections(id) {
   var hasNoConnections = true;
-  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  var query = activeMain().querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id || lc.to == id) {
@@ -1630,7 +1858,7 @@ function hasNoConnections(id) {
 // get all lines connected to connector
 function checkForLine(id) {
   var out = [];
-  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  var query = activeMain().querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id) out.push("from" + i);
@@ -1640,7 +1868,7 @@ function checkForLine(id) {
 }
 // remove all lines connected to a connector
 function removeConnected(id) {
-  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  var query = activeMain().querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id || lc.to == id) query[i].closest('.lineSVG').remove();
@@ -1648,7 +1876,7 @@ function removeConnected(id) {
 }
 // check if connectors has no connections
 function checkForNoConnections() {
-  var query = document.getElementById("main#" + active_tab).querySelectorAll(".connector");
+  var query = activeMain().querySelectorAll(".connector");
   for (var i = 0; i < query.length; i++) {
     if (query[i].closest(".connection").classList.contains("left") && hasNoConnections(query[i].id)) query[i].classList.add("notConnected");
     else if (query[i].classList.contains("notConnected")) query[i].classList.remove("notConnected");
@@ -1656,7 +1884,7 @@ function checkForNoConnections() {
 }
 // add black borders around svg line connections
 function addLineBorders() {
-  var query = document.getElementById("main#" + active_tab).querySelectorAll(".lineSVG");
+  var query = activeMain().querySelectorAll(".lineSVG");
   for (var i = 0; i < query.length; i++) {
     var path = query[i].lastChild.getAttribute("d");
     var style = query[i].lastChild.getAttribute("style");
@@ -1710,7 +1938,7 @@ function getLineConnectors(line) {
 // check if no lines have the same id (to prevent multiple connections to the same components)
 function noMatchingLines(id) {
   var noMatching = true;
-  var query = document.getElementById("main#" + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  var query = activeMain().querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     if (query[i].id == id) {
       noMatching = false;
@@ -1722,6 +1950,8 @@ function noMatchingLines(id) {
 
 ///// TABS /////
 document.getElementById('tabber').querySelector('.tab').addEventListener('click', openTab);
+document.getElementById('tabber').querySelector('.tab').addEventListener('mousedown', dragTab);
+document.getElementById('tabber').querySelector('.tab').querySelector('#close').addEventListener('click', closeTab);
 // create new page and tab
 var tabsId = 1;
 function addTab(name, active) {
@@ -1735,6 +1965,7 @@ function addTab(name, active) {
   newTab.innerHTML = '<span class="unsaved">' + name + '</span><div id="close"><i class="material-icons tabber" title="Close">close</i></div>';
   document.getElementById('tabber').querySelector('div').appendChild(newTab);
   newTab.addEventListener('click', openTab);
+  newTab.addEventListener('mousedown', dragTab);
   newTab.querySelector('#close').addEventListener('click', closeTab);
 
   var newMain = document.createElement('div');
@@ -1766,7 +1997,7 @@ function addTab(name, active) {
 function openTab(e) {
   if (!e.target.classList.contains('material-icons')) {
     active_tab = this.id.slice(4, this.id.length);
-    var newMain = document.getElementById('main#' + active_tab);
+    var newMain = activeMain();
     var main = document.querySelectorAll('.main');
     for (var i = 0; i < main.length; i++) {
       if (main[i].id == 'main#' + active_tab) main[i].classList.remove('hidden');
@@ -1780,15 +2011,15 @@ function openTab(e) {
 
     document.getElementById('zoomSlider').value = newMain.style.zoom * 100;
     sliderChange();
-    updateMap(document.getElementById('main#' + active_tab), document.querySelector('.map_overlay'), true);
+    updateMap(activeMain(), document.querySelector('.map_overlay'), true);
   }
 }
 function home() {
-  document.getElementById('main#' + active_tab).style.left = '-' + (document.getElementById('main#' + active_tab).offsetWidth / 2 - window.innerWidth / 2) + 'px';
-  document.getElementById('main#' + active_tab).style.top = '-' + (document.getElementById('main#' + active_tab).offsetHeight / 2 - window.innerHeight / 2) + 'px';
+  activeMain().style.left = '-' + (activeMain().offsetWidth / 2 - window.innerWidth / 2) + 'px';
+  activeMain().style.top = '-' + (activeMain().offsetHeight / 2 - window.innerHeight / 2) + 'px';
   document.getElementById('zoomSlider').value = 100;
   sliderChange();
-  updateMap(document.getElementById('main#' + active_tab), document.querySelector('.map_overlay'), true);
+  updateMap(activeMain(), document.querySelector('.map_overlay'), true);
 }
 
 // remove page and tab
@@ -1796,7 +2027,8 @@ function closeTab(e, elem) {
   if (elem == undefined) elem = this.closest('.tab');
   console.log(elem);
   // TODO: remove clock intervals... ++
-  if (confirm('Are you sure you want to delete this tab and remove all of its content?')) {
+  if (document.querySelectorAll('.tab').length < 2) alert("Can't delete. There needs to be one tab left.");
+  else if (confirm('Are you sure you want to delete this tab and remove all of its content?')) {
     var tabId = elem.id.slice(4, elem.id.length);
     document.getElementById('main#' + tabId).remove();
     if (elem.classList.contains('active')) {
@@ -1818,7 +2050,30 @@ function closeTab(e, elem) {
   }
 }
 
-// history
+// get the active tab object
+// TODO: creating new tabs store name
+function tabObject(id) {
+  if (id == undefined) id = active_tab;
+  else if (id.includes('tab#')) id = id.slice(4, id.length);
+  if (saves.tabs[id] == undefined) saves.tabs[id] = {};
+  return saves.tabs[id];
+}
+// get the main of the active tab
+function activeMain() {
+  return document.getElementById('main#' + active_tab);
+}
+
+// TAB DRAG
+var tabElem = '', tabDown = false, tabStart = 0;
+function dragTab(e) {
+  tabDown = true;
+  tabElem = this.closest('.tab');
+  tabStart = e.clientX - getNumber(tabElem.style.left) || 0;
+  // tabStart = tabElem.offsetLeft;
+}
+
+
+///// history.. /////
 function historyAdd(type, values) {
   document.getElementById('tab#' + active_tab).querySelector('span').classList.add('unsaved');
   console.log(historyLog);
@@ -1844,14 +2099,14 @@ function historyAdd(type, values) {
 // store a value inside its own object
 function store(elem, id, value) {
   var object = {}, name = '';
-  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
-  for (var i = 0; i < Object.keys(saves[tabName].components).length; i++) {
-    console.log(saves[tabName].components.component);
-    name = Object.keys(saves[tabName].components)[i];
-    if (saves[tabName].components[name].component === elem) {
-      if (id == 'delete') delete saves[tabName].components[name];
-      else if (id !== undefined) saves[tabName].components[name][id] = value;
-      object = saves[tabName].components[name];
+  var tabObj = tabObject();
+  for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
+    console.log(tabObj.components.component);
+    name = Object.keys(tabObj.components)[i];
+    if (tabObj.components[name].component === elem) {
+      if (id == 'delete') delete tabObj.components[name];
+      else if (id !== undefined) tabObj.components[name][id] = value;
+      object = tabObj.components[name];
       break;
     }
   }
@@ -1860,8 +2115,7 @@ function store(elem, id, value) {
 
 // remove all connections connected to an element
 function removeStoredConnections(key) {
-  var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
-  var compObj = saves[tabName].components;
+  var compObj = tabObject().components;
   var compKeys = Object.keys(compObj);
   console.log('KEY');
   console.log(key);
@@ -1886,13 +2140,13 @@ function removeStoredConnections(key) {
 // select / deselect all, or return amount selected
 function selector(action) {
   var selected = 0;
-  var components = document.getElementById('main#' + active_tab).querySelectorAll('.component');
+  var components = activeMain().querySelectorAll('.component');
   for (var i = 0; i < components.length; i++) {
     if (action == 'select') components[i].classList.add('selected');
     if (action == 'deselect') components[i].classList.remove('selected');
     if (components[i].classList.contains('selected')) selected++;
   }
-  var lines = document.getElementById('main#' + active_tab).querySelectorAll('.lineSVG');
+  var lines = activeMain().querySelectorAll('.lineSVG');
   for (var j = 0; j < lines.length; j++) {
     if (action == 'select') lines[j].classList.add('selected');
     if (action == 'deselect') lines[j].classList.remove('selected');

@@ -22,6 +22,7 @@ var context = {
   ],
   tab: [
     // {activated: '.tab'}
+    {text: 'Rename'},
     {text: 'Delete'},
     {text: 'Export'},
     {text: 'Create integrated circuit'},
@@ -77,6 +78,7 @@ window.addEventListener("contextmenu", function(e) {
     e.preventDefault();
     var origin = {left: e.pageX, top: e.pageY};
 
+    contextElem = e.target;
     if (getComponent(e.target) === true) { // target is a component
       setMenu('component');
       contextElem = e.target.closest(".component");
@@ -140,15 +142,24 @@ function getComponent(target) {
 
 function menuClick(e) {
   var type = e.target;
-  if (contextElem !== undefined) type = contextElem.firstChild.classList[0];
+  // TODO: fix box (have component class inside drawer too, but check for closest drawer)...
+  if (contextElem.classList.contains('component') || contextElem.classList.contains('box')) type = contextElem.firstChild.classList[0];
   var object = getObjectByType(type);
 
   if (!e.target.hasAttribute('disabled')) {
 
     switch (e.target.innerText) {
+      case "Rename":
+        var newName = prompt('Insert a new name', contextElem.closest('.tab').querySelector('span').innerText);
+        if (newName !== '' && newName !== null) {
+          var span = contextElem.closest('.tab').querySelector('span');
+          span.innerText = newName;
+          tabObject(contextElem.closest('.tab').id).name = newName;
+        }
+        break;
       case "Delete":
-        // contextElem.remove();
-        removeComponent(contextElem);
+        if (contextElem.closest('.tab') !== null) closeTab(e, contextElem.closest('.tab'));
+        else removeComponent(contextElem);
         break;
       case "Add Label":
         var val = "";

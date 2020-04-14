@@ -158,7 +158,7 @@ function btnClick() {
 
       case 'bug_report':
         // outdated
-        var query = document.getElementById('main#' + active_tab).querySelectorAll('.component');
+        var query = activeMain().querySelectorAll('.component');
         var output = '';
         var counter = {};
         var lineHelper = {};
@@ -175,7 +175,7 @@ function btnClick() {
           if (component.querySelector('.label') !== null) label = ", '" + component.querySelector('.label').innerHTML + "'";
           output += 'var ' + varName + counter[type] + " = appendElem('" + type + "', {x: " + getNumber(component.style.left) + ", y: " + getNumber(component.style.top) + "}" + label + ");\n";
         }
-        var lines = document.getElementById('main#' + active_tab).querySelectorAll('.lineSVG');
+        var lines = activeMain().querySelectorAll('.lineSVG');
         for (var j = 0; j < lines.length; j++) {
           var line = lines[j].children[1];
           var lineId = getLineConnectors(line);
@@ -346,14 +346,14 @@ function updateSettings() {
   document.documentElement.style.setProperty('--line-powered', setting_lineColor_powered);
 
   // BACKGROUND STYLE
-  if (setting_background == "dotted") document.getElementById("main#" + active_tab).style.backgroundImage = "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)";
-  else if (setting_background == "lines") document.getElementById("main#" + active_tab).style.backgroundImage = "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)";
-  else if (setting_background == "blank") document.getElementById("main#" + active_tab).style.backgroundImage = "none";
+  if (setting_background == "dotted") activeMain().style.backgroundImage = "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)";
+  else if (setting_background == "lines") activeMain().style.backgroundImage = "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)";
+  else if (setting_background == "blank") activeMain().style.backgroundImage = "none";
 
   // LINE TYPE
   if (localStorage.lineType !== setting_lineType) {
     localStorage.lineType = setting_lineType;
-    moveSVG(document.getElementById('main#' + active_tab));
+    moveSVG(activeMain());
   }
 }
 
@@ -433,8 +433,25 @@ function changeSelect(id, new_id) {
 //   }
 // };
 
+// var saves = {
+//   activeTab: 'main',
+//   tabs: [
+//     {
+//       name: 'main',
+//       description: '', // <<-- ??????
+//       zoom: 1,
+//       top: 0,
+//       left: 0,
+//       components: {
+//         0: {type: 'toggle', x: 5100, y: 5200, label: 'ayy', connections: {1: {}}},
+//         1: {type: 'light', x: 5400, y: 5200}
+//       }
+//     }
+//   ]
+// };
+
 var saves = {};
-if (localStorage.saves !== "undefined") {
+if (localStorage.saves !== "undefined" && localStorage.saves !== undefined) {
   saves = JSON.parse(localStorage.saves);
   // active_tab = saves.activeTab;
 }
@@ -442,29 +459,33 @@ if (localStorage.saves !== "undefined") {
 // TODO: delete elems from saves
 var createdElems = {};
 if (Object.keys(saves).length > 0) {
-  for (var i = 0; i < Object.keys(saves).length; i++) {
-    // TODO: create tab if not main
-    var tab = Object.keys(saves)[i];
-    // var currentTab = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
-    // if (tab == currentTab) {
-    if (tab !== 'activeTab') {
-      var newTab = 'tab#0';
-      if (tab !== 'main') newTab = addTab(tab, false).id;
-      loadObj(tab, newTab.slice(4, newTab.length));
-      document.getElementById(newTab).querySelector('span').classList.remove('unsaved');
-    }
+  // for (var i = 0; i < Object.keys(saves).length; i++) {
+  //   // TODO: create tab if not main
+  //   var tab = Object.keys(saves)[i];
+  //   // var currentTab = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
+  //   // if (tab == currentTab) {
+  //   if (tab == 'tabs') {
+  //   }
+  // }
+  for (var j = 0; j < saves.tabs.length; j++) {
+    var newTab = 'tab#0';
+    if (j !== 0) newTab = addTab(saves.tabs[j].name, false).id;
+    else document.getElementById(newTab).querySelector('span').innerText = saves.tabs[j].name;
+    loadObj(saves.tabs[j], newTab.slice(4, newTab.length));
+    document.getElementById(newTab).querySelector('span').classList.remove('unsaved');
   }
   active_tab = saves.activeTab;
   document.getElementById('tab#' + active_tab).click();
 }
-function loadObj(tab, tabId) {
+
+function loadObj(object, tabId) {
   if (tabId == undefined) tabId = active_tab;
-  for (var i = 0; i < Object.keys(saves[tab]).length; i++) {
-    var elem = Object.keys(saves[tab])[i];
-    var val = saves[tab][elem];
+  for (var i = 0; i < Object.keys(object).length; i++) {
+    var elem = Object.keys(object)[i];
+    var val = object[elem];
     console.log(elem);
     var currentMain = document.getElementById('main#' + tabId);
-    console.log(saves[tab].top);
+    console.log(object.top);
     if (elem == 'zoom') currentMain.style[elem] = val;
     else if (elem == 'top' || elem == 'left') currentMain.style[elem] = val + 'px';
     else if (elem == 'components') {
@@ -499,7 +520,7 @@ function loadObj(tab, tabId) {
         }
       }
       // power powered
-      var powered = document.querySelectorAll('.powered');
+      var powered = activeMain().querySelectorAll('.powered');
       for (var j = 0; j < powered.length; j++) {
         if (!powered[j].classList.contains('line')) powered[j].children[0].click();
         // powered[j].classList.remove('powered');
@@ -523,30 +544,29 @@ function loadObj(tab, tabId) {
 
 function checkSaved(component, tabId) {
   if (tabId == undefined) tabId = active_tab;
-  var tabName = document.getElementById('tab#' + tabId).querySelector('span').innerHTML;
   var main = document.getElementById('main#' + tabId);
-  if (saves[tabName] == undefined) saves[tabName] = {};
-  if (saves[tabName].components == undefined) saves[tabName].components = {};
+  var tabObj = tabObject(tabId);
+  if (tabObj.components == undefined) tabObj.components = {};
   // TODO: update this upon zoom and move
-  saves[tabName].zoom = main.style.zoom;
-  saves[tabName].left = getNumber(main.style.left);
-  saves[tabName].top = getNumber(main.style.top);
+  tabObj.zoom = main.style.zoom;
+  tabObj.left = getNumber(main.style.left);
+  tabObj.top = getNumber(main.style.top);
 
   if (component !== null) {
     var pos = 0;
-    for (var i = 0; i < Object.keys(saves[tabName].components).length; i++) {
-      var name = Object.keys(saves[tabName].components)[i];
+    for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
+      var name = Object.keys(tabObj.components)[i];
       if (component !== undefined) {
-        if (saves[tabName].components[name].component !== undefined) {
-          if (saves[tabName].components[name].component === component) {
+        if (tabObj.components[name].component !== undefined) {
+          if (tabObj.components[name].component === component) {
             break;
           }
         }
       }
       pos++;
     }
-    if (saves[tabName].components[pos] == undefined) saves[tabName].components[pos] = {};
-    return {object: saves[tabName].components[pos], pos: pos};
+    if (tabObj.components[pos] == undefined) tabObj.components[pos] = {};
+    return {object: tabObj.components[pos], pos: pos};
   }
 }
 
@@ -566,15 +586,16 @@ function save(e, exportFile) {
 
   function saveTabByName(tabId) {
     document.getElementById('tab#' + tabId).querySelector('span').classList.remove('unsaved');
-    var tabName = document.getElementById('tab#' + tabId).querySelector('span').innerHTML;
     var main = document.getElementById('main#' + tabId);
     checkSaved(null, tabId);
-    saves[tabName].zoom = main.style.zoom;
-    saves[tabName].left = getNumber(main.style.left);
-    saves[tabName].top = getNumber(main.style.top);
+    var tabObj = tabObject(tabId);
+    tabObj.zoom = main.style.zoom;
+    tabObj.left = getNumber(main.style.left);
+    tabObj.top = getNumber(main.style.top);
+    tabObj.name = document.getElementById('tab#' + tabId).querySelector('span').innerText;
     // remove all component elems (only remove in export and not in "saves" var)
-    // for (var i = 0; i < Object.keys(saves[tabName].components).length; i++) {
-    //   var cObject = saves[tabName].components[Object.keys(saves[tabName].components)[i]];
+    // for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
+    //   var cObject = tabObj.components[Object.keys(tabObj.components)[i]];
     //   if (cObject.component !== undefined) delete cObject.component;
     // }
     saves.activeTab = active_tab;
@@ -585,8 +606,8 @@ function save(e, exportFile) {
 }
 function exportTab() {
   var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
-  saves[tabName].name = tabName;
-  exportToJsonFile(JSON.stringify(saves[tabName], null, 2));
+  tabObject().name = tabName;
+  exportToJsonFile(JSON.stringify(tabObject(), null, 2));
 }
 
 function importFile() {
@@ -610,12 +631,11 @@ function opened() {
     // create tab
     // TODO: check for already existing
     var tabName = document.getElementById('tab#' + active_tab).querySelector('span').innerHTML;
-    // saves[tabName] = {};
-    saves[obj.name] = obj;
+    saves.tabs.push(obj);
     addTab(obj.name);
     loadObj(obj.name);
     sliderChange();
-    updateMap(document.getElementById('main#' + active_tab), document.querySelector('.map_overlay'), true);
+    updateMap(activeMain(), document.querySelector('.map_overlay'), true);
   }
 
   // setTimeout(function () {

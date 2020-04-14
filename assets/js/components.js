@@ -91,7 +91,7 @@ var components = {
       name: '4-Bit Digit',
       classes: ['box'],
       innerClasses: ['constant', 'noselect'],
-      children: '<span>0</span>',
+      children: '<span style="font-family:\'digital-clock\';">0</span>',
       connectors: {left: {amount: 4}}
     },
     seven_segment: {
