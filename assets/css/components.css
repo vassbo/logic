@@ -214,6 +214,11 @@ svg {
   top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  /* position: absolute;
+  top: 105%;
+  transform: translateX(-50%); */
+
   width: fit-content;
   padding: 2px 8px;
   border-radius: 2px;

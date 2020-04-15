@@ -29,18 +29,18 @@ var context = {
   ],
   // TODO: show this anywhere(instead of default) when elems are selected
   component: [
-    {text: 'Add Label', id: 'contextLabel'},
+    {text: 'Add Label'}, // , id: 'contextLabel'
     {text: 'Delete'},
     {text: 'Cut'},
     {text: 'Copy'},
     {text: 'Duplicate'},
     // {text: 'Save As'},
-    {text: 'Documentation', id: 'doc_context', disabled: true},
-    {text: 'Inspect', id: 'inspect_context', disabled: true}
+    {text: 'Documentation', disabled: true},
+    {text: 'Inspect', disabled: true}
   ],
   componentDrawer: [
-    {text: 'Documentation', id: 'doc_context', disabled: true},
-    {text: 'Inspect', id: 'inspect_context', disabled: true}
+    {text: 'Documentation', disabled: true}, // , id: 'doc_context'
+    {text: 'Inspect', disabled: true} // , id: 'inspect_context'
   ]
 };
 
@@ -60,6 +60,24 @@ function setPosition(origin) {
   if (origin.left + menu.offsetWidth > window.innerWidth) origin.left -= menu.offsetWidth;
   menu.style.left = origin.left + "px";
   menu.style.top = origin.top + "px";
+}
+
+function enableMenu(text, condition) { // make more universal...?
+  var lists = menu.querySelectorAll('li');
+  for (var i = 0; i < lists.length; i++) {
+    if (lists[i].innerText == text) {
+      if (condition) lists[i].removeAttribute('disabled');
+      else lists[i].setAttribute('disabled', '');
+    }
+  }
+}
+function changeMenuText(originalText, newText, condition) {
+  var lists = menu.querySelectorAll('li');
+  for (var i = 0; i < lists.length; i++) {
+    if (lists[i].innerText == originalText) {
+      if (condition) lists[i].innerHTML = newText;
+    }
+  }
 }
 
 window.addEventListener("click", function(e) {
@@ -82,22 +100,21 @@ window.addEventListener("contextmenu", function(e) {
     if (getComponent(e.target) === true) { // target is a component
       setMenu('component');
       contextElem = e.target.closest(".component");
-      if (contextElem.getElementsByClassName("label").length > 0) document.getElementById("contextLabel").innerHTML = "Edit Label";
-      else document.getElementById("contextLabel").innerHTML = "Add Label";
+      // if (contextElem.getElementsByClassName("label").length > 0) document.getElementById("contextLabel").innerHTML = "Edit Label";
+      // else document.getElementById("contextLabel").innerHTML = "Add Label";
+      changeMenuText('Add Label', 'Edit Label', contextElem.getElementsByClassName("label").length > 0);
       var classList = contextElem.querySelector('div').classList;
-      if (classList.contains('inspect')) menu.querySelector('#inspect_context').removeAttribute('disabled');
-      else menu.querySelector('#inspect_context').setAttribute('disabled', '');
-      if (classList.contains('documentation')) menu.querySelector('#doc_context').removeAttribute('disabled');
-      else menu.querySelector('#doc_context').setAttribute('disabled', '');
+      // if (classList.contains('inspect')) menu.querySelector('#inspect_context').removeAttribute('disabled');
+      // else menu.querySelector('#inspect_context').setAttribute('disabled', '');
+      enableMenu('Inspect', classList.contains('inspect'));
+      enableMenu('Documentation', classList.contains('documentation'));
 
     } else if (getComponent(e.target) == 'drawer') { // target is a component inside the drawer
       setMenu('componentDrawer');
       contextElem = e.target.closest(".box");
       var classList = contextElem.querySelector('div').classList;
-      if (classList.contains('inspect')) menu.querySelector('#inspect_context').removeAttribute('disabled');
-      else menu.querySelector('#inspect_context').setAttribute('disabled', '');
-      if (classList.contains('documentation')) menu.querySelector('#doc_context').removeAttribute('disabled');
-      else menu.querySelector('#doc_context').setAttribute('disabled', '');
+      enableMenu('Inspect', classList.contains('inspect'));
+      enableMenu('Documentation', classList.contains('documentation'));
 
     } else if (e.target.closest('.main') !== null) setMenu('main'); // context inside main
     else if (e.target.closest('.tab') !== null) setMenu('tab'); // context on tabs
@@ -118,11 +135,13 @@ function setMenu(id) {
         if (context[key][j].disabled !== undefined) attr += ' disabled';
         var text = context[key][j].text;
 
-        if (text == 'Select all') if (selector('count')) text = 'Deselect all';
-
         html += '<li class="menu-option"' + attr + '>' + text + '</li>';
       }
       menu.querySelector('ul').innerHTML = html;
+
+      changeMenuText('Select all', 'Deselect all', selector('count'));
+      enableMenu('Select all', activeMain().querySelectorAll('.component').length <= 0);
+
       var options = document.getElementById('contextMenu').querySelectorAll("li");
       for (var o = 0; o < options.length; o++) options[o].addEventListener("click", menuClick);
       break;
@@ -698,16 +717,18 @@ function loadComponent(component) {
       if (key.includes('vert')) vert = object.spacing;
       else hor = object.spacing;
       for (var v = 0; v < object.repeat; v++) {
-        var label = undefined;
+        var label = undefined, input = undefined;
         if (object.label !== undefined) label = getCustomLabel(object.label, object.repeat)[v];
-        elems[v + start] = appendElem({type: object.type, x: object.x + hor * v, y: object.y + vert * v, label: label}); // get names: $i+
+        if (object.inputs !== undefined) input = object.inputs[v];
+        console.log('INPUT: ' + input);
+        elems[v + start] = appendElem({type: object.type, x: object.x + hor * v, y: object.y + vert * v, label: label, input: input}, undefined, undefined, true); // get labels: $i+
         if (object.connection !== undefined) conns[v + start] = object.connection[v];
-        if (object.inputs !== undefined) gate(elems[v + start].querySelector('.textInput'), object.inputs[v]);
+        // if (object.inputs !== undefined) gate(elems[v + start].querySelector('.textInput'), object.inputs[v]);
       }
     } else {
       elems[key] = appendElem(object);
       conns[key] = object.connection;
-      if (object.inputs !== undefined) gate(elems[key].querySelector('.textInput'), object.inputs);
+      // if (object.inputs !== undefined) gate(elems[key].querySelector('.textInput'), object.inputs);
     }
   }
   // add connections

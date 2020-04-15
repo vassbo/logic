@@ -7,17 +7,16 @@ var componentsTemplate = {
     children: '', // add elements inside object
     memory: {row: 16, column: 16}, // should there be created divs for memory TODO: JS memory
     connectors: { // add connactions
-      left: {amount: 4, name: ['one', null, 'three']},
-      bottom: {amount: 16, name: ['$i']},
+      left: {amount: 4, label: ['one', null, 'three']},
+      bottom: {amount: 16, label: ['$i']},
       top: {
-        name: 'Input #$i+',
-        required: true // show red / notConnected (default right... (but can be falsed?)) TODO:
+        label: 'Input #$i+',
+        required: true // show red / notConnected (default: left / (top)... (but can be falsed?)) TODO:
       }
     },
     inspect: { // inspect element
-      // {fromSide: 'right', side: 'left', 5: {}, 7: {pos: 1, side: 'top', name: 'test'}}
-      // TODO: LABEL vs NAME. Consictency!
-      connection: {side: 'left', fromSide: 'right', fromPos: 2, connections: [{id: 6}, {id: 6, pos: 2}, {}]}, connectors: {left: {amount: 4, name: ['one', null, 'three']}},
+      // {fromSide: 'right', side: 'left', 5: {}, 7: {pos: 1, side: 'top', label: 'test'}}
+      connection: {side: 'left', fromSide: 'right', fromPos: 2, connections: [{id: 6}, {id: 6, pos: 2}, {}]}, connectors: {left: {amount: 4, label: ['one', null, 'three']}},
       0: {type: 'toggle', x: 4353, y: 4729, label: '1', connections: {side: 'left', 6: {}, '6__1': {pos: 1}, 8: {pos: 1}, 3: {}}},
       1: {type: 'toggle', x: 4353, y: 4841, label: '2', connections: {side: 'left', 7: {}, 8: {}, 4: {}}},
       2: {type: 'toggle', x: 4353, y: 4947, label: 'E', connections: {side: 'left', pos: 2, 5: {}, 6: {}, 7: {}, 8: {}}},
@@ -91,7 +90,7 @@ var components = {
       name: '4-Bit Digit',
       classes: ['box'],
       innerClasses: ['constant', 'noselect'],
-      children: '<span style="font-family:\'digital-clock\';">0</span>',
+      children: '<span style="font-family:\'digital-clock\';text-shadow:0px 0px 5px rgb(255, 255, 255);">0</span>',
       connectors: {left: {amount: 4}}
     },
     seven_segment: {
@@ -249,8 +248,8 @@ var components = {
       innerClasses: [],
       children: '',
       connectors: {
-        left: {amount: 2, name: ['Data in', 'Write enable']},
-        right: {name: ['Data out']}
+        left: {amount: 2, label: ['Data in', 'Write enable']},
+        right: {label: ['Data out']}
       },
       inspect: {}
     },
@@ -261,8 +260,8 @@ var components = {
       children: '',
       memory: {column: 1, row: 1},
       connectors: {
-        left: {amount: 5, name: ['Data in (/ out)', 'Write enable', 'Read enable', 'Row', 'Column']},
-        right: {name: ['Data out']}
+        left: {amount: 5, label: ['Data in (/ out)', 'Write enable', 'Read enable', 'Row', 'Column']},
+        right: {label: ['Data out']}
       },
       inspect: {}
     }
@@ -274,16 +273,14 @@ var components = {
       classes: ['box'],
       innerClasses: [], // 'gate',
       children: '<div class="arrow"><span></span><span></span><span></span></div>',
-      connectors: {left: {}, right: {}, top: {}},
-      inspect: {}
+      connectors: {left: {}, right: {}, top: {}}
     },
     transistor_inv: {
       name: 'Transistor Inverted',
       classes: ['box'],
       innerClasses: [], // 'gate',
       children: '<div class="arrow"><span></span><span></span><span></span><span></span></div>',
-      connectors: {left: {}, right: {}, top: {}},
-      inspect: {}
+      connectors: {left: {}, right: {}, top: {}}
     },
   },
   components: {
@@ -293,7 +290,7 @@ var components = {
       classes: ['box', 'big'],
       innerClasses: [],
       children: '',
-      connectors: {left: {amount: 4, name: ['8', '4', '2', '1']}, right: {amount: 7}},
+      connectors: {left: {amount: 4, label: ['8', '4', '2', '1']}, right: {amount: 7}},
       inspect: {}
     },
     multiplexer: {
@@ -301,7 +298,7 @@ var components = {
       classes: ['box', 'long'],
       innerClasses: [],
       children: '',
-      connectors: {left: {amount: 4}, bottom: {amount: 16, name: ['$i']}},
+      connectors: {left: {amount: 4}, bottom: {amount: 16, label: ['$i']}},
       inspect: {}
     },
     '256_bit': {
@@ -311,8 +308,8 @@ var components = {
       children: '',
       memory: {row: 16, column: 16},
       connectors: {
-        left: {amount: 11, name: ['1 Col', '2 Col', '4 Col', '8 Col', '1 Row', '2 Row', '4 Row', '8 Row', 'Data (in)', 'Write enable', 'Read enable']},
-        right: {name: ['Data out']}
+        left: {amount: 11, label: ['1 Col', '2 Col', '4 Col', '8 Col', '1 Row', '2 Row', '4 Row', '8 Row', 'Data (in)', 'Write enable', 'Read enable']},
+        right: {label: ['Data out']}
       },
       inspect: {}
     },
@@ -324,8 +321,8 @@ var components = {
       memory: {column: 16, row: 16, repeat: 8}, // 32 * 64 | 8 * 256
       connectors: {
         // TODO: same output as input
-        left: {amount: 18, name: ['8-bit Data', null, null, null, null, null, null, null, '1 Col', '2 Col', '4 Col', '8 Col', '1 Row', '2 Row', '4 Row', '8 Row', 'Write enable', 'Read enable']},
-        // right: {amount: 8, name: ['Data out']}
+        left: {amount: 18, label: ['8-bit Data', null, null, null, null, null, null, null, '1 Col', '2 Col', '4 Col', '8 Col', '1 Row', '2 Row', '4 Row', '8 Row', 'Write enable', 'Read enable']},
+        // right: {amount: 8, label: ['Data out']}
       },
       inspect: {}
     },
@@ -336,8 +333,8 @@ var components = {
       children: '',
       memory: {column: 8, row: 1},
       connectors: {
-        left: {amount: 10, name: ['In', null, null, null, null, null, null, null, 'Write enable', 'Read enable']},
-        right: {amount: 8, name: ['Out']}
+        left: {amount: 10, label: ['In', null, null, null, null, null, null, null, 'Write enable', 'Read enable']},
+        right: {amount: 8, label: ['Out']}
         // TODO: same output as input
       },
       inspect: {}
@@ -353,7 +350,7 @@ var components = {
       classes: ['box'],
       children: '',
       connectors: {
-        left: {amount: 3, name: [null, null, 'E']},
+        left: {amount: 3, label: [null, null, 'E']},
         right: {amount: 4}
       },
       inspect: {
@@ -391,7 +388,7 @@ var components = {
       classes: ['box'],
       innerClasses: [],
       children: '',
-      connectors: {left: {amount: 4}, right: {amount: 16, name: ['$i']}},
+      connectors: {left: {amount: 4}, right: {amount: 16, label: ['$i']}},
       inspect: {}
     }
   },
@@ -405,8 +402,8 @@ var components = {
       children: '',
       memory: {row: 16, column: 16},
       connectors: {
-        left: {amount: 20, name: ['$i', '@17:Data in', '@18:Data out', '@19:Write enable', '@20:Read enable'], required: [true, false, null, true]}, // show red / notConnected TODO: required
-        right: {name: ['Data out']},
+        left: {amount: 20, label: ['$i', '@17:Data in', '@18:Data out', '@19:Write enable', '@20:Read enable'], required: [true, false, null, true]}, // show red / notConnected TODO: required
+        right: {label: ['Data out']},
         top: {amount: 16}
       },
       inspect: {}

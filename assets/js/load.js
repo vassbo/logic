@@ -346,14 +346,22 @@ function updateSettings() {
   document.documentElement.style.setProperty('--line-powered', setting_lineColor_powered);
 
   // BACKGROUND STYLE
-  if (setting_background == "dotted") activeMain().style.backgroundImage = "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)";
-  else if (setting_background == "lines") activeMain().style.backgroundImage = "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)";
-  else if (setting_background == "blank") activeMain().style.backgroundImage = "none";
+  if (setting_background == "dotted") updateMains('background', "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)");
+  else if (setting_background == "lines") updateMains('background', "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)");
+  else if (setting_background == "blank") updateMains('background', "none");
 
   // LINE TYPE
   if (localStorage.lineType !== setting_lineType) {
     localStorage.lineType = setting_lineType;
-    moveSVG(activeMain());
+    updateMains('svg');
+  }
+}
+
+function updateMains(setting, style) {
+  var array = document.querySelectorAll('.main');
+  for (var i = 0; i < array.length; i++) {
+    if (setting == 'background') array[i].style.backgroundImage = style;
+    else if (setting == 'svg') moveSVG(array[i]);
   }
 }
 
@@ -479,6 +487,8 @@ if (Object.keys(saves).length > 0) {
 }
 
 function loadObj(object, tabId) {
+  document.getElementById('tab#' + tabId).click(); // TODO: something better than this
+
   if (tabId == undefined) tabId = active_tab;
   for (var i = 0; i < Object.keys(object).length; i++) {
     var elem = Object.keys(object)[i];
@@ -499,6 +509,7 @@ function loadObj(object, tabId) {
         if (cObject.connection !== undefined) conns[pos] = cObject.connection;
       }
       // add connections
+      console.log(conns);
       for (var j = 0; j < Object.keys(createdElems).length; j++) {
         var key = Object.keys(createdElems)[j];
         if (conns[key] !== undefined) {
@@ -515,7 +526,12 @@ function loadObj(object, tabId) {
           // }
           for (var c = 0; c < conns[key].connections.length; c++) {
             var conn = conns[key].connections[c];
-            cSVG({elem: createdElems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: createdElems[conn.id], side: conn.side || side, pos: conn.pos || pos});
+            console.log('!!!!!!!');
+            console.log(createdElems[key]);
+            console.log(createdElems[conn.id]);
+            console.log(conn);
+            // TODO: line created both in main and unnamed_3 ....
+            cSVG({elem: createdElems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: createdElems[conn.id], side: conn.side || side, pos: conn.pos || pos}, tabId);
           }
         }
       }
@@ -557,8 +573,13 @@ function checkSaved(component, tabId) {
     for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
       var name = Object.keys(tabObj.components)[i];
       if (component !== undefined) {
+        // console.log('CHECK:');
+        // console.log(component);
+        // console.log('COMPONENT:');
+        // console.log(tabObj.components[name].component);
         if (tabObj.components[name].component !== undefined) {
           if (tabObj.components[name].component === component) {
+            // console.log('MATCH');
             break;
           }
         }
