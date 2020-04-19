@@ -48,6 +48,11 @@
 // TODO: top bar resize, conn names, ssdd inspect
 // TODO: move main on top of svg's
 
+// TODO: Thruth table of each component + text?
+// TODO: moving a component with compoents selected should not deselct them
+
+// TODO: box selecting elements will not enable buttons properly
+
 
 // updateSignal | lineConnections | elementsIsideBox | main# -> var(--
 
@@ -58,16 +63,16 @@
 
 ///// SETTINGS /////
 
-var setting_lineType = "lined"; // straight / lined
+var settings = { // TODO: saves.settings...
+  lineType: 'lined', // straight / lined
 
-var setting_lineColor_idle = "#b00000";
-var setting_lineColor_powered = "red";
-// var setting_lineColor_idle = "white";
-// var setting_lineColor_powered = "#008eff";
+  lineColor_idle: '#b00000', // white
+  lineColor_powered: 'red', // #008eff
 
-var setting_theme = "light";
-
-var setting_background = "dotted";
+  theme: 'light',
+  background: 'dotted',
+  language: 'en'
+};
 
 ///// GLOBAL /////
 
@@ -1501,9 +1506,9 @@ function moveSVG(parent) {
   var lines = parent.querySelectorAll('.connector');
   for (var j = 0; j < lines.length; j++) {
     var pos = getLinePos(lines[j]);
-    var matching = checkForLine(parent.querySelectorAll(".connector")[j].id);
+    var matching = checkForLine(lines[j].id, parent.closest('.main'));
     for (var i = 0; i < matching.length; i++) {
-      var line = document.getElementById('main#' + active_tab).getElementsByClassName("line")[matching[i].replace(/\D+/g, '')];
+      var line = parent.closest('.main').getElementsByClassName("line")[matching[i].replace(/\D+/g, '')]; // document.getElementById('main#' + active_tab)
       var svgPos = getSVGCoords(line);
       if (matching[i].includes("from")) line.setAttribute("d", getSVGPositions(pos.x, pos.y, svgPos.x2, svgPos.y2));
       else if (matching[i].includes("to")) line.setAttribute("d", getSVGPositions(svgPos.x1, svgPos.y1, pos.x, pos.y));
@@ -1570,9 +1575,9 @@ function getSVGPositions(x1, y1, x2, y2) {
   }
   var output = 'M ' + storeInput.x1 + ' ' + storeInput.y1 + ' C ' + array[0] + ' ' + array[1] + ', ' + array[2] + ' ' + array[3] + ', ' + storeInput.x2 + ' ' + storeInput.y2;
   // output = 'M ' + storeInput.x1 + ' ' + storeInput.y1 + ' C ' + storeInput.x1 + ' ' + storeInput.y1 * 1.5 + ', ' + storeInput.x2 + ' ' + storeInput.y2 + ', ' + storeInput.x2 + ' ' + storeInput.y2;
-  if (setting_lineType == "straight") {
+  if (settings.lineType == "straight") {
     output = 'M ' + storeInput.x1 + ' ' + storeInput.y1 + ' C ' + storeInput.x1 + ' ' + storeInput.y1 + ', ' + storeInput.x2 + ' ' + storeInput.y2 + ', ' + storeInput.x2 + ' ' + storeInput.y2;
-  } else if (setting_lineType == 'lined') {
+  } else if (settings.lineType == 'lined') {
     // x1,y1 -> (x2-x1)/2 -> y1 -> y2 -> x2
     var center = (Math.abs(storeInput.x2 - storeInput.x1) / 2) + Math.min(storeInput.x1, storeInput.x2);
     console.log(storeInput.x1 + ', ' + storeInput.x2);
@@ -1916,9 +1921,10 @@ function hasNoConnections(id) {
   return hasNoConnections;
 }
 // get all lines connected to connector
-function checkForLine(id) {
+function checkForLine(id, main) {
+  if (main == undefined) main = document.getElementById('main#' + active_tab);
   var out = [];
-  var query = document.getElementById('main#' + active_tab).querySelector('.SVGdiv').querySelectorAll(".line");
+  var query = main.querySelector('.SVGdiv').querySelectorAll(".line");
   for (var i = 0; i < query.length; i++) {
     var lc = getLineConnectors(query[i]);
     if (lc.from == id) out.push("from" + i);

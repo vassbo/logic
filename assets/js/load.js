@@ -57,11 +57,12 @@ function createGrid(name) {
 
 ///// GET LOCALSTORAGE /////
 
-if (localStorage.lineType !== undefined) setting_lineType = localStorage.lineType;
-if (localStorage.lineColor_idle !== undefined) setting_lineColor_idle = localStorage.lineColor_idle;
-if (localStorage.lineColor_powered !== undefined) setting_lineColor_powered = localStorage.lineColor_powered;
-if (localStorage.theme !== undefined) setting_theme = localStorage.theme;
-if (localStorage.background !== undefined) setting_background = localStorage.background;
+if (localStorage.lineType !== undefined) settings.lineType = localStorage.lineType;
+if (localStorage.lineColor_idle !== undefined) settings.lineColor_idle = localStorage.lineColor_idle;
+if (localStorage.lineColor_powered !== undefined) settings.lineColor_powered = localStorage.lineColor_powered;
+if (localStorage.theme !== undefined) settings.theme = localStorage.theme;
+if (localStorage.background !== undefined) settings.background = localStorage.background;
+if (localStorage.language !== undefined) settings.language = localStorage.language;
 
 ///// BUTTONS /////
 
@@ -301,15 +302,15 @@ function updateSettings() {
   document.documentElement.removeAttribute("style");
 
   // THEME
-  if (setting_theme == "theme_light") {
-  } else if (setting_theme == "theme_dark") {
+  if (settings.theme == "theme_light") {
+  } else if (settings.theme == "theme_dark") {
     document.documentElement.style.setProperty('--main-color', "#242424");
     document.documentElement.style.setProperty('--main-color-inverted', "white");
     document.documentElement.style.setProperty('--main-background', "#585858");
     document.documentElement.style.setProperty('--transparent--10', "rgba(255, 255, 255, 0.1)");
     document.documentElement.style.setProperty('--transparent--20', "rgba(255, 255, 255, 0.2)");
     document.documentElement.style.setProperty('--transparent--50', "rgba(255, 255, 255, 0.5)");
-  } else if (setting_theme == "theme_night") {
+  } else if (settings.theme == "theme_night") {
     document.documentElement.removeAttribute("style");
     document.documentElement.style.setProperty('--main-color', "black");
     document.documentElement.style.setProperty('--main-color-inverted', "#bebebe");
@@ -323,7 +324,7 @@ function updateSettings() {
     document.documentElement.style.setProperty('--component-action', "#600000");
     document.documentElement.style.setProperty('--component-action--hover', "#7c0000");
     document.documentElement.style.setProperty('--toolbar-iconcolor', "#267ba3");
-  } else if (setting_theme == "theme_neon") {
+  } else if (settings.theme == "theme_neon") {
     // TODO: NEON THEME
     document.documentElement.style.setProperty('--main-color', "#1b1b1b");
     document.documentElement.style.setProperty('--main-color--second', "#1b1b1b");
@@ -342,17 +343,17 @@ function updateSettings() {
   }
 
   // LINE COLOR
-  document.documentElement.style.setProperty('--line-idle', setting_lineColor_idle);
-  document.documentElement.style.setProperty('--line-powered', setting_lineColor_powered);
+  document.documentElement.style.setProperty('--line-idle', settings.lineColor_idle);
+  document.documentElement.style.setProperty('--line-powered', settings.lineColor_powered);
 
   // BACKGROUND STYLE
-  if (setting_background == "dotted") updateMains('background', "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)");
-  else if (setting_background == "lines") updateMains('background', "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)");
-  else if (setting_background == "blank") updateMains('background', "none");
+  if (settings.background == "dotted") updateMains('background', "radial-gradient(circle, var(--transparent--20) 1px, rgba(0, 0, 0, 0) 1px)");
+  else if (settings.background == "lines") updateMains('background', "linear-gradient(to right, var(--transparent--10) 1px, transparent 1px), linear-gradient(to bottom, var(--transparent--10) 1px, transparent 1px)");
+  else if (settings.background == "blank") updateMains('background', "none");
 
   // LINE TYPE
-  if (localStorage.lineType !== setting_lineType) {
-    localStorage.lineType = setting_lineType;
+  if (localStorage.lineType !== settings.lineType) {
+    localStorage.lineType = settings.lineType;
     updateMains('svg');
   }
 }
@@ -361,7 +362,7 @@ function updateMains(setting, style) {
   var array = document.querySelectorAll('.main');
   for (var i = 0; i < array.length; i++) {
     if (setting == 'background') array[i].style.backgroundImage = style;
-    else if (setting == 'svg') moveSVG(array[i]);
+    else if (setting == 'svg') moveSVG(array[i]); // TODO: not aligned properly on other mains that the active
   }
 }
 
@@ -375,19 +376,19 @@ function settingsClick() {
     case "theme_night":
     case "theme_neon":
       changeSelect("theme", id);
-      setting_theme = id;
+      settings.theme = id;
       break;
     case "curved":
     case "straight":
     case "lined":
       changeSelect("line_type", id);
-      setting_lineType = id;
+      settings.lineType = id;
       break;
     case "dotted":
     case "lines":
     case "blank":
       changeSelect("background", id);
-      setting_background = id;
+      settings.background = id;
       break;
     default:
       alert(id);
@@ -399,6 +400,131 @@ function changeSelect(id, new_id) {
   document.getElementById(id).getElementsByClassName("active")[0].classList.remove("active");
   document.getElementById(id).getElementsByClassName(new_id)[0].classList.add("active");
 }
+
+
+
+
+function changeLang(newLang) {
+  settings.language = newLang;
+  var langObj = lang[newLang];
+  for (var i = 0; i < Object.keys(langObj).length; i++) {
+    var key = Object.keys(langObj)[i];
+    var elemClass = 'lang_';
+    var attribute = '';
+    if (key.includes('$')) {
+      attribute = key.slice(key.indexOf('$') + 1, key.indexOf('_'));
+      elemClass += key.slice(key.indexOf('_') + 1, key.length);
+    } else elemClass += key;
+    console.log(attribute);
+    console.log(elemClass);
+    var query = document.querySelectorAll('.' + elemClass);
+    for (var j = 0; j < query.length; j++) {
+      if (attribute !== '') query[j].setAttribute(attribute, langObj[key]);
+      else query[j].innerHTML = langObj[key];
+    }
+
+    // TODO: do at startup... (no...)
+    if (keys[elemClass.slice(5, elemClass.length)] !== undefined) {
+      var langQuery = document.querySelectorAll('.key_' + elemClass.slice(5, elemClass.length));
+      for (var k = 0; k < langQuery.length; k++) {
+        langQuery[k].title += ' [' + keys[elemClass.slice(5, elemClass.length)] + ']';
+        console.log(langQuery[k].title);
+      }
+    }
+  }
+}
+
+
+// cusom select
+
+var x, i, j, selElmnt, a, b, c;
+/*look for any elements with the class "custom-select":*/
+x = document.getElementsByClassName("custom-select");
+for (i = 0; i < x.length; i++) {
+  selElmnt = x[i].getElementsByTagName("select")[0];
+  /*for each element, create a new DIV that will act as the selected item:*/
+  a = document.createElement("DIV");
+  a.setAttribute("class", "select-selected");
+  a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+  a.classList.add('lang_' + selElmnt.options[selElmnt.selectedIndex].value);
+  x[i].appendChild(a);
+  /*for each element, create a new DIV that will contain the option list:*/
+  b = document.createElement("DIV");
+  b.setAttribute("class", "select-items select-hide");
+  for (j = 0; j < selElmnt.length; j++) {
+    /*for each option in the original select element,
+    create a new DIV that will act as an option item:*/
+    c = document.createElement("DIV");
+    if (j == 0) c.classList.add('same-as-selected');
+    c.classList.add('lang_' + selElmnt.options[j].value);
+    c.innerHTML = selElmnt.options[j].innerHTML;
+    c.setAttribute('value', selElmnt.options[j].value);
+    c.addEventListener("click", function(e) {
+      console.log(this.innerHTML);
+        /*when an item is clicked, update the original select box,
+        and the selected item:*/
+        var y, i, k, s, h;
+        s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+        h = this.parentNode.previousSibling;
+        for (i = 0; i < s.length; i++) {
+          if (s.options[i].innerHTML == this.innerHTML) {
+            s.selectedIndex = i;
+            h.innerHTML = this.innerHTML;
+            y = this.parentNode.getElementsByClassName("same-as-selected");
+            for (k = 0; k < y.length; k++) {
+              h.classList.remove('lang_' + y[k].getAttribute('value'));
+              // y[k].removeAttribute("class");
+              y[k].classList.remove("same-as-selected");
+            }
+            h.classList.add('lang_' + this.getAttribute('value'));
+            // this.setAttribute("class", "same-as-selected");
+            this.classList.add("same-as-selected");
+            changeLang(this.getAttribute('value'));
+            break;
+          }
+        }
+        h.click();
+    });
+    b.appendChild(c);
+  }
+  x[i].appendChild(b);
+  a.addEventListener("click", function(e) {
+    /*when the select box is clicked, close any other select boxes,
+    and open/close the current select box:*/
+    e.stopPropagation();
+    closeAllSelect(this);
+    this.nextSibling.classList.toggle("select-hide");
+    this.classList.toggle("select-arrow-active");
+  });
+}
+
+function closeAllSelect(elmnt) {
+  /*a function that will close all select boxes in the document,
+  except the current select box:*/
+  var x, y, i, arrNo = [];
+  x = document.getElementsByClassName("select-items");
+  y = document.getElementsByClassName("select-selected");
+  for (i = 0; i < y.length; i++) {
+    if (elmnt == y[i]) {
+      arrNo.push(i)
+    } else {
+      y[i].classList.remove("select-arrow-active");
+    }
+  }
+  for (i = 0; i < x.length; i++) {
+    if (arrNo.indexOf(i)) {
+      x[i].classList.add("select-hide");
+    }
+  }
+}
+/*if the user clicks anywhere outside the select box,
+then close all select boxes:*/
+document.addEventListener("click", closeAllSelect);
+
+
+
+
+
 
 
 

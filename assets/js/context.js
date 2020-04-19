@@ -3,44 +3,44 @@
 
 var context = {
   default: [
-    {text: 'Save'},
-    {text: 'Settings'},
-    {text: 'Info'}
+    {text: 'Save', id: 'save'},
+    {text: 'Settings', id: 'settings'},
+    {text: 'About', id: 'about'}
   ],
   // select all and paste -> only inside main
   main: [
     // {activated: '.main'}
-    // {text: 'Back'},
-    // {text: 'Reload'},
-    {text: 'Save'},
-    {text: 'Select all'}, // TODO: Show "Select none" when all is selected
+    // {text: 'Back', id: 'back'},
+    // {text: 'Reload', id: 'reload'},
+    {text: 'Save', id: 'save'},
+    {text: 'Select all', id: 'select_all'}, // TODO: Show "Select none" when all is selected
     // {text: 'Cut selected'},
     // {text: 'Copy selected'},
-    {text: 'Paste', disabled: true},
-    // {text: 'Save as'},
-    // {text: 'Inspect'},
+    {text: 'Paste', id: 'paste', disabled: true},
+    // {text: 'Save as', id: 'save_as'},
+    // {text: 'Inspect', id: 'inspect'},
   ],
   tab: [
     // {activated: '.tab'}
-    {text: 'Rename'},
-    {text: 'Delete'},
-    {text: 'Export'},
-    {text: 'Create integrated circuit'},
+    {text: 'Rename', id: 'rename'},
+    {text: 'Delete', id: 'delete'},
+    {text: 'Export', id: 'export'},
+    {text: 'Create integrated circuit', id: 'circuit'},
   ],
   // TODO: show this anywhere(instead of default) when elems are selected
   component: [
-    {text: 'Add Label'}, // , id: 'contextLabel'
-    {text: 'Delete'},
-    {text: 'Cut'},
-    {text: 'Copy'},
-    {text: 'Duplicate'},
-    // {text: 'Save As'},
-    {text: 'Documentation', disabled: true},
-    {text: 'Inspect', disabled: true}
+    {text: 'Add Label', id: 'add_label'}, // , id: 'contextLabel'
+    {text: 'Delete', id: 'delete'},
+    {text: 'Cut', id: 'cut'},
+    {text: 'Copy', id: 'copy'},
+    {text: 'Duplicate', id: 'duplicate'},
+    // {text: 'Save As', id: 'save_as'},
+    {text: 'Documentation', id: 'documentation', disabled: true},
+    {text: 'Inspect', id: 'inspect', disabled: true}
   ],
   componentDrawer: [
-    {text: 'Documentation', disabled: true}, // , id: 'doc_context'
-    {text: 'Inspect', disabled: true} // , id: 'inspect_context'
+    {text: 'Documentation', id: 'documentation', disabled: true}, // , id: 'doc_context'
+    {text: 'Inspect', id: 'inspect', disabled: true} // , id: 'inspect_context'
   ]
 };
 
@@ -62,22 +62,32 @@ function setPosition(origin) {
   menu.style.top = origin.top + "px";
 }
 
-function enableMenu(text, condition) { // make more universal...?
-  var lists = menu.querySelectorAll('li');
-  for (var i = 0; i < lists.length; i++) {
-    if (lists[i].innerText == text) {
-      if (condition) lists[i].removeAttribute('disabled');
-      else lists[i].setAttribute('disabled', '');
-    }
+function enableMenu(id, condition) { // make more universal...?
+  // var lists = menu.querySelectorAll('li');
+  // for (var i = 0; i < lists.length; i++) {
+  //   if (lists[i].innerText == text) {
+  //     if (condition) lists[i].removeAttribute('disabled');
+  //     else lists[i].setAttribute('disabled', '');
+  //   }
+  // }
+  var li = document.getElementById(id);
+  if (li !== null) {
+    if (condition) document.getElementById(id).removeAttribute('disabled');
+    else document.getElementById(id).setAttribute('disabled', '');
   }
 }
-function changeMenuText(originalText, newText, condition) {
-  var lists = menu.querySelectorAll('li');
-  for (var i = 0; i < lists.length; i++) {
-    if (lists[i].innerText == originalText) {
-      if (condition) lists[i].innerHTML = newText;
-    }
-  }
+function changeMenuText(buttonId, newTextId, condition) {
+  // change id
+  // change lang text
+  // var lists = menu.querySelectorAll('li');
+  // for (var i = 0; i < lists.length; i++) {
+  //   if (lists[i].innerText == originalText) {
+  //     if (condition) lists[i].innerHTML = newText;
+  //   }
+  // }
+  var text = lang[settings.language]['cx_' + newTextId];
+  if (text == undefined) text = lang.en['cx_' + newTextId];
+  if (condition) document.getElementById(buttonId).innerHTML = text;
 }
 
 window.addEventListener("click", function(e) {
@@ -102,19 +112,19 @@ window.addEventListener("contextmenu", function(e) {
       contextElem = e.target.closest(".component");
       // if (contextElem.getElementsByClassName("label").length > 0) document.getElementById("contextLabel").innerHTML = "Edit Label";
       // else document.getElementById("contextLabel").innerHTML = "Add Label";
-      changeMenuText('Add Label', 'Edit Label', contextElem.getElementsByClassName("label").length > 0);
+      changeMenuText('add_label', 'edit_label', contextElem.getElementsByClassName("label").length > 0);
       var classList = contextElem.querySelector('div').classList;
       // if (classList.contains('inspect')) menu.querySelector('#inspect_context').removeAttribute('disabled');
       // else menu.querySelector('#inspect_context').setAttribute('disabled', '');
-      enableMenu('Inspect', classList.contains('inspect'));
-      enableMenu('Documentation', classList.contains('documentation'));
+      enableMenu('inspect', classList.contains('inspect'));
+      enableMenu('documentation', classList.contains('documentation'));
 
     } else if (getComponent(e.target) == 'drawer') { // target is a component inside the drawer
       setMenu('componentDrawer');
       contextElem = e.target.closest(".box");
       var classList = contextElem.querySelector('div').classList;
-      enableMenu('Inspect', classList.contains('inspect'));
-      enableMenu('Documentation', classList.contains('documentation'));
+      enableMenu('inspect', classList.contains('inspect'));
+      enableMenu('documentation', classList.contains('documentation'));
 
     } else if (e.target.closest('.main') !== null) setMenu('main'); // context inside main
     else if (e.target.closest('.tab') !== null) setMenu('tab'); // context on tabs
@@ -133,14 +143,16 @@ function setMenu(id) {
         var attr = '';
         if (context[key][j].id !== undefined) attr = ' id="' + context[key][j].id + '"';
         if (context[key][j].disabled !== undefined) attr += ' disabled';
-        var text = context[key][j].text;
+        // var text = context[key][j].text;
+        var text = lang[settings.language]['cx_' + context[key][j].id];
+        if (text == undefined) text = lang.en['cx_' + context[key][j].id];
 
         html += '<li class="menu-option"' + attr + '>' + text + '</li>';
       }
       menu.querySelector('ul').innerHTML = html;
 
-      changeMenuText('Select all', 'Deselect all', selector('count'));
-      enableMenu('Select all', activeMain().querySelectorAll('.component').length <= 0);
+      changeMenuText('select_all', 'deselect_all', selector('count'));
+      enableMenu('select_all', activeMain().querySelectorAll('.component').length <= 0);
 
       var options = document.getElementById('contextMenu').querySelectorAll("li");
       for (var o = 0; o < options.length; o++) options[o].addEventListener("click", menuClick);
@@ -167,8 +179,8 @@ function menuClick(e) {
 
   if (!e.target.hasAttribute('disabled')) {
 
-    switch (e.target.innerText) {
-      case "Rename":
+    switch (e.target.id) {
+      case "rename":
         var newName = prompt('Insert a new name', contextElem.closest('.tab').querySelector('span').innerText);
         if (newName !== '' && newName !== null) {
           var span = contextElem.closest('.tab').querySelector('span');
@@ -176,17 +188,17 @@ function menuClick(e) {
           tabObject(contextElem.closest('.tab').id).name = newName;
         }
         break;
-      case "Delete":
+      case "delete":
         if (contextElem.closest('.tab') !== null) closeTab(e, contextElem.closest('.tab'));
         else removeComponent(contextElem);
         break;
-      case "Add Label":
+      case "add_label":
         var val = "";
         if (type == 'clock') val = 'Clock #' + contextElem.querySelector('.textInput').id.slice(contextElem.querySelector('.textInput').id.indexOf("#") + 1, contextElem.querySelector('.textInput').id.length);
         var inputPrompt = prompt("Please enter a label", val);
         if (inputPrompt !== "" && inputPrompt !== null) addLabel(inputPrompt, contextElem, false);
         break;
-      case "Edit Label":
+      case "edit_label":
         var label = contextElem.getElementsByClassName("label")[0];
         var input = prompt("Edit the label", label.innerHTML);
         if (input !== "" && input !== null) label.innerHTML = input;
@@ -197,20 +209,20 @@ function menuClick(e) {
           }
         }
         break;
-      case 'Select all':
+      case 'select_all':
         selector('select');
         break;
-      case 'Deselect all':
+      case 'deselect_all':
         selector('deselect');
         break;
-      case "Documentation":
+      case "documentation":
         document.getElementById("dark").classList.remove("hidden");
         var info = document.getElementById("info");
         info.classList.remove("hidden");
         info.querySelector('h1').innerHTML = object.name;
         info.querySelector('p').innerHTML = object.documentation || 'No documentation!';
         break;
-      case "Inspect":
+      case "inspect":
         // var t, t1, t2, l, tr, tr1, tr2, tr3, tr4, tr5, tr6, tr7;
         addTab(type + ' | Inspect').querySelector('span').classList.remove('unsaved'); // display name instead of type/id
         loadComponent(getObjectByType(type).inspect);
@@ -692,7 +704,7 @@ function menuClick(e) {
         }
         break;
       default:
-        alert(e.target.innerText);
+        alert(e.target.id);
     }
   }
 }

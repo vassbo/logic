@@ -29,16 +29,16 @@
 </head>
 <body class="noselect"> <!-- TODO: noselect body ???? -->
   <div id="top">
-    <div id="main_title"><a href="#">Logic Simulator</a></div>
+    <div id="main_title"><a href="#" class="lang_title">Logic Simulator</a></div>
     <div id="toolbar" class="noselect">
       <!-- <i class="material-icons" title="Create new [ctrl+n]">insert_drive_file</i> -->
-      <i class="material-icons" title="Save to local storage [ctrl+s]">save</i>
-      <i class="material-icons" title="Export selected tab(s) [ctrl+e]">cloud_download</i>
-      <i class="material-icons" title="Open file [ctrl+o]">folder_open</i>
+      <i class="material-icons lang_save key_save" title="Save to local storage [ctrl+s]">save</i>
+      <i class="material-icons lang_export key_export" title="Export selected tab(s) [ctrl+e]">cloud_download</i> <!-- TODO: change tab/tabs -->
+      <i class="material-icons lang_file key_file" title="Open file [ctrl+o]">folder_open</i>
       <!-- <i class="material-icons" title="Print [ctrl+p]">print</i> -->
       <span class="seperator"></span>
-      <i class="material-icons" title="Undo [ctrl+z]" disabled>undo</i>
-      <i class="material-icons" title="Redo [ctrl+y]" disabled>redo</i>
+      <i class="material-icons lang_undo key_undo" title="Undo [ctrl+z]" disabled>undo</i>
+      <i class="material-icons lang_redo key_redo" title="Redo [ctrl+y]" disabled>redo</i>
       <span class="seperator"></span>
       <!-- context menu -->
       <!-- <i class="material-icons" title="Cut [ctrl+x]" disabled>cut</i>
@@ -46,16 +46,16 @@
       <i class="material-icons" title="Paste [ctrl+v]" disabled>paste</i> -->
       <!-- <i class="material-icons" title="Select all [ctrl+a]" disabled>select_all</i> -->
       <!-- <span class="seperator"></span> -->
-      <i class="material-icons" title="Delete selected [delete]" disabled>delete</i>
-      <i class="material-icons" title="Duplicate selected [ctrl+d]" disabled>filter_none</i>
-      <i class="material-icons" title="Rotate selected right (90°) [ctrl+r]" disabled>rotate_right</i>
-      <i class="material-icons" title="Rotate selected left (-90°) [ctrl+shift+r]" disabled>rotate_left</i>
+      <i class="material-icons lang_delete key_delete" title="Delete selected [delete]" disabled>delete</i>
+      <i class="material-icons lang_duplicate key_duplicate" title="Duplicate selected [ctrl+d]" disabled>filter_none</i>
+      <i class="material-icons lang_rotate_right key_rotate_right" title="Rotate selected right (90°) [ctrl+r]" disabled>rotate_right</i>
+      <i class="material-icons lang_rotate_left key_rotate_left" title="Rotate selected left (-90°) [ctrl+shift+r]" disabled>rotate_left</i>
       <!-- this is always on and will create for the whole tab if nothing is selected! VVV -->
-      <i class="material-icons" title="Create integrated circuit (by selection) [ctrl+i]">post_add</i> <!-- receipt -->
+      <i class="material-icons lang_circuit key_circuit" title="Create integrated circuit (by selection) [ctrl+i]">post_add</i> <!-- receipt -->
 
       <span class="seperator"></span>
-      <i class="material-icons" title="Generate truth table [ctrl+g]">receipt</i>
-      <i class="material-icons" title="View timers">access_time</i>
+      <i class="material-icons lang_thruth_table key_thruth_table" title="Generate truth table [ctrl+g]">receipt</i>
+      <i class="material-icons lang_clocks" title="View clocks">access_time</i> <!-- timers -->
       <!-- <i class="material-icons" title="Component stats" disabled>memory</i> -->
 
       <span class="seperator"></span>
@@ -70,8 +70,8 @@
       <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">category</i> -->
       <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">layers</i> -->
       <!-- <i class="material-icons right" style="right:96px;" title="Modes [ctrl+?]">apps</i> -->
-      <i class="material-icons right" style="right:52px;" title="Settings [ctrl+?]">settings_gear</i>
-      <i class="material-icons right" title="About">info</i>
+      <i class="material-icons right lang_settings key_settings" style="right:52px;" title="Settings [ctrl+?]">settings_gear</i>
+      <i class="material-icons right lang_about" title="About">info</i>
     </div>
     <!-- pause simulation -->
     <!-- save (export) -->
@@ -80,12 +80,12 @@
   <div id="dragger"></div>
 
   <div id="tabber">
-    <i class="material-icons right tabber" title="Add tab">add</i>
+    <i class="material-icons right tabber lang_add_tab" title="Add tab">add</i>
 
     <div class="scroller" style="overflow-x:auto;overflow-y:hidden;max-width:calc(100vw - 250px - 44px);display:flex;">
       <div class="tab active" id="tab#0">
         <span>main</span>
-        <div id="close"><i class="material-icons tabber" title="Close">close</i></div>
+        <div id="close"><i class="material-icons tabber lang_close" title="Close">close</i></div>
       </div>
       <!-- <div class="tab">
         <span>and | Inspect*</span>
@@ -147,15 +147,15 @@
     <!-- TODO: pause / start / reset? simulation / (Advance Simulation One Step) -->
     <!-- <i class="material-icons" title="Pause simulation" disabled>pause</i> -->
     <div id="toolbar" class="noselect">
-      <i class="material-icons" title="Retreat Simulation One Step" disabled>fast_rewind</i>
-      <i class="material-icons" title="Reset Simulation">stop</i>
-      <i class="material-icons" title="Pause Simulation">pause</i>
-      <i class="material-icons" title="Advance Simulation One Step" disabled>fast_forward</i>
+      <i class="material-icons lang_retreat_sim" title="Retreat Simulation One Step" disabled>fast_rewind</i>
+      <i class="material-icons lang_reset" title="Reset Simulation">stop</i>
+      <i class="material-icons lang_pause" title="Pause Simulation">pause</i>
+      <i class="material-icons lang_advance_sim" title="Advance Simulation One Step" disabled>fast_forward</i>
       <span class="seperator"></span>
-      <i class="material-icons" title="Reset view">home</i>
-      <i class="material-icons" title="Open file [ctrl+o]">remove</i>
+      <i class="material-icons lang_home" title="Reset view">home</i>
+      <i class="material-icons lang_zoom_out" title="Zoom out">remove</i>
       <input id="zoomSlider" type="range" min="20" max="300" step="2" value="100">
-      <i class="material-icons" title="Open file [ctrl+o]">add</i>
+      <i class="material-icons lang_zoom_in" title="Zoom in">add</i>
       <p id="zoomValue">100%</p>
       <!-- TODO: fullscreen ????? - hide everything except main,  tab_bar, minimap & bottom toolbar? -->
       <!-- <i class="material-icons" title="Fullscreen mode">fullscreen</i> -->
@@ -166,7 +166,7 @@
 
   <!-- right timers menu -->
   <div id="timers" class="right_menu hidden">
-    <h2 style="padding:0 30px;">No clocks active</h2>
+    <h2 style="padding:0 30px;" class="lang_no_clocks">No clocks active</h2>
   </div>
 
 
@@ -178,24 +178,24 @@
   <!-- modes -->
   <!-- Logic mode, electric mode, game mode (MakeItTrue), minecraft -->
   <div id="modes" class="card hidden" style="height:75vh;">
-    <div id="close"><i class="material-icons" title="Close">close</i></div>
-    <h1>Modes</h1>
+    <div id="close"><i class="material-icons lang_close" title="Close">close</i></div>
+    <h1 class="lang_modes">Modes</h1>
     <div style="overflow-y: auto;max-height: 68vh;">
       <div class="modes_card">
-        <span>Standard</span>
-        <img src="assets/img/circuit_board.jpg" alt="Circuit Board">
+        <span class="lang_mode_standard">Standard</span>
+        <img class="lang_circuit_board" src="assets/img/circuit_board.jpg" alt="Circuit Board">
       </div>
       <div class="modes_card">
-        <span>Electric</span>
-        <img src="assets/img/electricity.jpg" alt="Circuit Board" style="object-position: bottom;">
+        <span class="lang_mode_electric">Electric</span>
+        <img class="lang_electricity" src="assets/img/electricity.jpg" alt="Electricity" style="object-position: bottom;">
       </div>
       <div class="modes_card">
-        <span>Redstone</span>
-        <img src="assets/img/redstone.jpg" alt="Circuit Board" style="object-position: 0 -70px;">
+        <span class="lang_mode_redstone">Redstone</span>
+        <img class="lang_redstone" src="assets/img/redstone.jpg" alt="Redstone Class" style="object-position: 0 -70px;">
       </div>
       <div class="modes_card">
-        <span>Game</span>
-        <img src="assets/img/game.jpeg" alt="Circuit Board">
+        <span class="lang_mode_game">Game</span>
+        <img class="lang_circuit_board" src="assets/img/game.jpeg" alt="Circuit Board">
       </div>
     </div>
   </div>
@@ -203,34 +203,44 @@
 
   <!-- settings -->
   <div id="settings" class="card hidden">
-    <div id="close"><i class="material-icons" title="Close">close</i></div>
-    <h1>General</h1>
+    <div id="close"><i class="material-icons lang_close" title="Close">close</i></div>
+    <h1 class="lang_settings_title">General</h1>
     <table style="width:100%;">
       <tbody>
         <tr>
-          <td><p>Theme: </p></td>
+          <td><p><span class="lang_theme">Theme</span>:</p></td>
           <td><div id="theme" class="multiselect">
-            <div class="theme_light settings active">Light</div>
+            <div class="theme_light settings active lan_light">Light</div>
             <!-- <div class="theme_light settings active">Light #2</div> -->
-            <div class="theme_dark settings">Dark</div>
-            <div class="theme_night settings">Night</div>
-            <div class="theme_neon settings">Neon</div>
+            <div class="theme_dark settings lang_dark">Dark</div>
+            <div class="theme_night settings lang_night">Night</div>
+            <div class="theme_neon settings lang_neon">Neon</div>
           </div></td>
         </tr>
         <tr>
-          <td><p>Line Type: </p></td>
+          <td><p><span class="lang_line_type">Line Type</span>:</p></td>
           <td><div id="line_type" class="multiselect">
-            <div class="lined settings active">Lined</div>
-            <div class="curved settings">Curved</div>
-            <div class="straight settings">Straight</div>
+            <div class="lined settings active lang_lined">Lined</div>
+            <div class="curved settings lang_curved">Curved</div>
+            <div class="straight settings lang_straight">Straight</div>
           </div></td>
         </tr>
         <tr>
-          <td><p>Background: </p></td>
+          <td><p><span class="lang_background">Background</span>:</p></td>
           <td><div id="background" class="multiselect">
-            <div class="dotted settings active">Dotted</div>
-            <div class="lines settings">Lines</div>
-            <div class="blank settings">Blank</div>
+            <div class="dotted settings active lang_bg_dotted">Dotted</div>
+            <div class="lines settings lang_lines">Lines</div>
+            <div class="blank settings lang_blank">Blank</div>
+          </div></td>
+        </tr>
+        <tr>
+          <td><p><span class="lang_language">Language</span>:</p></td>
+          <td><div id="language" class="custom-select" style="width:220px;">
+            <select>
+              <option class="lang_en" value="en">English</option>
+              <option class="lang_de" value="de">German</option> <!-- country codes... -->
+              <option class="lang_no" value="no">Norwegian</option>
+            </select>
           </div></td>
         </tr>
       </tbody>
@@ -240,14 +250,14 @@
 
   <!-- info -->
   <div id="info" class="card hidden">
-    <div id="close"><i class="material-icons" title="Close">close</i></div>
-    <h1>About</h1>
+    <div id="close"><i class="material-icons lang_close" title="Close">close</i></div>
+    <h1 class="lang_about_title">About</h1>
     <p style="margin-top:10px;">
-      Logic Simulator <em>beta 0.6</em> - created by <strong>Kristoffer Vassbø</strong><br>
-      <a href="https://github.com/Vassbo/logic" target="_blank">Source Code</a><br>
-      Support me on Patreon - comming...<br><br>
-      Do you have a Bug Report or Feature Request or something else?<br>
-      Open an <a href="https://github.com/Vassbo/logic/issues" target="_blank">issue on Github</a>, contact me on <a href="mailto:kristoffervassbo@gmail.com">Email</a> or social media - comming...
+      <span class="lang_title">Logic Simulator</span> <em>beta 0.6</em> - <span class="lang_created_by">created by</span> <strong>Kristoffer Vassbø</strong><br>
+      <a href="https://github.com/Vassbo/logic" target="_blank" class="lang_source_code">Source Code</a><br>
+      <span class="lang_support_me">Support me on Patreon</span> - comming...<br><br>
+      <span class="lang_request">Do you have a Bug Report or Feature Request or something else?</span><br>
+      <span class="lang_issue">Open an <a href="https://github.com/Vassbo/logic/issues" target="_blank">issue on Github</a>, contact me on <a href="mailto:kristoffervassbo@gmail.com">Email</a> or social media</span> - comming...
       <!-- TODO: custom <a> style -->
     </p>
   </div>
@@ -256,13 +266,14 @@
   <!-- TODO: WIP context menus -->
   <div id="contextMenu" class="menu">
     <ul class="menu-options">
-      <li class="menu-option">Save</li>
+      <!-- <li class="menu-option">Save</li>
       <li class="menu-option">Settings</li>
-      <li class="menu-option">Info</li>
+      <li class="menu-option">Info</li> -->
     </ul>
   </div>
 
   <script src="assets/js/script.js"></script>
+  <script src="assets/js/lang.js"></script>
   <script src="assets/js/zoom.js"></script>
   <script src="assets/js/components.js"></script>
   <script src="assets/js/load.js"></script>
