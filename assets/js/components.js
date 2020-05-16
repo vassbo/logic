@@ -42,28 +42,29 @@ var components = {
     toggle: {
       name: 'Toggle Switch',
       documentation: "Click on me to toggle my states, I can be on or off.",
-      classes: ['box'],
+      classes: ['box', 'input'],
       children: '<div class="btn-light"></div>',
-      connectors: {right: {}}
+      connectors: {right: {}},
+      // thruth: '0:1'
     },
     button: {
       name: 'Push Button',
       documentation: "Just a button, nothing special.",
-      classes: ['box'],
+      classes: ['box', 'input'],
       children: '',
       connectors: {right: {}}
     },
     clock: {
       name: 'Clock',
       documentation: "The clock is a timer.....<br><br>ms = milli seconds<br>s = seconds<br>m = minutes<br>h = hours<br><br>e.g. 1s == 1000ms",
-      classes: ['box'],
+      classes: ['box', 'input'],
       children: '<div class="display"><input class="clock_input textInput" id="clockInput#0" tabindex="-1" value="500ms" type="text"><div class="signal-light"></div></div>',
       connectors: {right: {}}
     },
     high_constant: {
       name: 'High constant',
       documentation: "I will be active forever, and you can't disable me! Muwhahahaha!!",
-      classes: ['box'],
+      classes: ['box', 'input'],
       innerClasses: ['constant', 'noselect'],
       children: '<span>1</span>',
       connectors: {right: {}}
@@ -71,7 +72,7 @@ var components = {
     low_constant: {
       name: 'Low constant',
       documentation: "What's the point of me, really??",
-      classes: ['box'],
+      classes: ['box', 'input'],
       innerClasses: ['constant', 'noselect'],
       children: '<span>0</span>',
       connectors: {right: {}}
@@ -81,23 +82,69 @@ var components = {
     name: 'Outputs',
     light: {
       name: 'Light Bulb',
-      classes: ['box', 'round'],
+      classes: ['box', 'output', 'round'],
       innerClasses: ['off'],
       children: '',
       connectors: {left: {}}
     },
     number_display: {
       name: '4-Bit Digit',
-      classes: ['box'],
+      classes: ['box', 'output'],
       innerClasses: ['constant', 'noselect'],
       children: '<span style="font-family:\'digital-clock\';text-shadow:0px 0px 5px rgb(255, 255, 255);">0</span>',
       connectors: {left: {amount: 4}}
     },
     seven_segment: {
       name: 'Seven Segment Display',
-      classes: ['box', 'big'],
+      classes: ['box', 'output', 'big'],
       children: '<div id="number_1"></div><div id="number_2"></div><div id="number_3"></div><div id="number_4"></div><div id="number_5"></div><div id="number_6"></div><div id="number_7"></div>',
       connectors: {left: {amount: 7}}
+    }
+  },
+  screens: {
+    name: 'Screens',
+    pixel: {
+      name: 'Pixel',
+      documentation: 'Contains a red, green and blue light with can be combined to create different lights',
+      classes: ['box', 'output'],
+      innerClasses: [''],
+      // children: '<div class="off" id="red"></div><div class="off" id="green"></div><div class="off" id="blue"></div>',
+      children: '<div></div>',
+      // TODO: turn on lights
+      connectors: {left: {amount: 3}}
+    },
+    screen: {
+      name: '10*10px screen',
+      classes: ['box', 'output'],
+      innerClasses: ['constant', 'noselect'],
+      children: '',
+      connectors: {left: {amount: 4}}
+    },
+    hd_screen: {
+      name: 'HD Screen',
+      classes: ['box', 'output'],
+      children: '',
+      connectors: {left: {amount: 7}}
+    },
+    speaker: {
+      name: 'Speaker',
+      classes: ['box', 'output'],
+      children: '<input id="soundtype" list="soundtypeList" type="range" value="0" min="0" max="11" step="1"><input id="tone" value="0" type="range" min="0" max="3" step="1">' +
+      '<datalist id="soundtypeList">' +
+        '<option value="261.6"></option>' +
+        '<option value="277.2"></option>' +
+        '<option value="293.7"></option>' +
+        '<option value="311.1"></option>' +
+        '<option value="329.6"></option>' +
+        '<option value="349.2"></option>' +
+        '<option value="370.0"></option>' +
+        '<option value="392.0"></option>' +
+        '<option value="415.3"></option>' +
+        '<option value="440.0"></option>' +
+        '<option value="466.2"></option>' +
+        '<option value="493.9.2"></option>' +
+      '</datalist>',
+      connectors: {left: {amount: 1}}
     }
   },
   logic_gates: {

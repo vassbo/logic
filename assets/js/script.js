@@ -90,6 +90,8 @@ var active_tab = 0;
 
 var historyLog = [], historyRedo = [];
 
+var speakerAudio = [];
+
 /////////////////////
 ///// DRAGGABLE /////
 /////////////////////
@@ -103,22 +105,25 @@ function dragElement(elmnt, drawer) {
   elmnt.onmousedown = dragMouseDown;
   function dragMouseDown(e) {
     e = e || window.event;
-    if (!e.target.classList.contains("textInput") || e.target.closest("#drawer") !== null) {
-      e.preventDefault();
+    if (e.target.nodeName !== 'INPUT') {
+      if (!e.target.classList.contains("textInput") || e.target.closest("#drawer") !== null) {
+        console.log('prevent1');
+        e.preventDefault();
 
-      // get the mouse cursor position at startup:
-      cursor.x = e.clientX;
-      cursor.y = e.clientY;
-      if (!e.target.classList.contains("connector")) { // move elem
-        moveToTop(e.target);
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-      } else { // move line
-        startingConnect = e.target;
-        connectorPosX = getNumber(e.target.closest(".component").style.left);
-        connectorPosY = getNumber(e.target.closest(".component").style.top);
-        document.onmouseup = closeDragConnector;
-        document.onmousemove = dragConnector;
+        // get the mouse cursor position at startup:
+        cursor.x = e.clientX;
+        cursor.y = e.clientY;
+        if (!e.target.classList.contains("connector")) { // move elem
+          moveToTop(e.target);
+          document.onmouseup = closeDragElement;
+          document.onmousemove = elementDrag;
+        } else { // move line
+          startingConnect = e.target;
+          connectorPosX = getNumber(e.target.closest(".component").style.left);
+          connectorPosY = getNumber(e.target.closest(".component").style.top);
+          document.onmouseup = closeDragConnector;
+          document.onmousemove = dragConnector;
+        }
       }
     }
   }
@@ -908,20 +913,25 @@ function gate(input, value) {
 ///// ...SIGNAL | COMPONENT ACTIONS /////
 
 // power/depower elements
-function activate(id, powered) {
+function activate(id, powered, thruth) {
   var elem = document.getElementById(id).closest(".component");
   var connectors = elem.querySelectorAll('.connector');
   if (elem.classList[0] == "box") elem = elem.children[0];
   var type = elem.classList[0];
 
-  var activated = false;
+  var activated = false, activatedArray = [];
 
   setTimeout(function () {
     var signal = getSignalMap(elem);
     switch (type) {
       case "light":
-        if (powered) elem.classList.remove("off");
-        else elem.classList.add("off");
+        console.log('LIGHT');
+        if (thruth !== true) {
+          if (powered) elem.classList.remove("off");
+          else elem.classList.add("off");
+        }
+        activatedArray.push({conn: elem, powered: powered});
+        console.log(activatedArray);
         break;
       case "number_display":
         activated = signal.left.bools;
@@ -972,6 +982,80 @@ function activate(id, powered) {
         else if (activated[3]) eo(elem, {true: [1, 2], false: [0, 3, 4, 5, 6]});
         else eo(elem, {true: [0, 1, 2, 3, 4, 5], false: [6]});
         break;
+
+      case 'pixel':
+      console.log(signal.left);
+        // if (signal.left.bools[0] == true) elem.querySelector('#red').classList.remove('off');
+        // else if (signal.left.bools[0] == false) elem.querySelector('#red').classList.add('off');
+        // if (signal.left.bools[1] == true) elem.querySelector('#green').classList.remove('off');
+        // else if (signal.left.bools[1] == false) elem.querySelector('#green').classList.add('off');
+        // if (signal.left.bools[2] == true) elem.querySelector('#blue').classList.remove('off');
+        // else if (signal.left.bools[2] == false) elem.querySelector('#blue').classList.add('off');
+
+        var color = false;
+
+        if (signal.left.bools[0] && signal.left.bools[1] && signal.left.bools[2]) color = '255, 255, 255'; // white
+        else if (signal.left.bools[0] && signal.left.bools[1]) color = '255, 255, 0'; // red + green = yellow
+        else if (signal.left.bools[0] && signal.left.bools[2]) color = '255, 67, 255'; // red + blue = magenta
+        else if (signal.left.bools[1] && signal.left.bools[2]) color = '0, 255, 255'; // green + blue = cyan
+        else if (signal.left.bools[0]) color = '255, 0, 0'; // red
+        else if (signal.left.bools[1]) color = '28, 182, 0'; // green
+        else if (signal.left.bools[2]) color = '48, 54, 224'; // blue
+
+        if (!color) elem.querySelector('div').removeAttribute('style');
+        else {
+          elem.querySelector('div').style.background = 'rgb(' + color + ')';
+          elem.querySelector('div').style.boxShadow = '0 0 8px rgba(' + color + ', 0.8)';
+        }
+        // sendSignal(elem, activated);
+        // enableOutput(elem, activated);
+        break;
+
+      case 'speaker':
+        if (signal.left.trues == 1) {
+          var context = new AudioContext();
+          var o = context.createOscillator();
+          var g = context.createGain();
+          // o.type = "square";
+          o.connect(g);
+          g.connect(context.destination);
+          o.start();
+
+          // get type
+          var typeValue = elem.querySelector('#tone').value;
+          if (typeValue == 0) o.type = "square";
+          else if (typeValue == 1) o.type = "sine";
+          else if (typeValue == 2) o.type = "triangle";
+          else if (typeValue == 3) o.type = "sawtooth";
+
+          // TODO: disable slider in drawer...
+
+          // octave 4
+          var frequency = elem.querySelector('#soundtypeList').querySelectorAll('option')[elem.querySelector('#soundtype').value].value;
+          console.log(frequency);
+          o.frequency.value = frequency;
+
+          // TODO: lower volume
+          // g.gain.setValueAtTime(0, 0.8);
+          // TODO: remove sound/object on delettion / line removal
+
+          // js audio create a sound
+          // src: https://marcgg.com/blog/2016/11/01/javascript-audio/
+          // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Advanced_techniques
+
+          speakerAudio.push({elem: elem, audio: o, gain: g, context: context});
+        } else {
+          for (var i = 0; i < speakerAudio.length; i++) {
+            if (speakerAudio[i].elem == elem) {
+              speakerAudio[i].gain.gain.exponentialRampToValueAtTime(0.00001, speakerAudio[i].context.currentTime + 1);
+              // speakerAudio[i].audio.stop();
+              speakerAudio.splice(i, 1);
+              break;
+            }
+          }
+        }
+        break;
+
       // logic gates
       case "buffer":
         // TODO: output is not active upon connection drag
@@ -1222,6 +1306,11 @@ function activate(id, powered) {
         }
         break;
     }
+    // console.log('return:');
+    // console.log(activatedArray);
+    // console.log(activatedArray[0]);
+    // console.log(activatedArray[0].powered);
+    return activatedArray;
   }, 10);
 }
 var readPrevActive = false; // TODO: this dont work with muliple components of same and different types

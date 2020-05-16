@@ -605,3 +605,44 @@ svg {
 .arrow span:nth-child(4) {
   transform: rotate(90deg) translate(-1.5px, 26px);
 }
+
+
+
+/* pixel */
+.pixel div {
+  width: calc(80% - 20%);
+  display: flex;
+  margin: 10%;
+  /* padding: 10%; */
+  padding: 40% 10%;
+  border-radius: 10%;
+  background: black;
+}
+/* .pixel .off {
+  background: var(--light-idle) !important;
+  box-shadow: none !important;
+} */
+/* .pixel #red {
+  background: red;
+  box-shadow: 0 0 3px red;
+}
+.pixel #red.off {
+  background: rgba(252, 0, 0, 0.4);
+  box-shadow: none;
+}
+.pixel #green {
+  background: #1cb600;
+  box-shadow: 0 0 3px #1cb600;
+}
+.pixel #green.off {
+  background: rgba(28, 182, 0, 0.4);
+  box-shadow: none;
+}
+.pixel #blue {
+  background: #3036e1;
+  box-shadow: 0 0 3px #3036e1;
+}
+.pixel #blue.off {
+  background: rgba(48, 54, 224, 0.4);
+  box-shadow: none;
+} */

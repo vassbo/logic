@@ -82,6 +82,7 @@ var lang = {
     lang_credits: 'Translators',
     lang_credits2: 'Translated to $s by $s', // E.g. Translated to English by Steve. (Don't replace $s...)
     roadmap: 'Roadmap', // Alias: todo
+    /**/keyboard_title: 'Keyboard shortcuts',
     // CONTEXT
     cx_save: 'Save',
     cx_settings: 'Settings',

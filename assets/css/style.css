@@ -598,6 +598,35 @@ input[type="range"]::-moz-range-thumb {
 
 
 
+/* about */
+#shortcuts span {
+  /* background: #e0e0e0;
+  border: 1px solid #a4a4a4; */
+  color: #f0f0f0;
+  background: #414141;
+  border: 1px solid #343434;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  padding: 2px 12px 5px 12px;
+
+  cursor: pointer;
+  transition: box-shadow .1s;
+
+  /* min-width: 70px;
+  min-width: 8px; */
+  text-align: center;
+  display: inline-block;
+}
+#shortcuts p {
+  margin: 14px 0;
+}
+/* fun */
+#shortcuts span:active {
+  box-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.4);
+}
+
+
+
 /* modes */
 .modes_card {
   position: relative;

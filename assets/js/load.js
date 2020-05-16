@@ -155,6 +155,327 @@ function btnClick() {
         break;
       case 'post_add':
         // integrated circuit
+        // TODO: custom prompt
+        var prompt = prompt('Insert a name:');
+        if (prompt !== '' && prompt !== undefined) {
+          var pos = Object.keys(compoents.custom).length;
+          compoents.custom[pos] = {};
+          compoents.custom[pos].name = prompt;
+          compoents.custom[pos].classes = ['box', 'custom'];
+          // compoents.custom[pos].label = prompt;
+
+          // TODO: check if any elem on activemain is selected or get all elems!
+
+          var inputs = document.querySelectorAll('.input'), inputLabels = [];
+          for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].querySelector('.label') !== undefined) inputLabels.push(inputs[i].querySelector('.label').innerText);
+            else inputLabels.push(null);
+          }
+          var output = document.querySelectorAll('.output'), outputLabels = [];
+          for (var i = 0; i < output.length; i++) {
+            if (output[i].querySelector('.label') !== undefined) outputLabels.push(output[i].querySelector('.label').innerText);
+            else outputLabels.push(null);
+          }
+
+          compoents.custom[pos].connectors = {
+            left: {amount: inputs.length, label: inputLabels},
+            right: {amount: output.length, label: outputLabels}
+          }
+          compoents.custom[pos].inspect = ''; // TODO
+
+          console.log(compoents.custom[pos]);
+
+          if (saves.customs == undefined) saves.customs = {};
+          saves.customs[pos] = compoents.custom[pos];
+
+          // TODO: show custom in menu (+ hide on load)
+
+          // register: {
+            //   name: 'Register',
+            //   classes: ['box', 'big'],
+            //   innerClasses: [],
+            //   children: '',
+            //   memory: {column: 8, row: 1},
+            //   connectors: {
+              //     left: {amount: 10, label: ['In', null, null, null, null, null, null, null, 'Write enable', 'Read enable']},
+              //     right: {amount: 8, label: ['Out']}
+              //     // TODO: same output as input
+              //   },
+              //   inspect: {}
+              // }
+        }
+        break;
+
+      case 'receipt':
+        console.log('------------');
+        console.log('------------');
+        // thruth table
+        // generateThruthTable();
+        var table = [];
+        var components = activeMain().querySelectorAll('.component');
+        var inputs = [], outputs = [];
+        for (var i = 0; i < components.length; i++) {
+          if (components[i].classList.contains('input')) inputs.push(components[i]);
+          else if (components[i].classList.contains('output')) outputs.push(components[i]);
+        }
+
+        // TODO: named input/output
+        // array: input, not, output
+        // 1, 0, 0
+        // 0, 1, 1
+
+        // array: input, not, not, output
+        // 1, 0, 1, 1
+        // 0, 1, 0, 0
+
+        // input, and, output
+        // I1 I2 O1
+        // 0 0 0
+        // 1 0 0
+        // 0 1 0
+        // 1 1 1
+
+        var lines = activeMain().querySelectorAll('.lineSVG');
+        var lineArray = [];
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].children[1];
+          var conns = getLineConnectors(line);
+          var elemFrom = document.getElementById(conns.from).closest('.component');
+          var elemTo = document.getElementById(conns.to).closest('.component');
+          var typeFrom = elemFrom.children[0].classList[0];
+          var typeTo = elemTo.children[0].classList[0];
+
+          // TODO: create a function for this VVV
+          var mapFrom = getSignalMap(elemFrom);
+          for (var j = 0; j < mapFrom.global.ids.length; j++) if (mapFrom.global.ids[j] == conns.from) break;
+          var sideFrom = mapFrom.global.sides[j];
+          for (var j = 0; j < mapFrom[sideFrom].ids.length; j++) if (mapFrom[sideFrom].ids[j] == conns.from) break;
+          var posFrom = j;
+
+          var mapTo = getSignalMap(elemTo);
+          for (var j = 0; j < mapTo.global.ids.length; j++) if (mapTo.global.ids[j] == conns.to) break;
+          var sideTo = mapTo.global.sides[j];
+          for (var j = 0; j < mapTo[sideTo].ids.length; j++) if (mapTo[sideTo].ids[j] == conns.to) break;
+          var posTo = j;
+
+          lineArray.push({from: {elem: elemFrom, type: typeFrom, side: sideFrom, pos: posFrom, input: elemFrom.classList.contains('input')}, to: {elem: elemTo, type: typeTo, side: sideTo, pos: posTo, output: elemFrom.classList.contains('output')}});
+        }
+
+        // TODO: thruth table!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        console.log(lineArray);
+        var final = [], temp = {}, id = 0, where = [], debugging = 0;
+        while (lineArray.length && debugging < 50) {
+          for (var i = 0; i < lineArray.length; i++) {
+            var search = searchForElem(lineArray[i].from.elem);
+            // console.log(search);
+            if (search !== null) {
+              temp[search][id] = lineArray[i].to;
+              where.push({elem: lineArray[i].to.elem, id: [search, id]}); // <----------
+              id++;
+              lineArray.splice(i, 1);
+            } else if (lineArray[i].from.input) {
+              temp[id] = lineArray[i].from;
+              where.push({elem: lineArray[i].from.elem, id: [id]}); // <----------
+              id++;
+              temp[id - 1][id] = lineArray[i].to;
+              where.push({elem: lineArray[i].to.elem, id: [id - 1, id]}); // <----------------------
+              id++;
+              lineArray.splice(i, 1);
+            }
+            // console.log(lineArray[i].from);
+          }
+          debugging++;
+        }
+        console.log(lineArray);
+        console.log('TEMP');
+        console.log(temp);
+
+        function searchForElem(elem) {
+          // console.log('SERACH');
+          // console.log(elem);
+          var returned = null;
+          // console.log(where);
+          for (var i = 0; i < where.length; i++) {
+            if (where[i].elem === elem) {
+              returned = where[i].id;
+            }
+          }
+          // console.log(returned);
+          return returned;
+        }
+
+        // var lines = activeMain().querySelectorAll('.lineSVG');
+        // // var lineArray = [];
+        // var obj = {}, inputCount = 0;
+        // for (var i = 0; i < lines.length; i++) {
+        //   var line = lines[i].children[1];
+        //   // lineArray.push(getLineConnectors(line));
+        //   var comp = document.getElementById(getLineConnectors(line).from).closest('.component');
+        //   var compTo = document.getElementById(getLineConnectors(line).to).closest('.component');
+        //
+        //   var pos = i;
+        //
+        //   // else pos = getObjElem(comp);
+        //   var search = getObjElem(comp);
+        //   if (search !== null) pos = search;
+        //
+        //   if (obj[pos] == undefined) obj[pos] = {};
+        //   console.log(comp);
+        //   console.log(obj[pos]);
+        //   // if (comp.children[0].classList[0].contains('input')) {
+        //   //   // obj[inputCount] = {};
+        //   //   // inputCount++;
+        //   //   obj[pos] = {};
+        //   // } else {
+        //   //   obj[pos] = {};
+        //   // }
+        //   obj[pos].connFrom = getLineConnectors(line).from;
+        //   // obj[pos].connTo = getLineConnectors(line).to;
+        //   obj[pos].elem = comp;
+        //   obj[pos].elemTo = compTo;
+        //   obj[pos].type = comp.children[0].classList[0];
+        // }
+        // console.log(obj);
+        //
+        // function getObjElem(elem) {
+        //   // for (var i = 0; i < Object.keys(obj).length; i++) {
+        //   //   var key = Object.keys(obj)[i];
+        //   // }
+        //   var returned = null;
+        //   iter(obj, []);
+        //   function iter(o, p) {
+        //     var keys = Object.keys(o);
+        //     // console.log(keys);
+        //     console.log(p);
+        //     console.log(o);
+        //     if (keys.length) {
+        //       return keys.forEach(function (k) {
+        //         if (o[k].elemTo === elem) returned = k; // o[k] || p?
+        //         // iter(o[k], p.concat(k));
+        //       });
+        //     }
+        //   }
+        //   return returned;
+        // }
+
+        // https://stackoverflow.com/questions/44759321/how-do-i-get-all-paths-to-tree-leafs-using-javascript
+        var object = {1: {2: {4: {7: {}}}, 3: {6: {}, 5: {}}}};
+        function getPath(object) {
+          function iter(o, p)  {
+            var keys = Object.keys(o);
+            if (keys.length) {
+              return keys.forEach(function (k) {
+                iter(o[k], p.concat(k));
+              });
+            }
+            result.push(p);
+          }
+          var result = [];
+          iter(object, []);
+          return result;
+        }
+
+        // TODO: direct input class search...
+        var circuits = [];
+        for (var i = 0; i < inputs.length; i++) {
+          // var conns = inputs[i].querySelectorAll('.connector');
+          var conn = inputs[i].querySelector('.connector');
+          var otherSide = getLineByConn(conn.id); // id
+          var arr = [{type: 'input', conn: conn.id, elem: inputs[i]}];
+          var test = 0;
+          otherSideF(otherSide, arr);
+          function otherSideF(otherSide, arr) {
+            for (var j = 0; j < otherSide.length; j++) { // (if j + 1 >= otherSide.length)
+              // while (otherSide[j] !== undefined) {
+                //   otherSide = getLineByConn(conn.id);
+                // }
+                if (j > 0) circuits.push(arr);
+                arr.push({type: document.getElementById(otherSide[j]).closest('.component').children[0].classList[0], conn: document.getElementById(otherSide[j]).closest('.component').querySelector('.connector').id, elem: document.getElementById(otherSide[j]).closest('.component')}); // TODO: get right conn (and not the first)
+                if (arr[arr.length - 1].type !== 'light' && arr[arr.length - 1].type !== 'number_display') {
+                  test++;
+                  otherSideF(getLineByConn(document.getElementById(otherSide[j]).closest('.component').querySelector('.connector').id), arr);
+                } else {
+                  // arr = ['input'];
+                  // circuits.push(arr);
+                  console.log(test);
+                  console.log(otherSide);
+                  console.log(arr);
+                }
+              }
+          }
+          // arr.push('output');
+          circuits.push(arr);
+        }
+        console.log(circuits);
+
+        // var connTemp = [];
+        // for (var i = 0; i < inputs.length; i++) {
+        //   var conns = inputs[i].querySelectorAll('.connector');
+        //   for (var j = 0; j < conns.length; j++) {
+        //     var connectedConnectors = getLineByConn(conns[j].id);
+        //     for (var k = 0; k < connectedConnectors.length; k++) {
+        //       var conn = connectedConnectors[k];
+        //       // var component = conn.closest('.component');
+        //       // var on = activate(conn, true, true);
+        //       // var off = activate(conn, false, true);
+        //       var on = activateThruth(conn, true);
+        //       var off = activateThruth(conn, false);
+        //       // setTimeout(function () {
+        //         connTemp.push({conn: conn, on: on, off: off});
+        //       // }, 10);
+        //     }
+        //   }
+        // }
+        // for (var i = 0; i < connTemp.length; i++) {
+        //   var conn = connTemp[i].conn;
+        //   var on = connTemp[i].on;
+        //   var off = connTemp[i].off;
+        //   console.log(on);
+        //   console.log(off);
+        //   if (on.length > 0) on = on[0].powered;
+        //   if (off.length > 0) off = off[0].powered;
+        //   console.log(conn);
+        //   console.log('----');
+        //   console.log('I' + (i + 1) + ': (on)');
+        //   console.log('O' + (k + 1) + ': ' + on);
+        //   console.log('I' + (i + 1) + ': (off)');
+        //   console.log('O' + (k + 1) + ': ' + off);
+        // }
+        // console.log(table);
+
+        function getLineByConn(id) {
+          var lines = activeMain().querySelectorAll('.lineSVG');
+          var linesReturn = [];
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].children[1];
+            if (line.id.includes(id)) {
+              var lineConns = getLineConnectors(line);
+              if (lineConns.from == id) linesReturn.push(lineConns.to);
+              else linesReturn.push(lineConns.from);
+            }
+          }
+          return linesReturn;
+        }
+
+        function activateThruth(id, powered) {
+          var elem = document.getElementById(id).closest(".component");
+          var connectors = elem.querySelectorAll('.connector');
+          if (elem.classList[0] == "box") elem = elem.children[0];
+          var type = elem.classList[0];
+
+          var activated = false, activatedArray = [];
+
+          var signal = getSignalMap(elem);
+          switch (type) {
+            case "light":
+              activatedArray.push({conn: elem, powered: powered});
+              break;
+            case "not":
+              activatedArray.push({conn: elem, powered: !powered});
+              break;
+          }
+          return activatedArray;
+        }
         break;
 
       case 'bug_report':
