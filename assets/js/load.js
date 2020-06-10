@@ -931,6 +931,8 @@ if (Object.keys(saves).length > 0) {
   }
   active_tab = saves.activeTab;
   document.getElementById('tab#' + active_tab).click();
+} else {
+  saves.tabs = []; // ...
 }
 
 function loadObj(object, tabId) {

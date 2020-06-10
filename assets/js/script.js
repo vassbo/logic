@@ -2223,7 +2223,7 @@ function closeTab(e, elem) {
 // TODO: creating new tabs store name
 function tabObject(id) {
   if (id == undefined) id = active_tab;
-  else if (id.includes('tab#')) id = id.slice(4, id.length);
+  else if (id.toString().includes('tab#')) id = id.slice(4, id.length);
   if (saves.tabs[id] == undefined) saves.tabs[id] = {};
   return saves.tabs[id];
 }
