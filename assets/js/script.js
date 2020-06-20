@@ -53,6 +53,16 @@
 
 // TODO: box selecting elements will not enable buttons properly
 
+// TODO: moving an element in very zoomed out mode makes it undefined on place (can find e.target)
+
+
+// show alert box upon exit with unchanged things...
+
+
+// TODO: start in center
+// menu y scroll...
+// test on different browsers
+
 
 // updateSignal | lineConnections | elementsIsideBox | main# -> var(--
 
@@ -90,7 +100,8 @@ var active_tab = 0;
 
 var historyLog = [], historyRedo = [];
 
-var speakerAudio = [];
+// var speakerAudio = [];
+var elemStorage = [];
 
 /////////////////////
 ///// DRAGGABLE /////
@@ -290,6 +301,12 @@ function dragElement(elmnt, drawer) {
       if (startingConnect.closest(".connection").classList[1] !== target.closest(".connection").classList[1]) { // e.g. right !== right || left !== left
         if (hasNoConnections(target.id) || !target.closest(".connection").classList.contains("left")) { // has no connections || has not connector on left (left = output)
           if (startingConnect !== target) { // not the same start and end
+            // constant start/end (WIP? (minimize))
+            if (!startingConnect.closest('.connection').classList.contains('right') && !startingConnect.closest('.connection').classList.contains('bottom') && !startingConnect.closest('.connection').classList.contains('required')) {
+              let placeholder = target;
+              target = startingConnect;
+              startingConnect = placeholder;
+            }
             var id = startingConnect.id + ':' + target.id;
             if (noMatchingLines(id)) { // no lines with the exact same id (same connections)
               var posTo = getLinePos(target);
@@ -305,6 +322,7 @@ function dragElement(elmnt, drawer) {
               // save to localStorage
               var startElem = startingConnect.closest('.component');
               var endElem = target.closest('.component');
+
               // TODO: WHAT'S THIS(VVV) FOR???
               // var tabObj = tabObject();
               // for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
@@ -383,9 +401,81 @@ function addListener(elem) {
       createClockSection(child.querySelector('.clock_input'));
       clock(child.querySelector(".clock_input"));
       break;
+    case "speaker":
+      // move this?
+      // soundtype
+      elemStorage.push({elem: elem, audio: null, curve: 1, pitch: 0, octave: 4});
+      let btns = elem.querySelectorAll('span');
+      btns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          let input = this.closest('.component').querySelector('.' + this.classList[0] + 'Input');
+          let getStorage = storageGet(this)[this.classList[0]];
+          let newVal = null;
+          switch (this.classList[0]) {
+            case 'curve':
+              let curves = ["square", "sine", "triangle", "sawtooth"];
+              if (this.innerHTML == 'add') newVal = ++getStorage;
+              else newVal = --getStorage;
+              if (newVal >= curves.length) newVal = curves.length - 1;
+              else if (newVal < 0) newVal = 0;
+              input.value = curves[newVal];
+              break;
+            case 'pitch':
+              let frequencies = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
+              if (this.innerHTML == 'add') newVal = ++getStorage;
+              else newVal = --getStorage;
+              if (newVal >= frequencies.length) newVal = frequencies.length - 1;
+              else if (newVal < 0) newVal = 0;
+              input.value = frequencies[newVal];
+              // add octave...
+              break;
+            case 'octave':
+              let octave = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+              if (this.innerHTML == 'add') newVal = ++getStorage;
+              else newVal = --getStorage;
+              if (newVal >= octave.length) newVal = octave.length - 1;
+              else if (newVal < 0) newVal = 0;
+              input.value = octave[newVal];
+              break;
+          
+            default:
+              alert(this.classList[0]);
+              break;
+          }
+          if (newVal !== null) {
+            storagePush(this, this.classList[0], newVal);
+            if (storageGet(this).audio !== null) playAudio(elem);
+          }
+        });
+      });
+      break;
+    case '256_bit':
+      // move / rename function...
+      elemStorage.push({elem: elem, storage: {}});
+      break;
   }
   if (child.classList[1] == 'gate' && child.querySelector(".gate_input") !== null) child.querySelector(".gate_input").addEventListener('change', gate);
   elem.addEventListener('click', select);
+}
+
+// move these!!!VVV
+function storageGet(elem) {
+  elem = elem.closest('.component');
+  for (var i = 0; i < elemStorage.length; i++) {
+    if (elemStorage[i].elem === elem) break;
+  }
+  return elemStorage[i];
+}
+function storagePush(elem, key, value) {
+  elem = elem.closest('.component');
+  for (var i = 0; i < elemStorage.length; i++) {
+    if (elemStorage[i].elem === elem) {
+      console.log(elemStorage[i], 'STORE', value, key);
+      elemStorage[i][key] = value;
+      break;
+    }
+  }
+  // return i;
 }
 
 // zoom slider
@@ -1002,10 +1092,10 @@ function activate(id, powered, thruth) {
         else if (signal.left.bools[1]) color = '28, 182, 0'; // green
         else if (signal.left.bools[2]) color = '48, 54, 224'; // blue
 
-        if (!color) elem.querySelector('div').removeAttribute('style');
+        if (!color) elem.removeAttribute('style');
         else {
-          elem.querySelector('div').style.background = 'rgb(' + color + ')';
-          elem.querySelector('div').style.boxShadow = '0 0 8px rgba(' + color + ', 0.8)';
+          elem.style.background = 'rgb(' + color + ')';
+          elem.style.boxShadow = '0 0 8px rgba(' + color + ', 0.8)';
         }
         // sendSignal(elem, activated);
         // enableOutput(elem, activated);
@@ -1013,46 +1103,23 @@ function activate(id, powered, thruth) {
 
       case 'speaker':
         if (signal.left.trues == 1) {
-          var context = new AudioContext();
-          var o = context.createOscillator();
-          var g = context.createGain();
-          // o.type = "square";
-          o.connect(g);
-          g.connect(context.destination);
-          o.start();
-
-          // get type
-          var typeValue = elem.querySelector('#tone').value;
-          if (typeValue == 0) o.type = "square";
-          else if (typeValue == 1) o.type = "sine";
-          else if (typeValue == 2) o.type = "triangle";
-          else if (typeValue == 3) o.type = "sawtooth";
-
-          // TODO: disable slider in drawer...
-
-          // octave 4
-          var frequency = elem.querySelector('#soundtypeList').querySelectorAll('option')[elem.querySelector('#soundtype').value].value;
-          console.log(frequency);
-          o.frequency.value = frequency;
-
-          // TODO: lower volume
-          // g.gain.setValueAtTime(0, 0.8);
-          // TODO: remove sound/object on delettion / line removal
-
-          // js audio create a sound
-          // src: https://marcgg.com/blog/2016/11/01/javascript-audio/
-          // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Advanced_techniques
-
-          speakerAudio.push({elem: elem, audio: o, gain: g, context: context});
+          playAudio(elem);
         } else {
-          for (var i = 0; i < speakerAudio.length; i++) {
-            if (speakerAudio[i].elem == elem) {
-              speakerAudio[i].gain.gain.exponentialRampToValueAtTime(0.00001, speakerAudio[i].context.currentTime + 1);
-              // speakerAudio[i].audio.stop();
-              speakerAudio.splice(i, 1);
-              break;
-            }
+          let soundElem = storageGet(elem);
+          if (soundElem.audio !== null) {
+            soundElem.gain.gain.exponentialRampToValueAtTime(0.00001, soundElem.context.currentTime + 1);
+            // soundElem.audio.stop();
+            storagePush(elem, 'audio', null);
+            break;
           }
+          // for (var i = 0; i < speakerAudio.length; i++) {
+          //   if (speakerAudio[i].elem == elem) {
+          //     speakerAudio[i].gain.gain.exponentialRampToValueAtTime(0.00001, speakerAudio[i].context.currentTime + 1);
+          //     // speakerAudio[i].audio.stop();
+          //     speakerAudio.splice(i, 1);
+          //     break;
+          //   }
+          // }
         }
         break;
 
@@ -1163,8 +1230,8 @@ function activate(id, powered, thruth) {
           }
         }
         break;
-      case 'multiplexer':
-        for (var m = 0; m <= 15; m++) { // function to make false
+      case 'multiplexer': // TODO: output 0 shoulg be enabled by default!
+        for (var m = 4; m < 16 + 4; m++) { // function to make false
           sendSignal(elem, false, m);
           enableOutput(elem, false, m);
         }
@@ -1203,6 +1270,7 @@ function activate(id, powered, thruth) {
         }
         break;
       case '256_bit':
+        let storage = storageGet(elem).storage;
         var activeInput = {column: '', row: ''};
         for (var n = 0; n <= 3; n++) {
           if (signal.left.bools[n]) activeInput.column += '1';
@@ -1214,11 +1282,14 @@ function activate(id, powered, thruth) {
         activeInput.row = parseInt(activeInput.row, 2);
 
         if (signal.global.labels.write_enable) {
-          if (signal.global.labels.data_in) activated = true;
-          elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML = activated;
+          console.log(signal.global);
+          if (signal.global.labels['data_(in)']) activated = true; // TODO: ['data_(in)'] = .data_in
+          // elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML = activated;
+          storageGet(elem).storage[activeInput.column + '_' + activeInput.row] = activated;
         }
         if (signal.global.labels.read_enable) {
-          if (elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML == 'true') activated = true;
+          // if (elem.getElementsByClassName(activeInput.column + '_' + activeInput.row)[0].innerHTML == 'true') activated = true;
+          if (storage[activeInput.column + '_' + activeInput.row] === true) activated = true;
           else activated = false;
           console.log('Memory read: ' + activated);
           sendSignal(elem, activated);
@@ -1229,6 +1300,7 @@ function activate(id, powered, thruth) {
         }
         break;
       case '256_byte':
+        // TODO: add storageGet() ...
         var activeInput = {column: '', row: ''};
         for (var n = 11; n >= 8; n -= 1) {
           if (signal.left.bools[n]) activeInput.column += '1';
@@ -1323,6 +1395,62 @@ function resetMemory(type, elem) {
       document.getElementById(i + '_' + j).innerHTML = false;
     }
   }
+}
+
+// TODO: move this...
+// TODO: stop audio on elem remove
+function playAudio(elem) {
+  let soundElem = storageGet(elem);
+
+  // check for existing sound
+  var context = new AudioContext();
+  var o = context.createOscillator();
+  var g = context.createGain();
+  if (soundElem.audio !== null) {
+    context = soundElem.context;
+    o = soundElem.audio;
+    g = soundElem.gain;
+  }
+  // o.type = "square";
+  o.connect(g);
+  g.connect(context.destination);
+  if (soundElem.audio == null) o.start();
+
+  let curves = ["square", "sine", "triangle", "sawtooth"];
+  o.type = curves[soundElem.curve];
+
+  // get type
+  // var typeValue = elem.querySelector('#tone').value;
+  // if (typeValue == 0) o.type = "square";
+  // else if (typeValue == 1) o.type = "sine";
+  // else if (typeValue == 2) o.type = "triangle";
+  // else if (typeValue == 3) o.type = "sawtooth";
+
+  // TODO: disable slider in drawer...
+
+  
+  let multiplier = [1, 2, 4, 8, 16, 32, 64, 128, 256];
+
+  // octave 4
+  // let frequencies = ['261.6', '277.2', '293.7', '311.1', '329.6', '349.2', '370.0', '392.0', '415.3', '440.0', '466.2', '493.9'];
+  let frequencies = ['16.35', '17.32', '18.35', '19.45', '20.60', '21.83', '23.12', '24.50', '25.96', '27.50', '29.14', '30.87'];
+  // var frequency = elem.querySelector('#soundtypeList').querySelectorAll('option')[elem.querySelector('#soundtype').value].value;
+  var frequency = frequencies[soundElem.pitch] * multiplier[soundElem.octave];
+  console.log(frequency);
+  o.frequency.value = frequency;
+
+  // TODO: lower volume
+  // g.gain.setValueAtTime(0, 0.8);
+  // TODO: remove sound/object on delettion / line removal
+
+  // js audio create a sound
+  // src: https://marcgg.com/blog/2016/11/01/javascript-audio/
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Advanced_techniques
+
+  // speakerAudio.push({elem: elem, audio: o, gain: g, context: context});
+  storagePush(elem, 'audio', o);
+  storagePush(elem, 'gain', g);
+  storagePush(elem, 'context', context);
 }
 
 function eo(elem, object) {
@@ -1472,6 +1600,7 @@ function sendSignal(elem, powered, output) { // TODO: , side
 
 // easily append element from object
 function appendElem(object, tabId, loaded, store) { // remove "loaded" // just send object?
+  console.log(object);
   if (tabId == undefined) tabId = active_tab;
   // var object = getObjectByType(type);
   var div = document.createElement("div");
@@ -2269,16 +2398,18 @@ function historyAdd(type, values) {
 function store(elem, id, value) {
   var object = {}, name = '';
   var tabObj = tabObject();
-  console.log(active_tab);
-  console.log(tabObj);
-  for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
-    console.log(tabObj.components.component);
-    name = Object.keys(tabObj.components)[i];
-    if (tabObj.components[name].component === elem) {
-      if (id == 'delete') delete tabObj.components[name];
-      else if (id !== undefined) tabObj.components[name][id] = value;
-      object = tabObj.components[name];
-      break;
+  // console.log(active_tab);
+  // console.log(tabObj);
+  if (tabObj.components !== undefined) {
+    for (var i = 0; i < Object.keys(tabObj.components).length; i++) {
+      console.log(tabObj.components.component);
+      name = Object.keys(tabObj.components)[i];
+      if (tabObj.components[name].component === elem) {
+        if (id == 'delete') delete tabObj.components[name];
+        else if (id !== undefined) tabObj.components[name][id] = value;
+        object = tabObj.components[name];
+        break;
+      }
     }
   }
   return {object: object, key: name};

@@ -35,6 +35,7 @@ var context = {
     {text: 'Copy', id: 'copy'},
     {text: 'Duplicate', id: 'duplicate'},
     // {text: 'Save As', id: 'save_as'},
+    // TODO: {text: 'Add inputs/outputs', id: 'addInsAndOuts'},
     {text: 'Documentation', id: 'documentation', disabled: true},
     {text: 'Inspect', id: 'inspect', disabled: true}
   ],
@@ -217,7 +218,7 @@ function menuClick(e) {
         break;
       case "documentation":
         document.getElementById("dark").classList.remove("hidden");
-        var info = document.getElementById("info");
+        var info = document.getElementById("documentationCard");
         info.classList.remove("hidden");
         info.querySelector('h1').innerHTML = object.name;
         info.querySelector('p').innerHTML = object.documentation || 'No documentation!';
@@ -242,157 +243,110 @@ function menuClick(e) {
           //   cSVG({elem: t2}, {elem: tr2, side: 'top'});
           //   break;
 
-          case 'seven_segment_decoder':
-            var t1 = appendElem('toggle', {x: 4550, y: 4700}, '8');
-            var t2 = appendElem('toggle', {x: 4700, y: 4700}, '4');
-            var t3 = appendElem('toggle', {x: 4850, y: 4700}, '2');
-            var t4 = appendElem('toggle', {x: 5000, y: 4700}, '1');
-            // var n1 = appendElem('not', {x: 4434, y: 4850});
-            var n2 = appendElem('not', {x: 4775, y: 4850});
-            var n3 = appendElem('not', {x: 4925, y: 4850});
-            var n4 = appendElem('not', {x: 5075, y: 4850});
-            var and1 = appendElem('and', {x: 5760, y: 4726});
-            var and2 = appendElem('and', {x: 5760, y: 4811});
-            var and3 = appendElem('and', {x: 5760, y: 4945});
-            var and4 = appendElem('and', {x: 5760, y: 5027});
-            var and5 = appendElem('and', {x: 5760, y: 5268});
-            var and6 = appendElem('and', {x: 5760, y: 5351});
-            var and7 = appendElem('and', {x: 5760, y: 5442});
-            var and8 = appendElem('and', {x: 5760, y: 5558});
-            var and9 = appendElem('and', {x: 5760, y: 5666});
-            var or1 = appendElem('or', {x: 6000, y: 4911}); // 4
-            var or2 = appendElem('or', {x: 6000, y: 5048}); // 3
-            var or3 = appendElem('or', {x: 5760, y: 5149}); // 3
-            var or4 = appendElem('or', {x: 6000, y: 5262}); // 5
-            var or5 = appendElem('or', {x: 6000, y: 5395}); // (2)
-            var or6 = appendElem('or', {x: 6000, y: 5505}); // 4
-            var or7 = appendElem('or', {x: 6000, y: 5636}); // 4
-            // var ssd = appendElem('seven_segment', {x: 6354, y: 5167});
-            var l1 = appendElem('light', {x: 6200, y: 4921}, 'Output #1');
-            var l2 = appendElem('light', {x: 6200, y: 5053}, 'Output #2');
-            var l3 = appendElem('light', {x: 6200, y: 5154}, 'Output #3');
-            var l4 = appendElem('light', {x: 6200, y: 5277}, 'Output #4');
-            var l5 = appendElem('light', {x: 6200, y: 5395}, 'Output #5');
-            var l6 = appendElem('light', {x: 6200, y: 5515}, 'Output #6');
-            var l7 = appendElem('light', {x: 6200, y: 5646}, 'Output #7');
-            gate(or1.querySelector('.textInput'), 4);
-            gate(or2.querySelector('.textInput'), 3);
-            gate(or3.querySelector('.textInput'), 3);
-            gate(or4.querySelector('.textInput'), 5);
-            // gate(or5.querySelector('.textInput'), 2);
-            gate(or6.querySelector('.textInput'), 4);
-            gate(or7.querySelector('.textInput'), 4);
-            // cSVG({elem: t1}, {elem: n1, side: 'left'});
-            cSVG({elem: t2}, {elem: n2, side: 'left'});
-            cSVG({elem: t3}, {elem: n3, side: 'left'});
-            cSVG({elem: t4}, {elem: n4, side: 'left'});
-            // cSVG({elem: or1, side: 'right'}, {elem: ssd});
-            // cSVG({elem: or2, side: 'right'}, {elem: ssd, pos: 1});
-            // cSVG({elem: or3, side: 'right'}, {elem: ssd, pos: 2});
-            // cSVG({elem: or4, side: 'right'}, {elem: ssd, pos: 3});
-            // cSVG({elem: or5, side: 'right'}, {elem: ssd, pos: 4});
-            // cSVG({elem: or6, side: 'right'}, {elem: ssd, pos: 5});
-            // cSVG({elem: or7, side: 'right'}, {elem: ssd, pos: 6});
-            cSVG({elem: or1, side: 'right'}, {elem: l1});
-            cSVG({elem: or2, side: 'right'}, {elem: l2});
-            cSVG({elem: or3, side: 'right'}, {elem: l3});
-            cSVG({elem: or4, side: 'right'}, {elem: l4});
-            cSVG({elem: or5, side: 'right'}, {elem: l5});
-            cSVG({elem: or6, side: 'right'}, {elem: l6});
-            cSVG({elem: or7, side: 'right'}, {elem: l7});
-            cSVG({elem: and1, side: 'right'}, {elem: or1, side: 'left'});
-            cSVG({elem: and2, side: 'right'}, {elem: or1, side: 'left', pos: 1});
-            cSVG({elem: and2, side: 'right'}, {elem: or4, side: 'left', pos: 1});
-            cSVG({elem: and2, side: 'right'}, {elem: or5, side: 'left', pos: 1});
-            cSVG({elem: and3, side: 'right'}, {elem: or2, side: 'left'});
-            cSVG({elem: and4, side: 'right'}, {elem: or2, side: 'left', pos: 2});
-            cSVG({elem: and4, side: 'right'}, {elem: or6, side: 'left'});
-            cSVG({elem: and5, side: 'right'}, {elem: or4, side: 'left', pos: 2});
-            cSVG({elem: and5, side: 'right'}, {elem: or5, side: 'left'});
-            cSVG({elem: and5, side: 'right'}, {elem: or7, side: 'left'});
-            cSVG({elem: and6, side: 'right'}, {elem: or4, side: 'left', pos: 3});
-            cSVG({elem: and6, side: 'right'}, {elem: or7, side: 'left', pos: 3});
-            cSVG({elem: and7, side: 'right'}, {elem: or4, side: 'left', pos: 4});
-            cSVG({elem: and8, side: 'right'}, {elem: and7, side: 'left', pos: 1});
-            cSVG({elem: and8, side: 'right'}, {elem: or6, side: 'left', pos: 2});
-            cSVG({elem: and8, side: 'right'}, {elem: or7, side: 'left', pos: 1});
-            cSVG({elem: and9, side: 'right'}, {elem: or6, side: 'left', pos: 1});
-            cSVG({elem: t1}, {elem: or1, side: 'left', pos: 2});
-            cSVG({elem: t1}, {elem: or4, side: 'left'});
-            cSVG({elem: t1}, {elem: or6, side: 'left', pos: 3});
-            cSVG({elem: t1}, {elem: or7, side: 'left', pos: 2});
-            cSVG({elem: t2}, {elem: and1, side: 'left'});
-            cSVG({elem: t2}, {elem: or3, side: 'left'});
-            cSVG({elem: t2}, {elem: and8, side: 'left'});
-            cSVG({elem: t2}, {elem: and9, side: 'left'});
-            cSVG({elem: n2}, {elem: and2, side: 'left'});
-            cSVG({elem: n2}, {elem: or2, side: 'left', pos: 1});
-            cSVG({elem: n2}, {elem: and6, side: 'left'});
-            cSVG({elem: t3}, {elem: or1, side: 'left', pos: 3});
-            cSVG({elem: t3}, {elem: and3, side: 'left'});
-            cSVG({elem: t3}, {elem: and5, side: 'left'});
-            cSVG({elem: t3}, {elem: and6, side: 'left', pos: 1});
-            cSVG({elem: n3}, {elem: and4, side: 'left'});
-            cSVG({elem: n3}, {elem: or3, side: 'left', pos: 1});
-            cSVG({elem: n3}, {elem: and8, side: 'left', pos: 1});
-            cSVG({elem: t4}, {elem: and1, side: 'left', pos: 1});
-            cSVG({elem: t4}, {elem: and3, side: 'left', pos: 1});
-            cSVG({elem: t4}, {elem: or3, side: 'left', pos: 2});
-            cSVG({elem: t4}, {elem: and7, side: 'left'});
-            cSVG({elem: n4}, {elem: and2, side: 'left', pos: 1});
-            cSVG({elem: n4}, {elem: and4, side: 'left', pos: 1});
-            cSVG({elem: n4}, {elem: and5, side: 'left', pos: 1});
-            cSVG({elem: n4}, {elem: and9, side: 'left', pos: 1});
-            break;
+          // case 'seven_segment_decoder':
+          //   var t1 = appendElem('toggle', {x: 4550, y: 4700}, '8');
+          //   var t2 = appendElem('toggle', {x: 4700, y: 4700}, '4');
+          //   var t3 = appendElem('toggle', {x: 4850, y: 4700}, '2');
+          //   var t4 = appendElem('toggle', {x: 5000, y: 4700}, '1');
+          //   // var n1 = appendElem('not', {x: 4434, y: 4850});
+          //   var n2 = appendElem('not', {x: 4775, y: 4850});
+          //   var n3 = appendElem('not', {x: 4925, y: 4850});
+          //   var n4 = appendElem('not', {x: 5075, y: 4850});
+          //   var and1 = appendElem('and', {x: 5760, y: 4726});
+          //   var and2 = appendElem('and', {x: 5760, y: 4811});
+          //   var and3 = appendElem('and', {x: 5760, y: 4945});
+          //   var and4 = appendElem('and', {x: 5760, y: 5027});
+          //   var and5 = appendElem('and', {x: 5760, y: 5268});
+          //   var and6 = appendElem('and', {x: 5760, y: 5351});
+          //   var and7 = appendElem('and', {x: 5760, y: 5442});
+          //   var and8 = appendElem('and', {x: 5760, y: 5558});
+          //   var and9 = appendElem('and', {x: 5760, y: 5666});
+          //   var or1 = appendElem('or', {x: 6000, y: 4911}); // 4
+          //   var or2 = appendElem('or', {x: 6000, y: 5048}); // 3
+          //   var or3 = appendElem('or', {x: 5760, y: 5149}); // 3
+          //   var or4 = appendElem('or', {x: 6000, y: 5262}); // 5
+          //   var or5 = appendElem('or', {x: 6000, y: 5395}); // (2)
+          //   var or6 = appendElem('or', {x: 6000, y: 5505}); // 4
+          //   var or7 = appendElem('or', {x: 6000, y: 5636}); // 4
+          //   // var ssd = appendElem('seven_segment', {x: 6354, y: 5167});
+          //   var l1 = appendElem('light', {x: 6200, y: 4921}, 'Output #1');
+          //   var l2 = appendElem('light', {x: 6200, y: 5053}, 'Output #2');
+          //   var l3 = appendElem('light', {x: 6200, y: 5154}, 'Output #3');
+          //   var l4 = appendElem('light', {x: 6200, y: 5277}, 'Output #4');
+          //   var l5 = appendElem('light', {x: 6200, y: 5395}, 'Output #5');
+          //   var l6 = appendElem('light', {x: 6200, y: 5515}, 'Output #6');
+          //   var l7 = appendElem('light', {x: 6200, y: 5646}, 'Output #7');
+          //   gate(or1.querySelector('.textInput'), 4);
+          //   gate(or2.querySelector('.textInput'), 3);
+          //   gate(or3.querySelector('.textInput'), 3);
+          //   gate(or4.querySelector('.textInput'), 5);
+          //   // gate(or5.querySelector('.textInput'), 2);
+          //   gate(or6.querySelector('.textInput'), 4);
+          //   gate(or7.querySelector('.textInput'), 4);
+          //   // cSVG({elem: t1}, {elem: n1, side: 'left'});
+          //   cSVG({elem: t2}, {elem: n2, side: 'left'});
+          //   cSVG({elem: t3}, {elem: n3, side: 'left'});
+          //   cSVG({elem: t4}, {elem: n4, side: 'left'});
+          //   // cSVG({elem: or1, side: 'right'}, {elem: ssd});
+          //   // cSVG({elem: or2, side: 'right'}, {elem: ssd, pos: 1});
+          //   // cSVG({elem: or3, side: 'right'}, {elem: ssd, pos: 2});
+          //   // cSVG({elem: or4, side: 'right'}, {elem: ssd, pos: 3});
+          //   // cSVG({elem: or5, side: 'right'}, {elem: ssd, pos: 4});
+          //   // cSVG({elem: or6, side: 'right'}, {elem: ssd, pos: 5});
+          //   // cSVG({elem: or7, side: 'right'}, {elem: ssd, pos: 6});
+          //   cSVG({elem: or1, side: 'right'}, {elem: l1});
+          //   cSVG({elem: or2, side: 'right'}, {elem: l2});
+          //   cSVG({elem: or3, side: 'right'}, {elem: l3});
+          //   cSVG({elem: or4, side: 'right'}, {elem: l4});
+          //   cSVG({elem: or5, side: 'right'}, {elem: l5});
+          //   cSVG({elem: or6, side: 'right'}, {elem: l6});
+          //   cSVG({elem: or7, side: 'right'}, {elem: l7});
+          //   cSVG({elem: and1, side: 'right'}, {elem: or1, side: 'left'});
+          //   cSVG({elem: and2, side: 'right'}, {elem: or1, side: 'left', pos: 1});
+          //   cSVG({elem: and2, side: 'right'}, {elem: or4, side: 'left', pos: 1});
+          //   cSVG({elem: and2, side: 'right'}, {elem: or5, side: 'left', pos: 1});
+          //   cSVG({elem: and3, side: 'right'}, {elem: or2, side: 'left'});
+          //   cSVG({elem: and4, side: 'right'}, {elem: or2, side: 'left', pos: 2});
+          //   cSVG({elem: and4, side: 'right'}, {elem: or6, side: 'left'});
+          //   cSVG({elem: and5, side: 'right'}, {elem: or4, side: 'left', pos: 2});
+          //   cSVG({elem: and5, side: 'right'}, {elem: or5, side: 'left'});
+          //   cSVG({elem: and5, side: 'right'}, {elem: or7, side: 'left'});
+          //   cSVG({elem: and6, side: 'right'}, {elem: or4, side: 'left', pos: 3});
+          //   cSVG({elem: and6, side: 'right'}, {elem: or7, side: 'left', pos: 3});
+          //   cSVG({elem: and7, side: 'right'}, {elem: or4, side: 'left', pos: 4});
+          //   cSVG({elem: and8, side: 'right'}, {elem: and7, side: 'left', pos: 1});
+          //   cSVG({elem: and8, side: 'right'}, {elem: or6, side: 'left', pos: 2});
+          //   cSVG({elem: and8, side: 'right'}, {elem: or7, side: 'left', pos: 1});
+          //   cSVG({elem: and9, side: 'right'}, {elem: or6, side: 'left', pos: 1});
+          //   cSVG({elem: t1}, {elem: or1, side: 'left', pos: 2});
+          //   cSVG({elem: t1}, {elem: or4, side: 'left'});
+          //   cSVG({elem: t1}, {elem: or6, side: 'left', pos: 3});
+          //   cSVG({elem: t1}, {elem: or7, side: 'left', pos: 2});
+          //   cSVG({elem: t2}, {elem: and1, side: 'left'});
+          //   cSVG({elem: t2}, {elem: or3, side: 'left'});
+          //   cSVG({elem: t2}, {elem: and8, side: 'left'});
+          //   cSVG({elem: t2}, {elem: and9, side: 'left'});
+          //   cSVG({elem: n2}, {elem: and2, side: 'left'});
+          //   cSVG({elem: n2}, {elem: or2, side: 'left', pos: 1});
+          //   cSVG({elem: n2}, {elem: and6, side: 'left'});
+          //   cSVG({elem: t3}, {elem: or1, side: 'left', pos: 3});
+          //   cSVG({elem: t3}, {elem: and3, side: 'left'});
+          //   cSVG({elem: t3}, {elem: and5, side: 'left'});
+          //   cSVG({elem: t3}, {elem: and6, side: 'left', pos: 1});
+          //   cSVG({elem: n3}, {elem: and4, side: 'left'});
+          //   cSVG({elem: n3}, {elem: or3, side: 'left', pos: 1});
+          //   cSVG({elem: n3}, {elem: and8, side: 'left', pos: 1});
+          //   cSVG({elem: t4}, {elem: and1, side: 'left', pos: 1});
+          //   cSVG({elem: t4}, {elem: and3, side: 'left', pos: 1});
+          //   cSVG({elem: t4}, {elem: or3, side: 'left', pos: 2});
+          //   cSVG({elem: t4}, {elem: and7, side: 'left'});
+          //   cSVG({elem: n4}, {elem: and2, side: 'left', pos: 1});
+          //   cSVG({elem: n4}, {elem: and4, side: 'left', pos: 1});
+          //   cSVG({elem: n4}, {elem: and5, side: 'left', pos: 1});
+          //   cSVG({elem: n4}, {elem: and9, side: 'left', pos: 1});
+          //   break;
 
-          case 'gated_latch':
-            var t1 = appendElem('toggle', {x: 4330, y: 4825}, 'Data in');
-            var t2 = appendElem('toggle', {x: 4330, y: 5003}, 'Write enable');
-            var l = appendElem('light', {x: 5410, y: 4900}, 'Data out');
-            var and1 = appendElem('and', {x: 4739, y: 4839});
-            var and2 = appendElem('and', {x: 5246, y: 4900});
-            var and3 = appendElem('and', {x: 4800, y: 4990});
-            var or = appendElem('or', {x: 5000, y: 4826});
-            var not1 = appendElem('not', {x: 4628, y: 4940});
-            var not2 = appendElem('not', {x: 5000, y: 4990});
-            cSVG({elem: t1}, {elem: and1, side: 'left'});
-            cSVG({elem: t1}, {elem: not1, side: 'left'});
-            cSVG({elem: t2}, {elem: and1, side: 'left', pos: 1});
-            cSVG({elem: t2}, {elem: and3, side: 'left', pos: 1});
-            cSVG({elem: not1, side: 'right'}, {elem: and3, side: 'left'});
-            cSVG({elem: and1, side: 'right'}, {elem: or, side: 'left', pos: 1});
-            cSVG({elem: and3, side: 'right'}, {elem: not2, side: 'left'});
-            cSVG({elem: not2, side: 'right'}, {elem: and2, side: 'left', pos: 1});
-            cSVG({elem: or, side: 'right'}, {elem: and2, side: 'left'});
-            cSVG({elem: and2, side: 'right'}, {elem: or, side: 'left'});
-            cSVG({elem: and2, side: 'right'}, {elem: l});
-            break;
-          case 'gated_latch_grid':
-            var g1 = appendElem('gated_latch', {x: 4921, y: 4847});
-            var tr1 = appendElem('transistor', {x: 5223, y: 4881});
-            var and1 = appendElem('and', {x: 4939, y: 5105});
-            var and2 = appendElem('and', {x: 4541, y: 5091});
-            var and3 = appendElem('and', {x: 4693, y: 4910});
-            var l1 = appendElem('light', {x: 5395, y: 4881}, 'Data out'); // Data in/out
-            var t1 = appendElem('toggle', {x: 4481, y: 4774}, 'Data in');
-            var t2 = appendElem('toggle', {x: 4482, y: 4896}, 'Write enable');
-            var t3 = appendElem('toggle', {x: 4679, y: 5169}, 'Read enable');
-            var t4 = appendElem('toggle', {x: 4320, y: 5027}, 'Row');
-            var t5 = appendElem('toggle', {x: 4318, y: 5143}, 'Column');
-            cSVG({elem: t1}, {elem: g1, side: 'left'});
-            cSVG({elem: t2}, {elem: and3, side: 'left'});
-            cSVG({elem: t3}, {elem: and1, side: 'left', pos: 1});
-            cSVG({elem: t4}, {elem: and2, side: 'left'});
-            cSVG({elem: t5}, {elem: and2, side: 'left', pos: 1});
-            cSVG({elem: and1, side: 'right'}, {elem: tr1, side: 'top'});
-            cSVG({elem: and3, side: 'right'}, {elem: g1, side: 'left', pos: 1});
-            cSVG({elem: and2, side: 'right'}, {elem: and3, side: 'left', pos: 1});
-            cSVG({elem: and2, side: 'right'}, {elem: and1, side: 'left'});
-            cSVG({elem: g1, side: 'right'}, {elem: tr1, side: 'left'});
-            cSVG({elem: tr1, side: 'right'}, {elem: l1});
-            break;
-
-            case '256_bit':
+            case '256_bit_remove':
               var lg = appendElem('latch_grid', {x: 5111, y: 5000});
               var ca = appendElem('multiplexer', {x: 4863, y: 4748}, 'Column address');
               var ra = appendElem('multiplexer', {x: 4392, y: 4901}, 'Row address');
@@ -710,61 +664,170 @@ function menuClick(e) {
 }
 
 
+var loadComponentInterval, loadComponentArrayInterval, loadConnectionsInterval;
 function loadComponent(component) {
   var elems = {}, conns = {};
+  loading('Getting data...');
   // create components
-  for (var i = 0; i < Object.keys(component).length; i++) {
-    var key = Object.keys(component)[i]
+  var i = 0;
+  loadComponentInterval = setInterval(function() {
+  // for (var i = 0; i < Object.keys(component).length; i++) {
+    var key = Object.keys(component)[i];
     var object = component[key];
     // console.log(object);
     if (key.includes('grid')) {
-      // for (var row = 0; row < object.rows; row++) {
-      //   for (var col = 0; col < object.cols; col++) {
-      //
-      //   }
-      // }
+
+
+      loading('Appending ' + object.repeat[0] * object.repeat[1] + 'components');
+      var start = getNumber(key);
+      let index = start;
+      for (var row = 0; row < object.repeat[0]; row++) {
+        for (var col = 0; col < object.repeat[1]; col++) {
+          console.log(row, col)
+      
+          let vert = object.spacing[1] * col;
+          let hor = object.spacing[0] * row;
+          
+          loading('Appending component: "' + object.type + '" #' + index);
+          var label = undefined, input = undefined;
+          if (object.label !== undefined) label = getCustomLabel(object.label, object.repeat)[index]; // WIP: 3d
+          if (object.inputs !== undefined) input = object.inputs[index]; // WIP: 3d
+          console.log('INPUT: ' + input);
+          elems[index] = appendElem({type: object.type, x: object.x + hor, y: object.y + vert, label: label, input: input}, undefined, undefined, true); // get labels: $i+
+          if (object.connection !== undefined) conns[index] = object.connection[index];
+          if (object.connectionAll !== undefined) conns[index] = object.connectionAll;
+
+          index++;
+        }
+      }
+
+
     } else if (key.includes('vert') || key.includes('hor')) {
       var start = getNumber(key);
       var vert = 0, hor = 0;
       if (key.includes('vert')) vert = object.spacing;
       else hor = object.spacing;
+      // var v = 0;
+      // loadComponentArrayInterval = setInterval(function() {
       for (var v = 0; v < object.repeat; v++) {
+        loading('Appending component: "' + object.type + '" #' + (v + start));
         var label = undefined, input = undefined;
         if (object.label !== undefined) label = getCustomLabel(object.label, object.repeat)[v];
         if (object.inputs !== undefined) input = object.inputs[v];
-        console.log('INPUT: ' + input);
+        // console.log('INPUT: ' + input);
         elems[v + start] = appendElem({type: object.type, x: object.x + hor * v, y: object.y + vert * v, label: label, input: input}, undefined, undefined, true); // get labels: $i+
         if (object.connection !== undefined) conns[v + start] = object.connection[v];
+        if (object.connectionAll !== undefined) conns[v + start] = object.connectionAll;
         // if (object.inputs !== undefined) gate(elems[v + start].querySelector('.textInput'), object.inputs[v]);
       }
+      //   v++;
+      //   if (v >= object.repeat) {
+      //     clearInterval(loadComponentArrayInterval);
+      //   }
+      // }, 1);
     } else {
+      loading('Appending component: "' + object.type + '" #' + key);
       elems[key] = appendElem(object);
       conns[key] = object.connection;
       // if (object.inputs !== undefined) gate(elems[key].querySelector('.textInput'), object.inputs);
     }
-  }
-  // add connections
-  for (var j = 0; j < Object.keys(elems).length; j++) {
-    var key = Object.keys(elems)[j];
-    if (conns[key] !== undefined) {
-      var side = conns[key].side || 'left';
-      var pos = conns[key].pos || 0;
-      var fromSide = conns[key].fromSide || 'right';
-      var fromPos = conns[key].fromPos || 0;
-      // for (var c = 0; c < Object.keys(conns[key]).length; c++) {
-      //   var connKey = Object.keys(conns[key])[c];
-      //   var conn = conns[key][connKey];
-      //   if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
-      //     cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: elems[connKey], side: conn.side || side, pos: conn.pos || pos});
-      //   }
-      // }
-      for (var c = 0; c < conns[key].connections.length; c++) {
-        var conn = conns[key].connections[c];
-        cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: elems[conn.id], side: conn.side || side, pos: conn.pos || pos});
-      }
+  // }
+    i++;
+    if (i >= Object.keys(component).length) {
+      clearInterval(loadComponentInterval);
+      loading('Getting connections...');
+      // add connections
+      var j = 0;
+      loadConnectionsInterval = setInterval(function() {
+      // for (var j = 0; j < Object.keys(elems).length; j++) {
+        var key = Object.keys(elems)[j];
+        if (conns[key] !== undefined) {
+          var side = conns[key].side || 'left';
+          var pos = conns[key].pos || 0;
+          var fromSide = conns[key].fromSide || 'right';
+          var fromPos = conns[key].fromPos || 0;
+          // for (var c = 0; c < Object.keys(conns[key]).length; c++) {
+          //   var connKey = Object.keys(conns[key])[c];
+          //   var conn = conns[key][connKey];
+          //   if (!connKey.toLowerCase().includes('side') && !connKey.toLowerCase().includes('pos')) {
+          //     cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: conn.fromPos || fromPos}, {elem: elems[connKey], side: conn.side || side, pos: conn.pos || pos});
+          //   }
+          // }
+          for (var c = 0; c < conns[key].connections.length; c++) {
+            var conn = conns[key].connections[c];
+            fromPos = conn.fromPos || fromPos, pos = conn.pos || pos;
+            let fromPosStore = fromPos, posStore = pos;
+            let multiplier = 1;
+            if (pos.toString().includes('*')) multiplier = Number(pos.substring(1));
+            else if (fromPos.toString().includes('*')) multiplier = Number(fromPos.substring(1));
+            for (let b = 0; b < multiplier; b++) {    
+              if (posStore.toString().includes('*')) pos = b;
+              if (fromPosStore.toString().includes('*')) fromPos = b;
+              // console.log(conn);
+              if (Array.isArray(conn.id)) {
+                let index = conn.id[0];
+                for (let a = 0; a < conn.id[1]; a++) {
+                  loading('Adding connection: #' + key + ' - #' + index);
+                  cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: fromPos}, {elem: elems[index], side: conn.side || side, pos: pos});
+                  index++;
+                }
+              } else {
+                // console.log(key, conn.id);
+                loading('Adding connection: #' + key + ' - #' + conn.id);
+                cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: fromPos}, {elem: elems[conn.id], side: conn.side || side, pos: pos});
+              }
+            }
+          }
+        }
+        // }
+        j++;
+        if (j >= Object.keys(elems).length) {
+          clearInterval(loadConnectionsInterval);
+          loading('Done!', true);
+        }
+      }, 1);
     }
-  }
+  }, 1);
 }
+
+function loading(text, hide) {
+  let loadingElem = document.getElementById('loading');
+  loadingElem.querySelector('span').innerHTML = text;
+  if (hide === true) loadingElem.classList.add('hidden');
+  else if (loadingElem.classList.contains('hidden')) loadingElem.classList.remove('hidden');
+}
+document.getElementById('loading').querySelector('button').addEventListener('click', function() {
+  clearInterval(loadComponentInterval);
+  // clearInterval(loadComponentArrayInterval);
+  clearInterval(loadConnectionsInterval);
+  loading('Canelled!', true);
+});
+
+
+// (https://www.w3schools.com/js/js_performance.asp)
+// TODO: loop without freezing! ((http://debuggable.com/posts/run-intense-js-without-freezing-the-browser:480f4dd6-f864-4f72-ae16-41cccbdd56cb))
+// var loops = [];
+// // function Loop(condition) {
+// //   this.index = 0;
+// //   this.condition = condition;
+// //   this.finished = false;
+// // }
+// // loops.push(new Loop(100));
+// function createLoop(condition) {
+//   loops[loops.length] = {};
+//   loops[loops.length].index = 0;
+//   loops[loops.length].condition = condition;
+//   loops[loops.length].interval = setInterval(function() {
+
+//     loops[loops.length].index++;
+//     if (loops[loops.length].index >= loops[loops.length].condition) {
+//       clearInterval(loops[loops.length].interval);
+//       // remove from loops[]
+//     }
+//   }, 1);
+// }
+
+
 
 
 // move to script.js..?

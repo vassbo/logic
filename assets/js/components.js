@@ -37,8 +37,8 @@ var componentsTemplate = {
 // TODO: add documentation
 
 var components = {
-  inputs: {
-    name: 'Inputs',
+  inputs: { // TODO: remove this <--
+    name: 'Inputs', // <---
     toggle: {
       name: 'Toggle Switch',
       documentation: "Click on me to toggle my states, I can be on or off.",
@@ -99,53 +99,71 @@ var components = {
       classes: ['box', 'output', 'big'],
       children: '<div id="number_1"></div><div id="number_2"></div><div id="number_3"></div><div id="number_4"></div><div id="number_5"></div><div id="number_6"></div><div id="number_7"></div>',
       connectors: {left: {amount: 7}}
-    }
-  },
-  screens: {
-    name: 'Screens',
+    },
+  // },
+  // screens: {
+  //   name: 'Screens',
     pixel: {
       name: 'Pixel',
       documentation: 'Contains a red, green and blue light with can be combined to create different lights',
       classes: ['box', 'output'],
       innerClasses: [''],
       // children: '<div class="off" id="red"></div><div class="off" id="green"></div><div class="off" id="blue"></div>',
-      children: '<div></div>',
+      // children: '<div></div>',
+      children: '',
       // TODO: turn on lights
       connectors: {left: {amount: 3}}
     },
-    screen: {
-      name: '10*10px screen',
-      classes: ['box', 'output'],
-      innerClasses: ['constant', 'noselect'],
-      children: '',
-      connectors: {left: {amount: 4}}
-    },
-    hd_screen: {
-      name: 'HD Screen',
-      classes: ['box', 'output'],
-      children: '',
-      connectors: {left: {amount: 7}}
-    },
+    // screen: {
+    //   // https://www.allaboutcircuits.com/worksheets/digital-display-circuits/
+    //   name: '10*10px screen',
+    //   classes: ['box', 'output'],
+    //   innerClasses: ['constant', 'noselect'],
+    //   children: '',
+    //   connectors: {left: {amount: 4}}
+    // },
+    // hd_screen: {
+    //   name: 'HD Screen',
+    //   classes: ['box', 'output'],
+    //   children: '',
+    //   connectors: {left: {amount: 7}}
+    // },
     speaker: {
       name: 'Speaker',
-      classes: ['box', 'output'],
-      children: '<input id="soundtype" list="soundtypeList" type="range" value="0" min="0" max="11" step="1"><input id="tone" value="0" type="range" min="0" max="3" step="1">' +
-      '<datalist id="soundtypeList">' +
-        '<option value="261.6"></option>' +
-        '<option value="277.2"></option>' +
-        '<option value="293.7"></option>' +
-        '<option value="311.1"></option>' +
-        '<option value="329.6"></option>' +
-        '<option value="349.2"></option>' +
-        '<option value="370.0"></option>' +
-        '<option value="392.0"></option>' +
-        '<option value="415.3"></option>' +
-        '<option value="440.0"></option>' +
-        '<option value="466.2"></option>' +
-        '<option value="493.9.2"></option>' +
-      '</datalist>',
+      classes: ['box', 'output', 'speakerBigger'],
+      // children: '<input id="soundtype" list="soundtypeList" type="range" value="0" min="0" max="11" step="1"><input id="tone" value="0" type="range" min="0" max="3" step="1">' +
+      // '<datalist id="soundtypeList">' +
+      //   '<option value="261.6"></option>' +
+      //   '<option value="277.2"></option>' +
+      //   '<option value="293.7"></option>' +
+      //   '<option value="311.1"></option>' +
+      //   '<option value="329.6"></option>' +
+      //   '<option value="349.2"></option>' +
+      //   '<option value="370.0"></option>' +
+      //   '<option value="392.0"></option>' +
+      //   '<option value="415.3"></option>' +
+      //   '<option value="440.0"></option>' +
+      //   '<option value="466.2"></option>' +
+      //   '<option value="493.9.2"></option>' +
+      // '</datalist>',
+      // https://marcgg.com/blog/2016/11/01/javascript-audio/
+      children: '<div><span class="curve pointer-event material-icons">remove</span><input class="curveInput" tabindex="-1" value="sine"><span class="curve pointer-event material-icons">add</span><br>' + // curve / sine
+      '<span class="pitch pointer-event material-icons">remove</span><input class="pitchInput" tabindex="-1" value="C"><span class="pitch pointer-event material-icons">add</span><br>' + // tone / pitch
+      '<span class="octave pointer-event material-icons">remove</span><input class="octaveInput" tabindex="-1" value="4"><span class="octave pointer-event material-icons">add</span></div>', // octave
       connectors: {left: {amount: 1}}
-    }
+    },
+    // music: {
+    //   name: 'Music',
+    //   classes: ['box', 'output'],
+    //   children: '',
+    //   inspect: {
+    //     // super mario
+    //     // triangle 5...
+    //     // https://codepen.io/gregh/post/recreating-legendary-8-bit-games-music-with-web-audio-api
+    //     // 0: {type: 'toggle', x: 4640, y: 4910, label: 'Input', connection: {connections: [{id: 1}]}},
+    //     // 1: {type: 'light', x: 4990, y: 4910, label: 'Output'},
+    //   }
+    // }
   },
   logic_gates: {
     name: 'Logic Gates',
@@ -196,7 +214,7 @@ var components = {
       innerClasses: ['gate'],
       children: '<input class="gate_input textInput" value="2" tabindex="-1" type="number" min="2" max="999">', // id="gateInput#0"
       connectors: {left: {amount: 2}, right: {}},
-      inspect: {
+      inspect: { 
         0: {type: 'high_constant', x: 4600, y: 5100, connection: {connections: [{id: 1}, {id: 3}]}},
         1: {type: 'transistor', x: 4800, y: 5000, connection: {connections: [{id: 2}]}},
         2: {type: 'transistor', x: 5000, y: 5000, connection: {connections: [{id: 3, side: 'top'}]}},
@@ -298,7 +316,16 @@ var components = {
         left: {amount: 2, label: ['Data in', 'Write enable']},
         right: {label: ['Data out']}
       },
-      inspect: {}
+      inspect: {
+        'hor_0': {type: 'toggle', x: 4330, y: 4825, spacing: 178, repeat: 2, label: ['Data in', 'Write enable'], connection: [{connections: [{id: 3}, {id: 7}]}, {connections: [{id: 3, pos: 1}, {id: 5, pos: 1}]}]},
+        2: {type: 'light', x: 5410, y: 4900, label: 'Data out'},
+        3: {type: 'and', x: 4739, y: 4839, connection: {connections: [{id: 6, pos: 1}]}},
+        4: {type: 'and', x: 5246, y: 4900, connection: {connections: [{id: 6}, {id: 2}]}},
+        5: {type: 'and', x: 4800, y: 4990, connection: {connections: [{id: 8}]}},
+        6: {type: 'or', x: 5000, y: 4826, connection: {connections: [{id: 4}]}},
+        7: {type: 'not', x: 4628, y: 4940, connection: {connections: [{id: 5}]}},
+        8: {type: 'not', x: 5000, y: 4990, connection: {connections: [{id: 4, pos: 1}]}}
+      }
     },
     gated_latch_grid: {
       name: 'Gated Latch Grid',
@@ -310,8 +337,20 @@ var components = {
         left: {amount: 5, label: ['Data in (/ out)', 'Write enable', 'Read enable', 'Row', 'Column']},
         right: {label: ['Data out']}
       },
-      inspect: {}
-    }
+      inspect: {
+        0: {type: 'gated_latch', x: 4921, y: 4847, connection: {connections: [{id: 1}]}},
+        1: {type: 'transistor', x: 5223, y: 4881, connection: {connections: [{id: 5}]}},
+        2: {type: 'and', x: 4939, y: 5105, connection: {connections: [{id: 1, side: 'top'}]}},
+        3: {type: 'and', x: 4541, y: 5091, connection: {connections: [{id: 4, pos: 1}, {id: 2}]}},
+        4: {type: 'and', x: 4693, y: 4910, connection: {connections: [{id: 0, pos: 1}]}},
+        5: {type: 'light', x: 5395, y: 4881, label: 'Data out'},
+        6: {type: 'toggle', x: 4481, y: 4774, label: 'Data in', connection: {connections: [{id: 0}]}},
+        7: {type: 'toggle', x: 4482, y: 4896, label: 'Write enable', connection: {connections: [{id: 4}]}},
+        8: {type: 'toggle', x: 4679, y: 5169, label: 'Read enable', connection: {connections: [{id: 2, pos: 1}]}},
+        9: {type: 'toggle', x: 4320, y: 5027, label: 'Row', connection: {connections: [{id: 3}]}},
+        10: {type: 'toggle', x: 4318, y: 5143, label: 'Column', connection: {connections: [{id: 3, pos: 1}]}}
+      }
+    },
   },
   other: {
     name: 'Other',
@@ -338,7 +377,21 @@ var components = {
       innerClasses: [],
       children: '',
       connectors: {left: {amount: 4, label: ['8', '4', '2', '1']}, right: {amount: 7}},
-      inspect: {}
+      inspect: {
+        'vert_0': {type: 'toggle', x: 4550, y: 4700, spacing: 150, repeat: 4, label: ['8', '4', '2', '1'], connection: [{connections: [{id: 16, pos: 2}, {id: 18}, {id: 20, pos: 3}, {id: 21, pos: 2}]}, {connections: [{id: 4}, {id: 7}, {id: 22}, {id: 14}, {id: 14}]}, {connections: [{id: 5}, {id: 16, pos: 3}, {id: 9}, {id: 11}, {id: 12, pos: 1}]}, {connections: [{id: 6}, {id: 7, pos: 1}, {id: 9, pos: 1}, {id: 22, pos: 2}, {id: 13}]}]},
+        'vert_4': {type: 'not', x: 4775, y: 4850, spacing: 150, repeat: 3, connection: [{connections: [{id: 8}, {id: 17, pos: 1}, {id: 12}]}, {connections: [{id: 10}, {id: 22, pos: 1}, {id: 14, pos: 1}]}, {connections: [{id: 8, pos: 1}, {id: 10, pos: 1}, {id: 11, pos: 1}, {id: 15, pos: 1}]}]},
+        'hor_7': {type: 'and', x: 5760, y: 4726, spacing: 110, repeat: 9, connection: [{connections: [{id: 16}]}, {connections: [{id: 16, pos: 1}, {id: 18, pos: 1}, {id: 19, pos: 1}]}, {connections: [{id: 17}]}, {connections: [{id: 17, pos: 2}, {id: 20}]}, {connections: [{id: 18, pos: 2}, {id: 19}, {id: 21}]}, {connections: [{id: 18, pos: 3}, {id: 21, pos: 3}]}, {connections: [{id: 18, pos: 4}]}, {connections: [{id: 13, pos: 1}, {id: 20, pos: 2}, {id: 21, pos: 1}]}, {connections: [{id: 20, pos: 1}]}]},
+        'hor_16': {type: 'or', x: 6000, y: 4911, spacing: 130, repeat: 6, inputs: [4, 3, 5, 2, 4, 4], connection: [{connections: [{id: 23}]}, {connections: [{id: 24}]}, {connections: [{id: 26}]}, {connections: [{id: 27}]}, {connections: [{id: 28}]}, {connections: [{id: 29}]}]}, // TODO: auto increase (fromSide: 'right', )
+        22: {type: 'or', x: 5760, y: 5149, input: 3, connection: {connections: [{id: 25}]}},
+        'hor_23': {type: 'light', x: 6200, y: 5121, spacing: 120, repeat: 7, label: ['Output #$i+']}, // , connection: [{connections: [{id: 2}]}, {connections: [{id: 5}]}]
+        // TODO: inputs
+        // 1: {type: 'transistor', x: 4800, y: 5000, connection: {connections: [{id: 2}]}},
+        // 2: {type: 'transistor', x: 5000, y: 5000, connection: {connections: [{id: 3, side: 'top'}]}},
+        // 3: {type: 'transistor_inv', x: 5150, y: 5100, connection: {connections: [{id: 6}]}},
+        // 4: {type: 'toggle', x: 4700, y: 4800, label: 'Input #1', connection: {connections: [{id: 1, side: 'top'}]}},
+        // 5: {type: 'toggle', x: 4900, y: 4800, label: 'Input #2', connection: {connections: [{id: 2, side: 'top'}]}},
+        // 6: {type: 'light', x: 5300, y: 5000, label: 'Output'},
+      }
     },
     multiplexer: {
       name: 'Multiplexer',
@@ -353,19 +406,33 @@ var components = {
       classes: ['box', 'chip'],
       innerClasses: [],
       children: '',
-      memory: {row: 16, column: 16},
+      // memory: {row: 16, column: 16},
       connectors: {
         left: {amount: 11, label: ['1 Col', '2 Col', '4 Col', '8 Col', '1 Row', '2 Row', '4 Row', '8 Row', 'Data (in)', 'Write enable', 'Read enable']},
         right: {label: ['Data out']}
       },
-      inspect: {}
+      inspect: {
+        0: {type: 'latch_grid', x: 5111, y: 5000, connection: {connections: [{id: 6}]}},
+        1: {type: 'multiplexer', x: 4863, y: 4748, label: 'Column address', connection: {connections: [{fromSide: 'bottom', fromPos: '*15', id: 0, side: 'top', pos: '*16'}]}},
+        2: {type: 'multiplexer', x: 4392, y: 4901, label: 'Row address', connection: {connections: [{fromSide: 'bottom', fromPos: '*15', id: 0, pos: '*16'}]}},
+        'hor_3': {type: 'toggle', x: 4500, y: 5105, spacing: 150, repeat: 3, label: ['Data in', 'Write enable', 'Read enable'], connection: [{connections: [{id: 0, pos: 16}]}, {connections: [{id: 0, pos: 18}]}, {connections: [{id: 0, pos: 19}]}]},
+        6: {type: 'light', x: 5625, y: 5160, label: 'Data out'},
+        7: {type: 'toggle', x: 4687, y: 4585, label: 'Col 4-bit #1', connection: {connections: [{id: 1}]}},
+        8: {type: 'toggle', x: 4590, y: 4643, label: 'Col 4-bit #2', connection: {connections: [{id: 1, pos: 1}]}},
+        9: {type: 'toggle', x: 4501, y: 4702, label: 'Col 4-bit #3', connection: {connections: [{id: 1, pos: 2}]}},
+        10: {type: 'toggle', x: 4409, y: 4772, label: 'Col 4-bit #4', connection: {connections: [{id: 1, pos: 3}]}},
+        11: {type: 'toggle', x: 4227, y: 4758, label: 'Row 4-bit #1', connection: {connections: [{id: 2}]}},
+        12: {type: 'toggle', x: 4126, y: 4813, label: 'Row 4-bit #2', connection: {connections: [{id: 2, pos: 1}]}},
+        13: {type: 'toggle', x: 4032, y: 4869, label: 'Row 4-bit #3', connection: {connections: [{id: 2, pos: 2}]}},
+        14: {type: 'toggle', x: 3941, y: 4925, label: 'Row 4-bit #4', connection: {connections: [{id: 2, pos: 3}]}}
+      }
     },
     '256_byte': {
       name: '256-byte RAM',
       classes: ['box', 'chip', 'chip_bigger'],
       innerClasses: [],
       children: '',
-      memory: {column: 16, row: 16, repeat: 8}, // 32 * 64 | 8 * 256
+      // memory: {column: 16, row: 16, repeat: 8}, // 32 * 64 | 8 * 256
       connectors: {
         // TODO: same output as input
         left: {amount: 18, label: ['8-bit Data', null, null, null, null, null, null, null, '1 Col', '2 Col', '4 Col', '8 Col', '1 Row', '2 Row', '4 Row', '8 Row', 'Write enable', 'Read enable']},
@@ -453,7 +520,15 @@ var components = {
         right: {label: ['Data out']},
         top: {amount: 16}
       },
-      inspect: {}
+      inspect: {
+        // 'grid_0': {type: 'gated_latch_grid', x: 5114, y: 4887, spacing: [270, 180], repeat: [16, 16]}, // spacing: [180, 120]
+        'grid_0': {type: 'gated_latch_grid', x: 5114, y: 4887, spacing: [270, 180], repeat: [2, 2], connectionAll: {connections: [{id: 291}]}}, // [16, 16]
+        // [0, 256] x5 V !!!
+        'hor_256': {type: 'toggle', x: 5114, y: 4687, spacing: 270, repeat: 16, label: ['#$i+'], connectionAll: {connections: [{id: [0, 4], pos: 4}]}}, // TODO: .....
+        'vert_272': {type: 'toggle', x: 4914, y: 4887, spacing: 180, repeat: 16, label: ['#$i+'], connectionAll: {connections: [{id: [0, 4], pos: 3}]}}, // TODO: .....
+        'hor_288': {type: 'toggle', x: 4300, y: 5105, spacing: 180, repeat: 3, label: ['Data in', 'Write enable', 'Read enable'], connection: [{connections: [{id: [0, 4]}]}, {connections: [{id: [0, 4], pos: 1}]}, {connections: [{id: [0, 4], pos: 2}]}]},
+        291: {type: 'light', x: 9780, y: 6400, label: 'Data out'} //, connection: {fromSide: 'right', side: 'left', connections: [{id: 5}, {id: 7, pos: 1}]}},
+      }
     }
   }
 };

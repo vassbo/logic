@@ -258,37 +258,274 @@ function btnClick() {
           for (var j = 0; j < mapTo[sideTo].ids.length; j++) if (mapTo[sideTo].ids[j] == conns.to) break;
           var posTo = j;
 
-          lineArray.push({from: {elem: elemFrom, type: typeFrom, side: sideFrom, pos: posFrom, input: elemFrom.classList.contains('input')}, to: {elem: elemTo, type: typeTo, side: sideTo, pos: posTo, output: elemFrom.classList.contains('output')}});
+          lineArray.push({from: {elem: elemFrom, type: typeFrom, side: sideFrom, pos: posFrom, input: elemFrom.classList.contains('input')}, to: {elem: elemTo, type: typeTo, side: sideTo, pos: posTo, output: elemTo.classList.contains('output')}});
         }
 
         // TODO: thruth table!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         console.log(lineArray);
-        var final = [], temp = {}, id = 0, where = [], debugging = 0;
-        while (lineArray.length && debugging < 50) {
-          for (var i = 0; i < lineArray.length; i++) {
-            var search = searchForElem(lineArray[i].from.elem);
-            // console.log(search);
-            if (search !== null) {
-              temp[search][id] = lineArray[i].to;
-              where.push({elem: lineArray[i].to.elem, id: [search, id]}); // <----------
-              id++;
-              lineArray.splice(i, 1);
-            } else if (lineArray[i].from.input) {
-              temp[id] = lineArray[i].from;
-              where.push({elem: lineArray[i].from.elem, id: [id]}); // <----------
-              id++;
-              temp[id - 1][id] = lineArray[i].to;
-              where.push({elem: lineArray[i].to.elem, id: [id - 1, id]}); // <----------------------
-              id++;
-              lineArray.splice(i, 1);
+        // sort array
+        let added = 0;
+        for (let i = lineArray.length - 1; i >= added; i--) {
+            if (lineArray[i].from.input) {
+              lineArray.unshift(lineArray[i]);
+              lineArray.splice(i + 1, 1);
+              added++;
             }
-            // console.log(lineArray[i].from);
-          }
-          debugging++;
         }
         console.log(lineArray);
-        console.log('TEMP');
-        console.log(temp);
+        var final = [], temp = {}, id = 0, where = [], debugging = 0;
+        // while (lineArray.length && debugging < 50) {
+          for (var i = 0; i < lineArray.length; i++) {
+            // var search = searchForElem(lineArray[i].from.elem);
+            // // console.log(search);
+            // if (search !== null) {
+            //   temp[search][id] = lineArray[i].to;
+            //   where.push({elem: lineArray[i].to.elem, id: [search, id]}); // <----------
+            //   id++;
+            //   lineArray.splice(i, 1);
+            // } else if (lineArray[i].from.input) {
+            //   temp[id] = lineArray[i].from;
+            //   where.push({elem: lineArray[i].from.elem, id: [id]}); // <----------
+            //   id++;
+            //   temp[id - 1][id] = lineArray[i].to;
+            //   where.push({elem: lineArray[i].to.elem, id: [id - 1, id]}); // <----------------------
+            //   id++;
+            //   lineArray.splice(i, 1);
+            // }
+            // // console.log(lineArray[i].from);
+
+            // lineArray = [{from: {
+            //   elem: div.box.input.component,
+            //   input: true
+            //   pos: 0,
+            //   side: "right",
+            //   type: "toggle",
+            // }, to: {output: false}}]
+
+            let found = false;
+            for (let j = 0; j < final.length; j++) {
+              for (let k = 0; k < final[j].length; k++) {
+                if (final[j][k].from.elem == lineArray[i].to.elem || final[j][k].to.elem == lineArray[i].from.elem) { // TODO: LEFT has to always be from, and RIGHT always to!!! (or custom from/to...)
+                  // if (final[j][k].from.elem == lineArray[i].to.elem || !lineArray[i].from.input) {
+                    final[j].push(lineArray[i]);
+                    found = true;
+                    break;
+                  // }
+                }
+              }
+            }
+            if (!found) {
+              // if (lineArray[i].to.output) {
+                final.push([lineArray[i]]);
+              // }
+            }
+          }
+          console.log('FINAL:');
+          console.log(final); // sort....... V?!
+          debugging++;
+        // }
+
+        // sort...
+        // let sortArray = [];
+        // for (let i = 0; i < final.length; i++) {
+        //   let inputFound = false;
+        //   sortArray[i] = [];
+        //   let inputs = [];
+        //   for (let j = 0; j < final[i].length; j++) {
+        //     if (final[i][j].from.input) {
+        //       inputFound = true;
+        //       sortArray[i].push(final[i][j]);
+        //     }
+        //   }
+        //   if (!inputFound) break;
+        //   else inputs = sortArray[i];
+        //   // while
+        //   // for (let s = 0; s < inputs.length; s++) {
+        //   //   for (let j = 0; j < final[i].length; j++) {
+        //   //     if (sortArray[i][sortArray.length - 1].to === final[i][j].from)
+        //   //   }
+        //   // }
+        // }
+        // // final = sortArray;
+        for (let i = 0; i < final.length; i++) {
+          for (let j = 0; j < final[i].length; j++) {
+            if (final[i][j].to.output) {
+              final[i].push(final[i][j]);
+              final[i].splice(j, 1);
+              break;
+            }
+          }
+        }
+
+        var test = [];
+        for (let i = 0; i < final.length; i++) {
+          let output = false, k;
+          let arrayIndex = 0;
+          for (k = 0; k < test.length; k++) {
+            if (test[k].output === final[i][final[i].length - 1].to.elem) {
+              output = true;
+              arrayIndex = test[k].order.length;
+              break;
+            }
+          }
+          for (let j = 0; j < final[i].length; j++) {
+          // for (let j = final[i].length - 1; j >= 0; j--) {
+            let push = false;
+            if (j == final[i].length - 1) push = true;
+            if (!output) {
+              let array = [final[i][j].from.type];
+              if (push) array.push(final[i][j].to.type);
+              test.push({order: [array], output: final[i][final[i].length - 1].to.elem});
+              k = test.length - 1;
+              output = true;
+            }
+            else {
+              if (test[k].order[arrayIndex] == undefined) test[k].order[arrayIndex] = [];
+              test[k].order[arrayIndex].push(final[i][j].from.type);
+              if (push) test[k].order[arrayIndex].push(final[i][j].to.type);
+            }
+          }
+        }
+        console.log('TEST');
+        console.log(test);
+
+        let table2 = [];
+        for (let i = 0; i < test.length; i++) { // outputs
+          table2[i] = [];
+          for (let j = 0; j < test[i].order.length; j++) { // inputs
+            for (let a = 0; a < test[i].order[j].length; a++) {
+
+              let text = [], count, match;
+              for (let k = 0; k < Math.pow(2, test[i].order.length); k++) {
+                count = {true: 0, false: 0};
+                let base2 = k.toString(2);
+                text.push(base2);
+                for (let l = 0; l < base2.length; l++) {
+                  if (base2[l] === '1') count.true++;
+                  else if (base2[l] === '0') count.false++;
+                }
+
+                match = true;
+                switch (test[i].order[j][a]) {
+                  case 'and':
+                    if (count.false == 0) text.push(true);
+                    else text.push(false);
+                    break;
+                  case 'or':
+                    if (count.true > 0) text.push(true);
+                    else text.push(false);
+                    break;
+                  default:
+                    match = false;
+                    break;
+                }
+              }
+              if (match) table2[i].push(text);
+
+
+              // switch (test[i].order[j][a]) {
+              //   case 'toggle':
+              //   case 'button':
+              //     // table2[i].push('I' + i + '#' + j);
+              //     break;
+              //   case 'and':
+              //     let text = [];
+              //     for (let k = 0; k < Math.pow(2, test[i].order.length); k++) {
+              //       let base2 = k.toString(2);
+              //       text.push(base2);
+              //       if (base2 === (Math.pow(2, test[i].order.length) - 1).toString(2)) text.push(true);
+              //       else text.push(false);
+              //     }
+              //     table2[i].push(text);
+
+              //     // // if (count.true == orderLength) text.push(true);
+              //     // if (count.false == 0) text.push(true);
+              //     // else text.push(false);
+              //     // table2[i].push(text);
+              //     break;
+              //   // case 'or':
+              //   //   // if count === 1
+              //   //   // let text2 = [];
+              //   //   // for (let k = 0; k < Math.pow(2, test[i].order.length); k++) {
+              //   //   //   let base2 = k.toString(2);
+              //   //   //   text2.push(base2);
+              //   //   //   // if (base2 === (Math.pow(2, test[i].order.length) - 1).toString(2)) text2.push(true);
+              //   //   //   let trueCount = 0;
+              //   //   //   for (let l = 0; l < base2.length; l++) {
+              //   //   //     if (base2[l] === '1') trueCount++;
+              //   //   //   }
+              //   //   //   if (trueCount === 1) text2.push(true);
+              //   //   //   else text2.push(false);
+              //   //   // }
+              //   //   if (count.true == 0) text.push(true);
+              //   //   else text.push(false);
+              //   //   table2[i].push(text);
+              //   //   break;
+              //   case 'light':
+              //     // table2[i].push('O' + i);
+              //     break;
+              //   // default:
+              //   //   alert(test[i].order[j]);
+              //   //   break;
+              // }
+            }
+          }
+        }
+        console.log('Table:');
+        console.log(table2);
+        // remove duplicates.........
+        // for (let i = 0; i < table2.length; i++) {
+        //   table2[i] = [...new Set(table2[i])]; // https://medium.com/dailyjs/how-to-remove-array-duplicates-in-es6-5daa8789641c
+        // }
+        // console.log(table2);
+
+        let tableFinal = [];
+        for (let i = 0; i < table2.length; i++) {
+          if (table2[i].length == 0) {
+            // tableFinal.push([['I' + i, '0', 'O' + i, false], ['I' + i, '1', 'O' + i, true]]);
+            tableFinal.push([['0', false], ['1', true]]);
+          } else {
+            for (let j = 0; j < table2[i].length; j++) {
+              let tempArray = [];
+              for (let k = 0; k < table2[i][j].length; k += 2) {
+                // const element = tableFinal[i][j][k];
+                // tempArray.push([['I' + i, table2[i][j][k]], ['O' + i, table2[i][j][k + 1]]]); // 'I' + i + '#' + k / 2
+                tempArray.push([table2[i][j][k], table2[i][j][k + 1]]);
+              }
+              tableFinal.push(tempArray);
+              break; // TODO: WIP
+            }
+          }
+        }
+        console.log('Table FINAL:');
+        console.log(tableFinal);
+        
+        var tableHtml = [];
+        for (let i = 0; i < tableFinal.length; i++) {
+          let tableHtml2 = '<table><tr>';
+          for (let a = 0; a < tableFinal[i][tableFinal[i].length - 1][0].length; a++) {
+            // tableHtml2 += '<td>I' + i + '#' + a + '</td>';
+            tableHtml2 += '<td>I' + ((i + 1) + a) + '</td>'; // TODO: get actial index (+ remove duplicates...)
+          }
+          tableHtml2 += '<td>O' + (i + 1) + '</td></tr>';
+          for (let j = 0; j < tableFinal[i].length; j++) { // length
+            let state = tableFinal[i][j][0];
+            while (state.length < tableFinal[i][tableFinal[i].length - 1][0].length) state = '0' + state;
+            let output = tableFinal[i][j][1];
+            tableHtml2 += '<tr>';
+            for (let k = 0; k < state.length; k++) {
+              tableHtml2 += '<td>' + state[k] + '</td>';
+            }
+            tableHtml2 += '<td>' + output + '</td></tr>';
+          }
+          tableHtml2 += '</table>';
+          tableHtml.push(tableHtml2);
+        }
+        console.log(tableHtml);
+
+        // console.log(lineArray);
+        // console.log('TEMP');
+        // console.log(temp);
 
         function searchForElem(elem) {
           // console.log('SERACH');

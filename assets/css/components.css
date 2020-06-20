@@ -9,6 +9,10 @@
 
   /* position: absolute; */
 }
+#drawer .box {
+  max-width: 80px;
+  max-height: 80px;
+}
 .box.big {
   /* width: 60px; */
   width: 160px;
@@ -16,8 +20,8 @@
 }
 #drawer .big {
   max-width: 60px;
-  max-height: 80px;
 }
+/* ...... */
 .box.latch {
   width: 180px;
   height: 120px;
@@ -55,6 +59,10 @@
 .box.chip_bigger {
   width: 280px;
   height: 280px;
+}
+
+#drawer input, #drawer .pointer-event {
+  pointer-events: none;
 }
 
 .component {
@@ -609,10 +617,16 @@ svg {
 
 
 /* pixel */
-.pixel div {
+.pixel {
   width: calc(80% - 20%);
   display: flex;
-  margin: 10%;
+  /* margin: 10%; */
+
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   /* padding: 10%; */
   padding: 40% 10%;
   border-radius: 10%;
@@ -646,3 +660,68 @@ svg {
   background: rgba(48, 54, 224, 0.4);
   box-shadow: none;
 } */
+
+
+
+
+
+.speaker {
+  height: calc(100% - 20%);
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* padding: 40% 10%; */
+}
+.speakerBigger {
+  width: 150px;
+  height: 150px;
+}
+
+.speaker div {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.speaker input { /* TODO: not interacion in drawer!!! remove inputs from javascript (has pointer-events: none; in css!! */
+  /* user-select: none; */
+  pointer-events: none;
+  display: inline;
+  width: 30%;
+
+  margin: 0 4px;
+
+  background: #008074;
+  /* outline-color: #00a3ff; */
+  height: 25%;
+  /* top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%); */
+  box-shadow: inset 2px 1px 4px 1px rgba(0, 0, 0, 0.34);
+  border-radius: 2px;
+  border: none;
+  border: 1px solid black;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  font-family: 'digital-clock';
+  /* color: white; */
+}
+
+.speaker .material-icons {
+  background: rgb(88, 88, 88);
+  border-radius: 2px;
+  font-size: 12px;
+  color: white;
+  /* padding: 4px; */
+  padding: 5%;
+  cursor: pointer;
+}
+.speaker .material-icons:hover {
+  background: rgb(100, 100, 100);
+}
