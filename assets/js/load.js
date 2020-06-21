@@ -1170,6 +1170,7 @@ if (Object.keys(saves).length > 0) {
   document.getElementById('tab#' + active_tab).click();
 } else {
   saves.tabs = []; // ...
+  home();
 }
 
 function loadObj(object, tabId) {

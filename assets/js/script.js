@@ -153,6 +153,7 @@ function dragElement(elmnt, drawer) {
     backgroundCanBeDragged = false;
     active = false;
 
+    // TODO: Elem drag gets a little bit more and more offset (when zoomed)
     cursor.movedX = cursor.x - e.clientX;
     cursor.movedY = cursor.y - e.clientY;
     cursor.x = e.clientX;
@@ -168,8 +169,17 @@ function dragElement(elmnt, drawer) {
         // TODO: map zoom...
         // clone.style.top = elmnt.offsetTop / mapZoom - getNumber(document.getElementById("main").style.top) - scrollTop / mapZoom + "px";
         // clone.style.left = elmnt.offsetLeft * mapZoom - getNumber(document.getElementById("main").style.left) - getDrawerWidth() + "px";
-        clone.style.top = elmnt.offsetTop - getNumber(activeMain().style.top) - 32 - scrollTop / mapZoom + "px";
-        clone.style.left = elmnt.offsetLeft - getNumber(activeMain().style.left) - getDrawerWidth() + "px";
+
+        // relative height
+        let heightPercent = (e.clientY - 40 - elmnt.offsetTop) / elmnt.offsetHeight;
+        let newTop = ((e.clientY - 40 - scrollTop * mapZoom) / mapZoom - elmnt.offsetHeight * heightPercent);
+        let widthPercent = (e.clientX - elmnt.offsetLeft) / elmnt.offsetWidth;
+        let newLeft = (e.clientX / mapZoom - elmnt.offsetWidth * widthPercent);
+        clone.style.top = newTop - getNumber(activeMain().style.top) - 32 / mapZoom + "px";
+        clone.style.left = newLeft - getNumber(activeMain().style.left) - getDrawerWidth() / mapZoom + "px";
+
+        // clone.style.top = elmnt.offsetTop - getNumber(activeMain().style.top) - 32 - scrollTop / mapZoom + "px";
+        // clone.style.left = elmnt.offsetLeft - getNumber(activeMain().style.left) - getDrawerWidth() + "px";
         clone.style.opacity = "0.3";
         clone.style.zIndex = "9999919";
       }
@@ -632,18 +642,18 @@ document.addEventListener('mousemove', function(e) {
       created = true;
     }
 
-    var left = boxLeft - getDrawerWidth(),
-        top = boxTop - top_height,
-        width = e.pageX - boxLeft,
-        height = e.pageY - boxTop;
+    var left = (boxLeft - getDrawerWidth()) / mapZoom,
+        top = (boxTop - top_height) / mapZoom,
+        width = (e.pageX - boxLeft) / mapZoom,
+        height = (e.pageY - boxTop) / mapZoom;
 
     if (e.pageX - boxLeft < 0) {
-      left = e.pageX - getDrawerWidth();
-      width = boxLeft - e.pageX;
+      left = (e.pageX - getDrawerWidth()) / mapZoom;
+      width = (boxLeft - e.pageX) / mapZoom;
     }
     if (e.pageY - boxTop < 0) {
-      top = e.pageY - top_height;
-      height = boxTop - e.pageY;
+      top = (e.pageY - top_height) / mapZoom;
+      height = (boxTop - e.pageY) / mapZoom;
     }
 
     left -= getNumber(activeMain().style.left);
@@ -918,7 +928,7 @@ function clock(elem) {
   var num = getNumAdvanced(input);
   var interval = getInterval(input, num);
 
-  if (elem.classList.contains('textInput')) document.getElementById('clockViewInput#' + number).value = input;
+  if (elem.classList.contains('clock_input')) document.getElementById('clockViewInput#' + number).value = input;
   else document.getElementById('clockInput#' + number).value = input;
 
   var signal_light = clockElem.querySelector(".signal-light");
@@ -939,7 +949,8 @@ function clock(elem) {
       if (document.querySelector('.clockSection') == null) document.getElementById('timers').querySelector('h2').classList.remove('hidden');
     } else {
       var num = getNumAdvanced(input.value);
-      progress.style.transition = 'all ' + getInterval(input.value, num) + 'ms linear';
+      // progress.style.transition = 'all ' + getInterval(input.value, num) + 'ms linear';
+      progress.style.transition = 'all ' + interval + 'ms linear';
       if (signal_light.classList.contains("on")) progress.style.width = '0%';
       else progress.style.width = '100%';
     }
@@ -952,7 +963,7 @@ function createClockSection(elem) {
   var section = document.createElement('div');
   section.classList.add('clockSection');
   section.innerHTML = '<h1>Clock #' + number + '</h1>' +
-  '<input id="clockViewInput#' + number + '" type="text" value="' + elem.value + '">' +
+  '<input id="clockViewInput#' + number + '" class="textInput" type="text" value="' + elem.value + '">' +
   '<div class="progress">' +
     '<div id="clockProgress#' + number + '" class="fill" style="width: 100%; transition: all 500ms linear 0s;"></div>' +
   '</div>';
@@ -1099,6 +1110,38 @@ function activate(id, powered, thruth) {
         }
         // sendSignal(elem, activated);
         // enableOutput(elem, activated);
+        break;
+
+      case 'screen':
+        console.log(signal);
+        console.log(signal.global.write_enable);
+        if (signal.global.labels.write_enable) {
+          var color = false;
+          if (signal.global.labels.r && signal.global.labels.g && signal.global.labels.b) color = '255, 255, 255'; // white
+          else if (signal.global.labels.r && signal.global.labels.g) color = '255, 255, 0'; // red + green = yellow
+          else if (signal.global.labels.r && signal.global.labels.b) color = '255, 67, 255'; // red + blue = magenta
+          else if (signal.global.labels.g && signal.global.labels.b) color = '0, 255, 255'; // green + blue = cyan
+          else if (signal.global.labels.r) color = '255, 0, 0'; // red
+          else if (signal.global.labels.g) color = '28, 182, 0'; // green
+          else if (signal.global.labels.b) color = '48, 54, 224'; // blue
+          
+          let col = 0, row = 0;
+          for (let i = 0; i < 3; i++) {
+            let add = i + 1;
+            if (i > 1) add = 4;
+            if (signal.left.bools[i]) col += add;
+            if (signal.left.bools[i + 3]) row += add;
+          }
+          let index = col + (8 * row);
+          console.log(index);
+          let pixelElem = elem.querySelectorAll('span')[index];
+          console.log(pixelElem);
+          if (!color) pixelElem.removeAttribute('style');
+          else {
+            pixelElem.style.background = 'rgb(' + color + ')';
+            pixelElem.style.boxShadow = '0 0 8px rgba(' + color + ', 0.8)';
+          }
+        }
         break;
 
       case 'speaker':
@@ -2285,7 +2328,7 @@ function addTab(name, active) {
 
 // open a tab
 function openTab(e) {
-  if (!e.target.classList.contains('material-icons')) {
+  if (!e.target.classList.contains('material-icons') && e.target.id !== 'close') {
     active_tab = this.id.slice(4, this.id.length);
     var newMain = document.getElementById('main#' + active_tab);
     var main = document.querySelectorAll('.main');

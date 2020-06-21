@@ -120,15 +120,15 @@ document.addEventListener('mousemove', function(e) {
         // //   elem.style.left = -10000 + (window.innerWidth - getDrawerWidth()) + "px";
         // } else elem.style.left = "0px";
 
-        elem.style.top = getNumber(elem.style.top) + (oldPosY-movePosY) * -1 + "px";
-        elem.style.left = getNumber(elem.style.left) + (oldPosX-movePosX) * -1 + "px";
+        elem.style.top = getNumber(elem.style.top) + (oldPosY-movePosY) / mapZoom * -1 + "px";
+        elem.style.left = getNumber(elem.style.left) + (oldPosX-movePosX) / mapZoom * -1 + "px";
 
         elem.style.marginLeft = getDrawerWidth() / mapZoom + "px";
         elem.style.marginTop = top_height / mapZoom + "px";
 
-        console.log("---------");
-        console.log(elem.style.top);
-        console.log(elem.style.left);
+        // console.log("---------");
+        // console.log(elem.style.top);
+        // console.log(elem.style.left);
 
         // console.log(0 / mapZoom);
         // console.log(0 / mapZoom);
@@ -168,8 +168,10 @@ function wheel(e) {
     // Zoom
     var zoomFactor = delta * (minZoom / 100);
 
-    console.log(Number(elem.style.zoom) + zoomFactor);
-    console.log(delta);
+    let old = elem.getBoundingClientRect();
+
+    // console.log(Number(elem.style.zoom) + zoomFactor);
+    // console.log(delta);
     if (delta == -1 && Number(elem.style.zoom) + zoomFactor < (minZoom / 100)) {
       elem.style.zoom = (minZoom / 100);
       mapZoom = (minZoom / 100);
@@ -188,8 +190,8 @@ function wheel(e) {
     if (percent.toString().length <= 2) percent = '&nbsp;&nbsp;' + percent;
     document.getElementById('zoomValue').innerHTML = percent + '%';
 
-    console.log(movePosY);
-    console.log(movePosX);
+    // console.log(movePosY);
+    // console.log(movePosX);
 
     // Offset main to corner
     // elem.style.top = (getNumber(elem.style.top) + window.innerHeight) / mapZoom + "px";
@@ -224,6 +226,15 @@ function wheel(e) {
     elem.style.marginTop = top_height / mapZoom + "px";
 
 
+    // (zoom semi centered)
+    // TODO: zoom relative to cursor position
+    let newLeft = old.left - elem.getBoundingClientRect().left;
+    let newTop = old.top - elem.getBoundingClientRect().top;
+    elem.style.left = getNumber(elem.style.left) - newLeft * 2 + 'px'; //  * 2.4
+    elem.style.top = getNumber(elem.style.top) - newTop * 2 + 'px'; //  * 4
+    
+
+
     // Move back to the original position
     // elem.style.top = getNumber(elem.style.top) - movePosY;
     // elem.style.left = getNumber(elem.style.left) - movePosX;
@@ -237,12 +248,13 @@ function wheel(e) {
   } else {
 
     // TODO: Smoother scroll!?
+    var scrollLength = 110 / mapZoom;
     if (e.shiftKey) { // scroll right
-      if (Math.sign(e.deltaY) == -1) document.getElementById('main#' + active_tab).style.left = getNumber(document.getElementById('main#' + active_tab).style.left) + 110 + 'px'; // up
-      else if (Math.sign(e.deltaY) == 1) document.getElementById('main#' + active_tab).style.left = getNumber(document.getElementById('main#' + active_tab).style.left) - 110 + 'px'; // down
+      if (Math.sign(e.deltaY) == -1) document.getElementById('main#' + active_tab).style.left = getNumber(document.getElementById('main#' + active_tab).style.left) + scrollLength + 'px'; // up
+      else if (Math.sign(e.deltaY) == 1) document.getElementById('main#' + active_tab).style.left = getNumber(document.getElementById('main#' + active_tab).style.left) - scrollLength + 'px'; // down
     } else { // scroll down
-      if (Math.sign(e.deltaY) == -1) document.getElementById('main#' + active_tab).style.top = getNumber(document.getElementById('main#' + active_tab).style.top) + 110 + 'px'; // up
-      else if (Math.sign(e.deltaY) == 1) document.getElementById('main#' + active_tab).style.top = getNumber(document.getElementById('main#' + active_tab).style.top) - 110 + 'px'; // down
+      if (Math.sign(e.deltaY) == -1) document.getElementById('main#' + active_tab).style.top = getNumber(document.getElementById('main#' + active_tab).style.top) + scrollLength + 'px'; // up
+      else if (Math.sign(e.deltaY) == 1) document.getElementById('main#' + active_tab).style.top = getNumber(document.getElementById('main#' + active_tab).style.top) - scrollLength + 'px'; // down
     }
 
     checkMainPos();
@@ -316,12 +328,11 @@ function moveIndicator(e) {
     }
 
 
-    console.log((offsetX * -1 / mapSizePercentage));
-    console.log((offsetY * -1 / mapSizePercentage));
+    // console.log((offsetX * -1 / mapSizePercentage));
+    // console.log((offsetY * -1 / mapSizePercentage));
 
-    // TODO: WIPWIPWIPWIPWIPWIPWIP
-    document.getElementById('main#' + active_tab).style.left = (offsetX / 2) * -1 / mapSizePercentage * 2 + 'px';
-    document.getElementById('main#' + active_tab).style.top = (offsetY / 2) * -1 / mapSizePercentage * 2 + 'px';
+    document.getElementById('main#' + active_tab).style.left = (offsetX - boxWidth / 2) * -1 / mapSizePercentage + 'px';
+    document.getElementById('main#' + active_tab).style.top = (offsetY - boxHeight / 2) * -1 / mapSizePercentage + 'px';
 
     // console.log(offsetX - width);
     // document.getElementById('main#' + active_tab).style.left = (offsetX - boxWidth / 2) * -1 / mapSizePercentage + 'px';

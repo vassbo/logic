@@ -348,33 +348,39 @@ i.active {
 
 
 /* minimap */
-.map_overlay
-{
-    /* background: url(http://source.visualpulse.net/images/12_qkg0xbzw6xyma4vs5bm6roj2puo19cafa3dxqqmc.png); */
-    background: white;
-    background-size: 100%;
-    background-repeat: no-repeat;
+.map_overlay {
+  /* background: url(http://source.visualpulse.net/images/12_qkg0xbzw6xyma4vs5bm6roj2puo19cafa3dxqqmc.png); */
+  background: white;
+  background-size: 100%;
+  background-repeat: no-repeat;
 
-    border: 2px solid rgba(0, 0, 0, 0.8);
+  /* border: 2px solid rgba(0, 0, 0, 0.8); */
+  /* border: 1px solid var(--toolbar-iconcolor); */
+  box-shadow: 1px -1px 7px 0px rgba(0, 0, 0, 0.4);
+  /* box-shadow: 1px -1px 12px 0px rgba(0, 0, 0, 0.2); */
 
-    /* position: absolute;
-    left: 0;
-    bottom: 0; */
-    /* pointer-events: none; */
-    opacity: 0.4;
+  /* position: absolute;
+  left: 0;
+  bottom: 0; */
+  /* pointer-events: none; */
+  opacity: 0.4;
 
-    position: fixed;
-    bottom: 2px; /* border width */
-    left: 255px; /* drawer + dragger width */
-    width: 200px;
-    height: 200px;
-    z-index: 9999908;
+  position: fixed;
+  bottom: 2px; /* border width */
+  left: 255px; /* drawer + dragger width */
+  width: 200px;
+  height: 200px;
+  z-index: 9999908;
 }
 
-.map_outline
-{
-    position: absolute;
-    border: 2px solid #dd0000;
+.map_outline {
+  position: absolute;
+  /* border: 1.4px solid #dd0000; */
+  /* border: 1.4px solid var(--toolbar-iconcolor); */
+  /* border: 1.4px solid rgba(0, 0, 0, 0.5); */
+  /* box-shadow: inset 1px -1px 4px rgba(0, 0, 0, 0.5); */
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 
@@ -535,7 +541,7 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
   padding: 40px;
   z-index: 9999950;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 /* .card h1 {
   text-transform: uppercase;
@@ -627,6 +633,37 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.4);
 }
 
+
+
+/* loading */
+#loading {
+  width: auto;
+  height: auto;
+  background: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  color: var(--toolbar-iconcolor);
+  /* font-weight: bold; */
+}
+/* TODO: univesal buttons */
+#loading button {
+  padding: 8px 16px;
+  border-radius: 3px;
+  background: var(--toolbar-iconcolor);
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  border: none;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: .2s background;
+}
+#loading button:hover {
+  /* background: #25779f; */
+  background: #3098cc;
+}
+#loading button:active {
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+}
 
 
 /* modes */

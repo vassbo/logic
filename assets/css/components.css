@@ -283,6 +283,7 @@ svg {
   bottom: 10%;
   left: 50%;
   transform: translate(-50%, -50%);
+  transition: .2s background, .2s box-shadow;
 }
 .main .btn-light {
   cursor: pointer;
@@ -372,6 +373,7 @@ svg {
   bottom: 8%;
   left: 50%;
   transform: translate(-50%, -50%);
+  transition: .1s background, .1s box-shadow;
 }
 /* .main .signal-light {
   cursor: pointer;
@@ -422,6 +424,7 @@ svg {
   transform: translate(-50%, -50%);
   cursor: default;
   box-shadow: 0px 0px 20px 6px var(--light-active--shadow);
+  transition: .1s background, .1s box-shadow;
 }
 
 .main .light.off {
@@ -466,6 +469,7 @@ svg {
   background: var(--light-idle);
   position: absolute;
   transform: translate(-50%, -50%);
+  transition: .3s background, .3s box-shadow;
 }
 .seven_segment #number_1 { /* top */
   width: 80%;
@@ -631,6 +635,7 @@ svg {
   padding: 40% 10%;
   border-radius: 10%;
   background: black;
+  transition: .2s background, .2s box-shadow;
 }
 /* .pixel .off {
   background: var(--light-idle) !important;
@@ -724,4 +729,27 @@ svg {
 }
 .speaker .material-icons:hover {
   background: rgb(100, 100, 100);
+}
+
+
+
+.screen {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-gap: 4px;
+  height: calc(100% - 8px);
+  margin: 4px;
+  grid-gap: 2%;
+  height: calc(100% - 4%);
+  margin: 2%;
+}
+.screenDiv {
+  height: 200px;
+  width: 200px;
+}
+.screen span {
+  background: black;
+  border-radius: 6px;
+  transition: .2s background, .2s box-shadow;
+  /* margin: 2px; */
 }

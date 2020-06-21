@@ -264,8 +264,8 @@ var components = {
         0: {type: 'nand', x: 4850, y: 4800, connection: {connections: [{id: 2}]}},
         1: {type: 'or', x: 4850, y: 5000, connection: {connections: [{id: 2, pos: 1}]}},
         2: {type: 'and', x: 5100, y: 4900, connection: {connections: [{id: 5}]}},
-        3: {type: 'toggle', x: 4360, y: 4900, label: 'Input #1', connection: {connections: [{id: 0}, {id: 1}]}},
-        4: {type: 'toggle', x: 4680, y: 4900, label: 'Input #2', connection: {pos: 1, connections: [{id: 0}, {id: 1}]}},
+        3: {type: 'toggle', x: 4360, y: 4900, label: 'Input #1', connection: {connections: [{id: 0}, {id: 1, pos: 1}]}},
+        4: {type: 'toggle', x: 4680, y: 4900, label: 'Input #2', connection: {connections: [{id: 0, pos: 1}, {id: 1}]}},
         5: {type: 'light', x: 5300, y: 4900, label: 'Output'}
 
         // 0: {type: 'toggle', x: 4170, y: 4840, label: 'Input #1', connection: {side: 'top', connections: [{id: 6}, {id: 9}]}},
@@ -277,7 +277,7 @@ var components = {
         // 6: {type: 'transistor', x: 4650, y: 4650, connection: {connections: [{id: 7}]}},
         // 7: {type: 'transistor', x: 4800, y: 4650, connection: {connections: [{id: 12, side: 'top'}]}},
         // 8: {type: 'transistor', x: 5000, y: 4840, connection: {connections: [{id: 11}]}}, // x: 5010
-        // 9: {type: 'transistor', x: 4590, y: 4985, connection: {connections: [{id: 10}]}}, // y: 5000?
+        // 9: {type: 'transistor', x: 4590, y: 4985, connection: {connections: [{id: 10, side: 'top'}]}}, // y: 5000?
         // 10: {type: 'transistor', x: 4800, y: 5043, connection: {connections: [{id: 11, side: 'top'}]}},
         // 11: {type: 'transistor', x: 5180, y: 5101, connection: {connections: [{id: 2}]}},
         // 12: {type: 'transistor_inv', x: 4900, y: 4750, connection: {connections: [{id: 8, side: 'top'}]}} // x: 4910
@@ -296,14 +296,14 @@ var components = {
         3: {type: 'toggle', x: 4360, y: 4900, label: 'Input #1', connection: {connections: [{id: 0}, {id: 1, pos: 1}]}},
         4: {type: 'toggle', x: 4680, y: 4900, label: 'Input #2', connection: {connections: [{id: 0, pos: 1}, {id: 1}]}},
         5: {type: 'high_constant', x: 5100, y: 5000, connection: {connections: [{id: 6}]}},
-        6: {type: 'transistor_inv', x: 5250, y: 4958, connection: {connections: [{id: 7, side: 'top'}]}},
+        6: {type: 'transistor_inv', x: 5250, y: 4958, connection: {connections: [{id: 7}]}},
         7: {type: 'light', x: 5400, y: 4958, label: 'Output'}
       }
     },
   },
-  flip_flops: {
-    name: 'Flip-Flops'
-  },
+  // flip_flops: {
+  //   name: 'Flip-Flops'
+  // },
   // inspect VVV
   latches: {
     name: 'Latches',
@@ -317,7 +317,7 @@ var components = {
         right: {label: ['Data out']}
       },
       inspect: {
-        'hor_0': {type: 'toggle', x: 4330, y: 4825, spacing: 178, repeat: 2, label: ['Data in', 'Write enable'], connection: [{connections: [{id: 3}, {id: 7}]}, {connections: [{id: 3, pos: 1}, {id: 5, pos: 1}]}]},
+        'vert_0': {type: 'toggle', x: 4330, y: 4825, spacing: 178, repeat: 2, label: ['Data in', 'Write enable'], connection: [{connections: [{id: 3}, {id: 7}]}, {connections: [{id: 3, pos: 1}, {id: 5, pos: 1}]}]},
         2: {type: 'light', x: 5410, y: 4900, label: 'Data out'},
         3: {type: 'and', x: 4739, y: 4839, connection: {connections: [{id: 6, pos: 1}]}},
         4: {type: 'and', x: 5246, y: 4900, connection: {connections: [{id: 6}, {id: 2}]}},
@@ -378,12 +378,12 @@ var components = {
       children: '',
       connectors: {left: {amount: 4, label: ['8', '4', '2', '1']}, right: {amount: 7}},
       inspect: {
-        'vert_0': {type: 'toggle', x: 4550, y: 4700, spacing: 150, repeat: 4, label: ['8', '4', '2', '1'], connection: [{connections: [{id: 16, pos: 2}, {id: 18}, {id: 20, pos: 3}, {id: 21, pos: 2}]}, {connections: [{id: 4}, {id: 7}, {id: 22}, {id: 14}, {id: 14}]}, {connections: [{id: 5}, {id: 16, pos: 3}, {id: 9}, {id: 11}, {id: 12, pos: 1}]}, {connections: [{id: 6}, {id: 7, pos: 1}, {id: 9, pos: 1}, {id: 22, pos: 2}, {id: 13}]}]},
-        'vert_4': {type: 'not', x: 4775, y: 4850, spacing: 150, repeat: 3, connection: [{connections: [{id: 8}, {id: 17, pos: 1}, {id: 12}]}, {connections: [{id: 10}, {id: 22, pos: 1}, {id: 14, pos: 1}]}, {connections: [{id: 8, pos: 1}, {id: 10, pos: 1}, {id: 11, pos: 1}, {id: 15, pos: 1}]}]},
-        'hor_7': {type: 'and', x: 5760, y: 4726, spacing: 110, repeat: 9, connection: [{connections: [{id: 16}]}, {connections: [{id: 16, pos: 1}, {id: 18, pos: 1}, {id: 19, pos: 1}]}, {connections: [{id: 17}]}, {connections: [{id: 17, pos: 2}, {id: 20}]}, {connections: [{id: 18, pos: 2}, {id: 19}, {id: 21}]}, {connections: [{id: 18, pos: 3}, {id: 21, pos: 3}]}, {connections: [{id: 18, pos: 4}]}, {connections: [{id: 13, pos: 1}, {id: 20, pos: 2}, {id: 21, pos: 1}]}, {connections: [{id: 20, pos: 1}]}]},
-        'hor_16': {type: 'or', x: 6000, y: 4911, spacing: 130, repeat: 6, inputs: [4, 3, 5, 2, 4, 4], connection: [{connections: [{id: 23}]}, {connections: [{id: 24}]}, {connections: [{id: 26}]}, {connections: [{id: 27}]}, {connections: [{id: 28}]}, {connections: [{id: 29}]}]}, // TODO: auto increase (fromSide: 'right', )
-        22: {type: 'or', x: 5760, y: 5149, input: 3, connection: {connections: [{id: 25}]}},
-        'hor_23': {type: 'light', x: 6200, y: 5121, spacing: 120, repeat: 7, label: ['Output #$i+']}, // , connection: [{connections: [{id: 2}]}, {connections: [{id: 5}]}]
+        'vert_0': {type: 'toggle', x: 4550, y: 4700, spacing: 150, repeat: 4, label: ['8', '4', '2', '1'], connection: [{connections: [{id: 16, pos: 2}, {id: 18}, {id: 20, pos: 3}, {id: 21, pos: 2}]}, {connections: [{id: 4}, {id: 7}, {id: 22}, {id: 14}, {id: 15}]}, {connections: [{id: 5}, {id: 16, pos: 3}, {id: 9}, {id: 11}, {id: 12, pos: 1}]}, {connections: [{id: 6}, {id: 7, pos: 1}, {id: 9, pos: 1}, {id: 22, pos: 2}, {id: 13}]}]},
+        'vert_4': {type: 'not', x: 4775, y: 4900, spacing: 150, repeat: 3, connection: [{connections: [{id: 8}, {id: 17, pos: 1}, {id: 12}]}, {connections: [{id: 10}, {id: 22, pos: 1}, {id: 14, pos: 1}]}, {connections: [{id: 8, pos: 1}, {id: 10, pos: 1}, {id: 11, pos: 1}, {id: 15, pos: 1}]}]},
+        'vert_7': {type: 'and', x: 5760, y: 4726, spacing: 110, repeat: 9, connection: [{connections: [{id: 16}]}, {connections: [{id: 16, pos: 1}, {id: 18, pos: 1}, {id: 19, pos: 1}]}, {connections: [{id: 17}]}, {connections: [{id: 17, pos: 2}, {id: 20}]}, {connections: [{id: 18, pos: 2}, {id: 19}, {id: 21}]}, {connections: [{id: 18, pos: 3}, {id: 21, pos: 3}]}, {connections: [{id: 18, pos: 4}]}, {connections: [{id: 13, pos: 1}, {id: 20, pos: 2}, {id: 21, pos: 1}]}, {connections: [{id: 20, pos: 1}]}]},
+        'vert_16': {type: 'or', x: 6000, y: 4911, spacing: 130, repeat: 6, inputs: [4, 3, 5, 2, 4, 4], connection: [{connections: [{id: 23}]}, {connections: [{id: 24}]}, {connections: [{id: 26}]}, {connections: [{id: 27}]}, {connections: [{id: 28}]}, {connections: [{id: 29}]}]}, // TODO: auto increase (fromSide: 'right', )
+        22: {type: 'or', x: 5560, y: 5105, input: 3, connection: {connections: [{id: 25}]}},
+        'vert_23': {type: 'light', x: 6200, y: 5121, spacing: 120, repeat: 7, label: ['Output #$i+']}, // , connection: [{connections: [{id: 2}]}, {connections: [{id: 5}]}]
         // TODO: inputs
         // 1: {type: 'transistor', x: 4800, y: 5000, connection: {connections: [{id: 2}]}},
         // 2: {type: 'transistor', x: 5000, y: 5000, connection: {connections: [{id: 3, side: 'top'}]}},
@@ -399,7 +399,20 @@ var components = {
       innerClasses: [],
       children: '',
       connectors: {left: {amount: 4}, bottom: {amount: 16, label: ['$i']}},
-      inspect: {}
+      inspect: {
+        0: {type: '2_4', x: 4600, y: 5130, connection: {connections: [{id: 1, pos: 2}, {fromPos: 1, id: 2, pos: 2}, {fromPos: 2, id: 3, pos: 2}, {fromPos: 3, id: 4, pos: 2}]}},
+        'vert_1': {type: '2_4', x: 4937, y: 4765, spacing: 95, repeat: 4, connection: [
+          {connections: [{id: 10}, {fromPos: 1, id: 11}, {fromPos: 2, id: 12}, {fromPos: 3, id: 13}]},
+          {connections: [{id: 14}, {fromPos: 1, id: 15}, {fromPos: 2, id: 16}, {fromPos: 3, id: 17}]},
+          {connections: [{id: 18}, {fromPos: 1, id: 19}, {fromPos: 2, id: 20}, {fromPos: 3, id: 21}]},
+          {connections: [{id: 22}, {fromPos: 1, id: 23}, {fromPos: 2, id: 24}, {fromPos: 3, id: 25}]},
+        ]},
+        // 'vert_5': {type: 'toggle', x: 4290, y: 4700, spacing: 110, repeat: 4, label: ['2', '1', '8', '4'], connection: [{connections: [{id: 1}, {id: 2}, {id: 3}, {id: 4}]}, {connections: [{id: 1, pos: 1}, {id: 2, pos: 1}, {id: 3, pos: 1}, {id: 4, pos: 1}]}, {connections: [{id: 0}]}, {connections: [{id: 0, pos: 1}]}]},
+        'vert_5': {type: 'toggle', x: 4290, y: 4700, spacing: 110, repeat: 4, label: ['1', '2', '4', '8'], connection: [{connections: [{id: 1}, {id: 2}, {id: 3}, {id: 4}]}, {connections: [{id: 1, pos: 1}, {id: 2, pos: 1}, {id: 3, pos: 1}, {id: 4, pos: 1}]}, {connections: [{id: 0}]}, {connections: [{id: 0, pos: 1}]}]},
+        9: {type: 'high_constant', x: 4291, y: 5150, connection: {connections: [{id: 0, pos: 2}]}},
+        'vert_10': {type: 'light', x: 5250, y: 4100, spacing: 110, repeat: 16, label: ['$i']}
+        // 'hor_10': {type: 'light', x: 5200, y: 4400, spacing: 110, repeat: 16, label: ['$i']}
+      }
     },
     '256_bit': {
       name: '256-bit Memory',
@@ -438,7 +451,21 @@ var components = {
         left: {amount: 18, label: ['8-bit Data', null, null, null, null, null, null, null, '1 Col', '2 Col', '4 Col', '8 Col', '1 Row', '2 Row', '4 Row', '8 Row', 'Write enable', 'Read enable']},
         // right: {amount: 8, label: ['Data out']}
       },
-      inspect: {}
+      inspect: {
+        'vert_0': {type: 'toggle', x: 4700, y: 5400, spacing: 110, repeat: 2, label: ['Write enable', 'Read enable'], connection: [{connections: [{id: [10, 8], pos: 9}]}, {connections: [{id: [10, 8], pos: 10}]}]},
+        // 2: {type: 'toggle', x: 4700, y: 4585, label: 'Col 4-bit #1', connection: {connections: [{id: [10, 8]}]}},
+        // 3: {type: 'toggle', x: 4590, y: 4643, label: 'Col 4-bit #2', connection: {connections: [{id: [10, 8], pos: 1}]}},
+        // 4: {type: 'toggle', x: 4501, y: 4702, label: 'Col 4-bit #3', connection: {connections: [{id: [10, 8], pos: 2}]}},
+        // 5: {type: 'toggle', x: 4409, y: 4772, label: 'Col 4-bit #4', connection: {connections: [{id: [10, 8], pos: 3}]}},
+        // 6: {type: 'toggle', x: 4227, y: 4758, label: 'Row 4-bit #1', connection: {connections: [{id: [10, 8], pos: 4}]}},
+        // 7: {type: 'toggle', x: 4126, y: 4813, label: 'Row 4-bit #2', connection: {connections: [{id: [10, 8], pos: 5}]}},
+        // 8: {type: 'toggle', x: 4032, y: 4869, label: 'Row 4-bit #3', connection: {connections: [{id: [10, 8], pos: 6}]}},
+        // 9: {type: 'toggle', x: 3941, y: 4925, label: 'Row 4-bit #4', connection: {connections: [{id: [10, 8], pos: 7}]}},
+        'vert_2': {type: 'toggle', x: 4700, y: 4473, spacing: 110, repeat: 8, label: ['Col 4-bit #1', 'Col 4-bit #2', 'Col 4-bit #3', 'Col 4-bit #4', 'Row 4-bit #1', 'Row 4-bit #2', 'Row 4-bit #3', 'Row 4-bit #4'], connection: [{connections: [{id: [10, 8]}]}, {connections: [{id: [10, 8], pos: 1}]}, {connections: [{id: [10, 8], pos: 2}]}, {connections: [{id: [10, 8], pos: 3}]}, {connections: [{id: [10, 8], pos: 4}]}, {connections: [{id: [10, 8], pos: 5}]}, {connections: [{id: [10, 8], pos: 6}]}, {connections: [{id: [10, 8], pos: 7}]}]},
+        'vert_10': {type: '256_bit', x: 5050, y: 4363, spacing: 210, repeat: 8, connectionRel: {connections: [{id: 26}]}},
+        'vert_18': {type: 'toggle', x: 4500, y: 4473, spacing: 210, repeat: 8, label: ['Input #$i+'], connectionRel: {connections: [{id: 10, pos: 8}]}},
+        'vert_26': {type: 'light', x: 5347, y: 4423, spacing: 210, repeat: 8, label: ['Output #$i+']}
+      }
     },
     register: {
       name: 'Register',
@@ -451,7 +478,12 @@ var components = {
         right: {amount: 8, label: ['Out']}
         // TODO: same output as input
       },
-      inspect: {}
+      inspect: {
+        'hor_0': {type: 'gated_latch', x: 4550, y: 4920, spacing: 240, repeat: 8, connectionRel: {connections: [{id: 16}]}},
+        'hor_8': {type: 'toggle', x: 4390, y: 4780, spacing: 240, repeat: 8, label: ['Input #$i+'], connectionRel: {connections: [{id: 0}]}},
+        'hor_16': {type: 'light', x: 4785, y: 5080, spacing: 240, repeat: 8, label: ['Output #$i+']},
+        24: {type: 'toggle', x: 4390, y: 5109, label: 'Write enable', connection: {connections: [{id: [0, 8], pos: 1}]}},
+      }
     }
   },
   custom: {
@@ -494,7 +526,7 @@ var components = {
           {fromSide: 'right', connections: [{id: 11}]},
           {fromSide: 'right', connections: [{id: 12}]},
         ]},
-        'vert_9': {type: 'light', x: 5161, y: 4739, spacing: 110, repeat: 4, label: ['Output #$i+']},
+        'vert_9': {type: 'light', x: 5161, y: 4739, spacing: 110, repeat: 4, label: ['Output #$i']},
       }
     },
     'WIP_disabled_4_16': {
@@ -516,18 +548,28 @@ var components = {
       children: '',
       memory: {row: 16, column: 16},
       connectors: {
-        left: {amount: 20, label: ['$i', '@17:Data in', '@18:Data out', '@19:Write enable', '@20:Read enable'], required: [true, false, null, true]}, // show red / notConnected TODO: required
+        // left: {amount: 20, label: ['$i', '@17:Data in', '@18:Data out', '@19:Write enable', '@20:Read enable'], required: [true, false, null, true]}, // show red / notConnected TODO: required
+        left: {amount: 20, label: ['$i', '@17:Data in', '@18:Data out', '@19:Write enable', '@20:Read enable']},
         right: {label: ['Data out']},
         top: {amount: 16}
       },
       inspect: {
+        // 'alert': 'WARNING! This will take a long time (up to 30 minutes) and cause much lag. Do you want to procceed?',
         // 'grid_0': {type: 'gated_latch_grid', x: 5114, y: 4887, spacing: [270, 180], repeat: [16, 16]}, // spacing: [180, 120]
-        'grid_0': {type: 'gated_latch_grid', x: 5114, y: 4887, spacing: [270, 180], repeat: [2, 2], connectionAll: {connections: [{id: 291}]}}, // [16, 16]
-        // [0, 256] x5 V !!!
+        'grid_0': {type: 'gated_latch_grid', x: 5114, y: 4887, spacing: [270, 180], repeat: [2, 2], connectionAll: {connections: [{id: 291}]}}, // TODO: [16, 16]
+        // TODO: [0, 256] x5 V !!!
         'hor_256': {type: 'toggle', x: 5114, y: 4687, spacing: 270, repeat: 16, label: ['#$i+'], connectionAll: {connections: [{id: [0, 4], pos: 4}]}}, // TODO: .....
         'vert_272': {type: 'toggle', x: 4914, y: 4887, spacing: 180, repeat: 16, label: ['#$i+'], connectionAll: {connections: [{id: [0, 4], pos: 3}]}}, // TODO: .....
         'hor_288': {type: 'toggle', x: 4300, y: 5105, spacing: 180, repeat: 3, label: ['Data in', 'Write enable', 'Read enable'], connection: [{connections: [{id: [0, 4]}]}, {connections: [{id: [0, 4], pos: 1}]}, {connections: [{id: [0, 4], pos: 2}]}]},
         291: {type: 'light', x: 9780, y: 6400, label: 'Data out'} //, connection: {fromSide: 'right', side: 'left', connections: [{id: 5}, {id: 7, pos: 1}]}},
+      }
+    },
+    screen: { // TODO: screen storage.....
+      name: 'Screen decoder...',
+      classes: ['box', 'screenDiv'],
+      children: ['<span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>'],
+      connectors: {
+        left: {amount: 10, label: ['1 Col', '2 Col', '4 Col', '1 Row', '2 Row', '4 Row', 'Write Enable', 'R', 'G', 'B']}
       }
     }
   }

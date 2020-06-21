@@ -228,7 +228,7 @@ function menuClick(e) {
         addTab(type + ' | Inspect').querySelector('span').classList.remove('unsaved'); // display name instead of type/id
         loadComponent(getObjectByType(type).inspect);
 
-        switch (type) {
+        // switch (type) {
           // case 'and':
           //   var c = appendElem('high_constant', {x: 4600, y: 5000});
           //   var tr1 = appendElem('transistor', {x: 4800, y: 5000});
@@ -346,154 +346,116 @@ function menuClick(e) {
           //   cSVG({elem: n4}, {elem: and9, side: 'left', pos: 1});
           //   break;
 
-            case '256_bit_remove':
-              var lg = appendElem('latch_grid', {x: 5111, y: 5000});
-              var ca = appendElem('multiplexer', {x: 4863, y: 4748}, 'Column address');
-              var ra = appendElem('multiplexer', {x: 4392, y: 4901}, 'Row address');
-              var di = appendElem('toggle', {x: 4500, y: 5105}, 'Data in');
-              var we = appendElem('toggle', {x: 4500, y: 5248}, 'Write enable');
-              var re = appendElem('toggle', {x: 4500, y: 5395}, 'Read enable');
-              var out = appendElem('light', {x: 5625, y: 5160}, 'Data out');
+            // case '256_byte':
+            //   // var bit1 = appendElem('256_bit', {x: 5050, y: 5841});
+            //   // var bit2 = appendElem('256_bit', {x: 5050, y: 5631});
+            //   // var bit3 = appendElem('256_bit', {x: 5050, y: 5421});
+            //   // var bit4 = appendElem('256_bit', {x: 5050, y: 5211});
+            //   // var bit5 = appendElem('256_bit', {x: 5050, y: 5000});
+            //   // var bit6 = appendElem('256_bit', {x: 5050, y: 4785});
+            //   // var bit7 = appendElem('256_bit', {x: 5050, y: 4571});
+            //   // var bit8 = appendElem('256_bit', {x: 5050, y: 4363});
 
-              var t1 = appendElem('toggle', {x: 4687, y: 4585}, 'Col 4-bit #1');
-              var t2 = appendElem('toggle', {x: 4590, y: 4643}, 'Col 4-bit #2');
-              var t3 = appendElem('toggle', {x: 4501, y: 4702}, 'Col 4-bit #3');
-              var t4 = appendElem('toggle', {x: 4409, y: 4772}, 'Col 4-bit #4');
-              var t5 = appendElem('toggle', {x: 4227, y: 4758}, 'Row 4-bit #1');
-              var t6 = appendElem('toggle', {x: 4126, y: 4813}, 'Row 4-bit #2');
-              var t7 = appendElem('toggle', {x: 4032, y: 4869}, 'Row 4-bit #3');
-              var t8 = appendElem('toggle', {x: 3941, y: 4925}, 'Row 4-bit #4');
-              cSVG({elem: t1, side: 'right'}, {elem: ca, side: 'left'});
-              cSVG({elem: t2, side: 'right'}, {elem: ca, side: 'left', pos: 1});
-              cSVG({elem: t3, side: 'right'}, {elem: ca, side: 'left', pos: 2});
-              cSVG({elem: t4, side: 'right'}, {elem: ca, side: 'left', pos: 3});
-              cSVG({elem: t5, side: 'right'}, {elem: ra, side: 'left'});
-              cSVG({elem: t6, side: 'right'}, {elem: ra, side: 'left', pos: 1});
-              cSVG({elem: t7, side: 'right'}, {elem: ra, side: 'left', pos: 2});
-              cSVG({elem: t8, side: 'right'}, {elem: ra, side: 'left', pos: 3});
+            //   var we = appendElem('toggle', {x: 4500, y: 5248}, 'Write enable');
+            //   var re = appendElem('toggle', {x: 4500, y: 5395}, 'Read enable');
 
-              cSVG({elem: di}, {elem: lg, side: 'left', pos: 16});
-              cSVG({elem: we}, {elem: lg, side: 'left', pos: 17});
-              cSVG({elem: re}, {elem: lg, side: 'left', pos: 18});
-              cSVG({elem: lg, side: 'right'}, {elem: out});
+            //   // var d1 = appendElem('toggle', {x: 4687, y: 4585});
+            //   // var d2 = appendElem('toggle', {x: 4590, y: 4643});
+            //   // var d3 = appendElem('toggle', {x: 4501, y: 4702});
+            //   // var d4 = appendElem('toggle', {x: 4409, y: 4772});
+            //   // var d5 = appendElem('toggle', {x: 4227, y: 4758});
+            //   // var d6 = appendElem('toggle', {x: 4126, y: 4813});
+            //   // var d7 = appendElem('toggle', {x: 4032, y: 4869});
+            //   // var d8 = appendElem('toggle', {x: 3941, y: 4925});
 
-              for (var i = 0; i < 16; i++) {
-                cSVG({elem: ca, side: 'bottom', pos: i}, {elem: lg, side: 'top', pos: i});
-                cSVG({elem: ra, side: 'bottom', pos: i}, {elem: lg, side: 'left', pos: i});
-              }
+            //   var t1 = appendElem('toggle', {x: 4687, y: 4485}, 'Col 4-bit #1');
+            //   var t2 = appendElem('toggle', {x: 4590, y: 4543}, 'Col 4-bit #2');
+            //   var t3 = appendElem('toggle', {x: 4501, y: 4602}, 'Col 4-bit #3');
+            //   var t4 = appendElem('toggle', {x: 4409, y: 4672}, 'Col 4-bit #4');
+            //   var t5 = appendElem('toggle', {x: 4227, y: 4758}, 'Row 4-bit #1');
+            //   var t6 = appendElem('toggle', {x: 4126, y: 4813}, 'Row 4-bit #2');
+            //   var t7 = appendElem('toggle', {x: 4032, y: 4869}, 'Row 4-bit #3');
+            //   var t8 = appendElem('toggle', {x: 3941, y: 4925}, 'Row 4-bit #4');
 
-              // TODO: add 8 toggles
-              break;
-            case '256_byte':
-              // var bit1 = appendElem('256_bit', {x: 5050, y: 5841});
-              // var bit2 = appendElem('256_bit', {x: 5050, y: 5631});
-              // var bit3 = appendElem('256_bit', {x: 5050, y: 5421});
-              // var bit4 = appendElem('256_bit', {x: 5050, y: 5211});
-              // var bit5 = appendElem('256_bit', {x: 5050, y: 5000});
-              // var bit6 = appendElem('256_bit', {x: 5050, y: 4785});
-              // var bit7 = appendElem('256_bit', {x: 5050, y: 4571});
-              // var bit8 = appendElem('256_bit', {x: 5050, y: 4363});
+            //   // cSVG({elem: t1, side: 'right'}, {elem: ca, side: 'left'});
+            //   // cSVG({elem: t2, side: 'right'}, {elem: ca, side: 'left', pos: 1});
+            //   // cSVG({elem: t3, side: 'right'}, {elem: ca, side: 'left', pos: 2});
+            //   // cSVG({elem: t4, side: 'right'}, {elem: ca, side: 'left', pos: 3});
+            //   // cSVG({elem: t5, side: 'right'}, {elem: ra, side: 'left'});
+            //   // cSVG({elem: t6, side: 'right'}, {elem: ra, side: 'left', pos: 1});
+            //   // cSVG({elem: t7, side: 'right'}, {elem: ra, side: 'left', pos: 2});
+            //   // cSVG({elem: t8, side: 'right'}, {elem: ra, side: 'left', pos: 3});
+            //   //
+            //   // cSVG({elem: di}, {elem: lg, side: 'left', pos: 16});
+            //   // cSVG({elem: we}, {elem: lg, side: 'left', pos: 17});
+            //   // cSVG({elem: re}, {elem: lg, side: 'left', pos: 18});
+            //   // cSVG({elem: lg, side: 'right'}, {elem: out});
 
-              var we = appendElem('toggle', {x: 4500, y: 5248}, 'Write enable');
-              var re = appendElem('toggle', {x: 4500, y: 5395}, 'Read enable');
+            //   var bits = createGrid({rows: 8, cols: 1}, '256_bit', {width: 160, height: 160}, {x: 5050, y: 4363}, 'b');
+            //   var inputs = createGrid({rows: 8, cols: 1}, 'toggle', {width: 160, height: 160}, {x: 4850, y: 4473}, 'i', true);
 
-              // var d1 = appendElem('toggle', {x: 4687, y: 4585});
-              // var d2 = appendElem('toggle', {x: 4590, y: 4643});
-              // var d3 = appendElem('toggle', {x: 4501, y: 4702});
-              // var d4 = appendElem('toggle', {x: 4409, y: 4772});
-              // var d5 = appendElem('toggle', {x: 4227, y: 4758});
-              // var d6 = appendElem('toggle', {x: 4126, y: 4813});
-              // var d7 = appendElem('toggle', {x: 4032, y: 4869});
-              // var d8 = appendElem('toggle', {x: 3941, y: 4925});
+            //   for (var i = 0; i < 8; i++) {
+            //     var bit = bits['b' + '00' + ('0' + i).slice(-2)];
+            //     // console.log('b' + '00' + ('0' + row).slice(-2));
+            //     console.log(bit);
+            //     cSVG({elem: t1}, {elem: bit, side: 'left'});
+            //     cSVG({elem: t2}, {elem: bit, side: 'left', pos: 1});
+            //     cSVG({elem: t3}, {elem: bit, side: 'left', pos: 2});
+            //     cSVG({elem: t4}, {elem: bit, side: 'left', pos: 3});
+            //     cSVG({elem: t5}, {elem: bit, side: 'left', pos: 4});
+            //     cSVG({elem: t6}, {elem: bit, side: 'left', pos: 5});
+            //     cSVG({elem: t7}, {elem: bit, side: 'left', pos: 6});
+            //     cSVG({elem: t8}, {elem: bit, side: 'left', pos: 7});
 
-              var t1 = appendElem('toggle', {x: 4687, y: 4485}, 'Col 4-bit #1');
-              var t2 = appendElem('toggle', {x: 4590, y: 4543}, 'Col 4-bit #2');
-              var t3 = appendElem('toggle', {x: 4501, y: 4602}, 'Col 4-bit #3');
-              var t4 = appendElem('toggle', {x: 4409, y: 4672}, 'Col 4-bit #4');
-              var t5 = appendElem('toggle', {x: 4227, y: 4758}, 'Row 4-bit #1');
-              var t6 = appendElem('toggle', {x: 4126, y: 4813}, 'Row 4-bit #2');
-              var t7 = appendElem('toggle', {x: 4032, y: 4869}, 'Row 4-bit #3');
-              var t8 = appendElem('toggle', {x: 3941, y: 4925}, 'Row 4-bit #4');
+            //     cSVG({elem: inputs['i' + '00' + ('0' + i).slice(-2)]}, {elem: bit, side: 'left', pos: 8});
+            //     cSVG({elem: we}, {elem: bit, side: 'left', pos: 9});
+            //     cSVG({elem: re}, {elem: bit, side: 'left', pos: 10});
+            //   }
 
-              // cSVG({elem: t1, side: 'right'}, {elem: ca, side: 'left'});
-              // cSVG({elem: t2, side: 'right'}, {elem: ca, side: 'left', pos: 1});
-              // cSVG({elem: t3, side: 'right'}, {elem: ca, side: 'left', pos: 2});
-              // cSVG({elem: t4, side: 'right'}, {elem: ca, side: 'left', pos: 3});
-              // cSVG({elem: t5, side: 'right'}, {elem: ra, side: 'left'});
-              // cSVG({elem: t6, side: 'right'}, {elem: ra, side: 'left', pos: 1});
-              // cSVG({elem: t7, side: 'right'}, {elem: ra, side: 'left', pos: 2});
-              // cSVG({elem: t8, side: 'right'}, {elem: ra, side: 'left', pos: 3});
-              //
-              // cSVG({elem: di}, {elem: lg, side: 'left', pos: 16});
-              // cSVG({elem: we}, {elem: lg, side: 'left', pos: 17});
-              // cSVG({elem: re}, {elem: lg, side: 'left', pos: 18});
-              // cSVG({elem: lg, side: 'right'}, {elem: out});
+            //   // cSVG({elem: t11, side: 'right'}, {elem: bit1, side: 'left'});
+            //   // cSVG({elem: t12, side: 'right'}, {elem: bit1, side: 'left', pos: 1});
+            //   // cSVG({elem: t13, side: 'right'}, {elem: bit1, side: 'left', pos: 2});
+            //   // cSVG({elem: t14, side: 'right'}, {elem: bit1, side: 'left', pos: 3});
+            //   // cSVG({elem: t11, side: 'right'}, {elem: bit2, side: 'left'});
+            //   // cSVG({elem: t12, side: 'right'}, {elem: bit2, side: 'left', pos: 1});
+            //   // cSVG({elem: t13, side: 'right'}, {elem: bit2, side: 'left', pos: 2});
+            //   // cSVG({elem: t14, side: 'right'}, {elem: bit2, side: 'left', pos: 3});
+            //   // cSVG({elem: t3, side: 'right'}, {elem: bit1, side: 'left', pos: 8});
+            //   // cSVG({elem: t5, side: 'right'}, {elem: bit2, side: 'left', pos: 8});
+            //   // cSVG({elem: t4, side: 'right'}, {elem: 26, side: 'left', pos: 8});
+            //   // cSVG({elem: t6, side: 'right'}, {elem: 25, side: 'left', pos: 8});
+            //   break;
 
-              var bits = createGrid({rows: 8, cols: 1}, '256_bit', {width: 160, height: 160}, {x: 5050, y: 4363}, 'b');
-              var inputs = createGrid({rows: 8, cols: 1}, 'toggle', {width: 160, height: 160}, {x: 4850, y: 4473}, 'i', true);
+            // case 'latch_grid':
+            //   // TODO: wokingg???
+            //   if (confirm('WARNING! This will take a long time (up to 30 minutes) and cause much lag. Do you want to procceed?')) {
+            //     var latches = createGrid({rows: 16, cols: 16}, 'gated_latch_grid', {width: 180, height: 120}, {x: 5114, y: 4887}, 'g');
+            //     var toggleColumn = createGrid({rows: 1, cols: 16}, 'toggle', {width: 180, height: 80}, {x: 5114, y: 4787}, 't', true);
+            //     var toggleRow = createGrid({rows: 16, cols: 1}, 'toggle', {width: 80, height: 120}, {x: 5014, y: 4887}, 't', true);
+            //     console.log(toggleColumn);
 
-              for (var i = 0; i < 8; i++) {
-                var bit = bits['b' + '00' + ('0' + i).slice(-2)];
-                // console.log('b' + '00' + ('0' + row).slice(-2));
-                console.log(bit);
-                cSVG({elem: t1}, {elem: bit, side: 'left'});
-                cSVG({elem: t2}, {elem: bit, side: 'left', pos: 1});
-                cSVG({elem: t3}, {elem: bit, side: 'left', pos: 2});
-                cSVG({elem: t4}, {elem: bit, side: 'left', pos: 3});
-                cSVG({elem: t5}, {elem: bit, side: 'left', pos: 4});
-                cSVG({elem: t6}, {elem: bit, side: 'left', pos: 5});
-                cSVG({elem: t7}, {elem: bit, side: 'left', pos: 6});
-                cSVG({elem: t8}, {elem: bit, side: 'left', pos: 7});
+            //     var di = appendElem('toggle', {x: 4700, y: 5105}, 'Data in');
+            //     var we = appendElem('toggle', {x: 4700, y: 5248}, 'Write enable');
+            //     var re = appendElem('toggle', {x: 4700, y: 5395}, 'Read enable');
+            //     var out = appendElem('light', {x: 9780, y: 6400}, 'Data out');
 
-                cSVG({elem: inputs['i' + '00' + ('0' + i).slice(-2)]}, {elem: bit, side: 'left', pos: 8});
-                cSVG({elem: we}, {elem: bit, side: 'left', pos: 9});
-                cSVG({elem: re}, {elem: bit, side: 'left', pos: 10});
-              }
+            //     for (var col = 0; col < 16; col++) {
+            //       for (var row = 0; row < 16; row++) {
+            //         var elem = latches['g' + ('0' + col).slice(-2) + ('0' + row).slice(-2)];
+            //         cSVG({elem: di}, {elem: elem, side: 'left'});
+            //         cSVG({elem: we}, {elem: elem, side: 'left', pos: 1});
+            //         cSVG({elem: re}, {elem: elem, side: 'left', pos: 2});
+            //         cSVG({elem: elem, side: 'right'}, {elem: out});
+            //       }
+            //     }
+            //     for (var i = 0; i < 16; i++) {
+            //       cSVG({elem: toggleColumn['t' + ('0' + i).slice(-2) + '00']}, {elem: elem, side: 'left', pos: 4});
+            //       cSVG({elem: toggleRow['t' + '00' + ('0' + i).slice(-2)]}, {elem: elem, side: 'left', pos: 3});
+            //     }
+            //   }
+            //   break;
 
-              // cSVG({elem: t11, side: 'right'}, {elem: bit1, side: 'left'});
-              // cSVG({elem: t12, side: 'right'}, {elem: bit1, side: 'left', pos: 1});
-              // cSVG({elem: t13, side: 'right'}, {elem: bit1, side: 'left', pos: 2});
-              // cSVG({elem: t14, side: 'right'}, {elem: bit1, side: 'left', pos: 3});
-              // cSVG({elem: t11, side: 'right'}, {elem: bit2, side: 'left'});
-              // cSVG({elem: t12, side: 'right'}, {elem: bit2, side: 'left', pos: 1});
-              // cSVG({elem: t13, side: 'right'}, {elem: bit2, side: 'left', pos: 2});
-              // cSVG({elem: t14, side: 'right'}, {elem: bit2, side: 'left', pos: 3});
-              // cSVG({elem: t3, side: 'right'}, {elem: bit1, side: 'left', pos: 8});
-              // cSVG({elem: t5, side: 'right'}, {elem: bit2, side: 'left', pos: 8});
-              // cSVG({elem: t4, side: 'right'}, {elem: 26, side: 'left', pos: 8});
-              // cSVG({elem: t6, side: 'right'}, {elem: 25, side: 'left', pos: 8});
-              break;
-
-            case 'latch_grid':
-              // TODO: wokingg???
-              if (confirm('WARNING! This will take a long time (up to 30 minutes) and cause much lag. Do you want to procceed?')) {
-                var latches = createGrid({rows: 16, cols: 16}, 'gated_latch_grid', {width: 180, height: 120}, {x: 5114, y: 4887}, 'g');
-                var toggleColumn = createGrid({rows: 1, cols: 16}, 'toggle', {width: 180, height: 80}, {x: 5114, y: 4787}, 't', true);
-                var toggleRow = createGrid({rows: 16, cols: 1}, 'toggle', {width: 80, height: 120}, {x: 5014, y: 4887}, 't', true);
-                console.log(toggleColumn);
-
-                var di = appendElem('toggle', {x: 4700, y: 5105}, 'Data in');
-                var we = appendElem('toggle', {x: 4700, y: 5248}, 'Write enable');
-                var re = appendElem('toggle', {x: 4700, y: 5395}, 'Read enable');
-                var out = appendElem('light', {x: 9780, y: 6400}, 'Data out');
-
-                for (var col = 0; col < 16; col++) {
-                  for (var row = 0; row < 16; row++) {
-                    var elem = latches['g' + ('0' + col).slice(-2) + ('0' + row).slice(-2)];
-                    cSVG({elem: di}, {elem: elem, side: 'left'});
-                    cSVG({elem: we}, {elem: elem, side: 'left', pos: 1});
-                    cSVG({elem: re}, {elem: elem, side: 'left', pos: 2});
-                    cSVG({elem: elem, side: 'right'}, {elem: out});
-                  }
-                }
-                for (var i = 0; i < 16; i++) {
-                  cSVG({elem: toggleColumn['t' + ('0' + i).slice(-2) + '00']}, {elem: elem, side: 'left', pos: 4});
-                  cSVG({elem: toggleRow['t' + '00' + ('0' + i).slice(-2)]}, {elem: elem, side: 'left', pos: 3});
-                }
-              }
-              break;
-
-          case '2_4':
+          // case '2_4':
             // loadComponent(componentTemplates['2_4']);
 
             // var t1 = appendElem('toggle', {x: 4353, y: 4729}, '1');
@@ -574,88 +536,72 @@ function menuClick(e) {
             //     y: 269
             //   }
             // }
-            break;
+            // break;
 
-          case 'multiplexer': // 4_16
-            var dec1 = appendElem('2_4', {x: 4593, y: 4939});
-            var dec2 = appendElem('2_4', {x: 4937, y: 4765});
-            var dec3 = appendElem('2_4', {x: 4937, y: 4865});
-            var dec4 = appendElem('2_4', {x: 4945, y: 4966});
-            var dec5 = appendElem('2_4', {x: 4949, y: 5073});
-            var t1 = appendElem('toggle', {x: 4290, y: 4737}, '2');
-            var t2 = appendElem('toggle', {x: 4290, y: 4832}, '1');
-            var t3 = appendElem('toggle', {x: 4290, y: 4927}, '8');
-            var t4 = appendElem('toggle', {x: 4290, y: 5025}, '4');
-            var h1 = appendElem('high_constant', {x: 4291, y: 5150});
+          // case 'multiplexer': // 4_16
+          //   var dec1 = appendElem('2_4', {x: 4593, y: 4939});
+          //   var dec2 = appendElem('2_4', {x: 4937, y: 4765});
+          //   var dec3 = appendElem('2_4', {x: 4937, y: 4865});
+          //   var dec4 = appendElem('2_4', {x: 4945, y: 4966});
+          //   var dec5 = appendElem('2_4', {x: 4949, y: 5073});
+          //   var t1 = appendElem('toggle', {x: 4290, y: 4737}, '2');
+          //   var t2 = appendElem('toggle', {x: 4290, y: 4832}, '1');
+          //   var t3 = appendElem('toggle', {x: 4290, y: 4927}, '8');
+          //   var t4 = appendElem('toggle', {x: 4290, y: 5025}, '4');
+          //   var h1 = appendElem('high_constant', {x: 4291, y: 5150});
 
-            var l1 = appendElem('light', {x: 5250, y: 4386});
-            var l2 = appendElem('light', {x: 5250, y: 4469});
-            var l3 = appendElem('light', {x: 5250, y: 4552});
-            var l4 = appendElem('light', {x: 5250, y: 4636});
-            var l5 = appendElem('light', {x: 5250, y: 4720});
-            var l6 = appendElem('light', {x: 5250, y: 4804});
-            var l7 = appendElem('light', {x: 5250, y: 4890});
-            var l8 = appendElem('light', {x: 5250, y: 4974});
-            var l9 = appendElem('light', {x: 5250, y: 5057});
-            var l10 = appendElem('light', {x: 5250, y: 5140});
-            var l11 = appendElem('light', {x: 5250, y: 5227});
-            var l12 = appendElem('light', {x: 5250, y: 5315});
-            var l13 = appendElem('light', {x: 5250, y: 5400});
-            var l14 = appendElem('light', {x: 5250, y: 5484});
-            var l15 = appendElem('light', {x: 5250, y: 5570});
-            var l16 = appendElem('light', {x: 5250, y: 5656});
+          //   var l1 = appendElem('light', {x: 5250, y: 4386});
+          //   var l2 = appendElem('light', {x: 5250, y: 4469});
+          //   var l3 = appendElem('light', {x: 5250, y: 4552});
+          //   var l4 = appendElem('light', {x: 5250, y: 4636});
+          //   var l5 = appendElem('light', {x: 5250, y: 4720});
+          //   var l6 = appendElem('light', {x: 5250, y: 4804});
+          //   var l7 = appendElem('light', {x: 5250, y: 4890});
+          //   var l8 = appendElem('light', {x: 5250, y: 4974});
+          //   var l9 = appendElem('light', {x: 5250, y: 5057});
+          //   var l10 = appendElem('light', {x: 5250, y: 5140});
+          //   var l11 = appendElem('light', {x: 5250, y: 5227});
+          //   var l12 = appendElem('light', {x: 5250, y: 5315});
+          //   var l13 = appendElem('light', {x: 5250, y: 5400});
+          //   var l14 = appendElem('light', {x: 5250, y: 5484});
+          //   var l15 = appendElem('light', {x: 5250, y: 5570});
+          //   var l16 = appendElem('light', {x: 5250, y: 5656});
 
-            cSVG({elem: t3, side: 'right'}, {elem: dec1, side: 'left'});
-            cSVG({elem: t4, side: 'right'}, {elem: dec1, side: 'left', pos: 1});
-            cSVG({elem: t1, side: 'right'}, {elem: dec2, side: 'left'});
-            cSVG({elem: t1, side: 'right'}, {elem: dec3, side: 'left'});
-            cSVG({elem: t1, side: 'right'}, {elem: dec4, side: 'left'});
-            cSVG({elem: t1, side: 'right'}, {elem: dec5, side: 'left'});
-            cSVG({elem: t2, side: 'right'}, {elem: dec2, side: 'left', pos: 1});
-            cSVG({elem: t2, side: 'right'}, {elem: dec3, side: 'left', pos: 1});
-            cSVG({elem: t2, side: 'right'}, {elem: dec4, side: 'left', pos: 1});
-            cSVG({elem: t2, side: 'right'}, {elem: dec5, side: 'left', pos: 1});
+          //   cSVG({elem: t3, side: 'right'}, {elem: dec1, side: 'left'});
+          //   cSVG({elem: t4, side: 'right'}, {elem: dec1, side: 'left', pos: 1});
+          //   cSVG({elem: t1, side: 'right'}, {elem: dec2, side: 'left'});
+          //   cSVG({elem: t1, side: 'right'}, {elem: dec3, side: 'left'});
+          //   cSVG({elem: t1, side: 'right'}, {elem: dec4, side: 'left'});
+          //   cSVG({elem: t1, side: 'right'}, {elem: dec5, side: 'left'});
+          //   cSVG({elem: t2, side: 'right'}, {elem: dec2, side: 'left', pos: 1});
+          //   cSVG({elem: t2, side: 'right'}, {elem: dec3, side: 'left', pos: 1});
+          //   cSVG({elem: t2, side: 'right'}, {elem: dec4, side: 'left', pos: 1});
+          //   cSVG({elem: t2, side: 'right'}, {elem: dec5, side: 'left', pos: 1});
 
-            cSVG({elem: h1}, {elem: dec1, side: 'left', pos: 2});
-            cSVG({elem: dec1, side: 'right'}, {elem: dec2, side: 'left', pos: 2});
-            cSVG({elem: dec1, side: 'right', pos: 1}, {elem: dec3, side: 'left', pos: 2});
-            cSVG({elem: dec1, side: 'right', pos: 2}, {elem: dec4, side: 'left', pos: 2});
-            cSVG({elem: dec1, side: 'right', pos: 3}, {elem: dec5, side: 'left', pos: 2});
+          //   cSVG({elem: h1}, {elem: dec1, side: 'left', pos: 2});
+          //   cSVG({elem: dec1, side: 'right'}, {elem: dec2, side: 'left', pos: 2});
+          //   cSVG({elem: dec1, side: 'right', pos: 1}, {elem: dec3, side: 'left', pos: 2});
+          //   cSVG({elem: dec1, side: 'right', pos: 2}, {elem: dec4, side: 'left', pos: 2});
+          //   cSVG({elem: dec1, side: 'right', pos: 3}, {elem: dec5, side: 'left', pos: 2});
 
-            cSVG({elem: dec2, side: 'right'}, {elem: l1, side: 'left'});
-            cSVG({elem: dec2, side: 'right', pos: 1}, {elem: l2, side: 'left'});
-            cSVG({elem: dec2, side: 'right', pos: 2}, {elem: l3, side: 'left'});
-            cSVG({elem: dec2, side: 'right', pos: 3}, {elem: l4, side: 'left'});
-            cSVG({elem: dec3, side: 'right'}, {elem: l5, side: 'left'});
-            cSVG({elem: dec3, side: 'right', pos: 1}, {elem: l6, side: 'left'});
-            cSVG({elem: dec3, side: 'right', pos: 2}, {elem: l7, side: 'left'});
-            cSVG({elem: dec3, side: 'right', pos: 3}, {elem: l8, side: 'left'});
-            cSVG({elem: dec4, side: 'right'}, {elem: l9, side: 'left'});
-            cSVG({elem: dec4, side: 'right', pos: 1}, {elem: l10, side: 'left'});
-            cSVG({elem: dec4, side: 'right', pos: 2}, {elem: l11, side: 'left'});
-            cSVG({elem: dec4, side: 'right', pos: 3}, {elem: l12, side: 'left'});
-            cSVG({elem: dec5, side: 'right'}, {elem: l13, side: 'left'});
-            cSVG({elem: dec5, side: 'right', pos: 1}, {elem: l14, side: 'left'});
-            cSVG({elem: dec5, side: 'right', pos: 2}, {elem: l15, side: 'left'});
-            cSVG({elem: dec5, side: 'right', pos: 3}, {elem: l16, side: 'left'});
-            break;
-
-          case 'register':
-            var latches = createGrid({rows: 1, cols: 8}, 'gated_latch', {width: 180, height: 120}, {x: 4584, y: 4780}, 'g');
-            var inputs = createGrid({rows: 1, cols: 8}, 'toggle', {width: 180, height: 120}, {x: 4386, y: 4680}, 't', true);
-            var outputs = createGrid({rows: 1, cols: 8}, 'light', {width: 180, height: 120}, {x: 4886, y: 4980}, 'l', true);
-            var t2 = appendElem('toggle', {x: 4388, y: 5009}, 'Write enable');
-
-            for (var i = 0; i < 8; i++) {
-              var input = inputs['t' + ('0' + i).slice(-2) + '00'];
-              var latch = latches['g' + ('0' + i).slice(-2) + '00'];
-              var output = outputs['l' + ('0' + i).slice(-2) + '00'];
-              cSVG({elem: input}, {elem: latch, side: 'left'});
-              cSVG({elem: t2}, {elem: latch, side: 'left', pos: 1});
-              cSVG({elem: latch, side: 'right'}, {elem: output});
-            }
-            break;
-        }
+          //   cSVG({elem: dec2, side: 'right'}, {elem: l1, side: 'left'});
+          //   cSVG({elem: dec2, side: 'right', pos: 1}, {elem: l2, side: 'left'});
+          //   cSVG({elem: dec2, side: 'right', pos: 2}, {elem: l3, side: 'left'});
+          //   cSVG({elem: dec2, side: 'right', pos: 3}, {elem: l4, side: 'left'});
+          //   cSVG({elem: dec3, side: 'right'}, {elem: l5, side: 'left'});
+          //   cSVG({elem: dec3, side: 'right', pos: 1}, {elem: l6, side: 'left'});
+          //   cSVG({elem: dec3, side: 'right', pos: 2}, {elem: l7, side: 'left'});
+          //   cSVG({elem: dec3, side: 'right', pos: 3}, {elem: l8, side: 'left'});
+          //   cSVG({elem: dec4, side: 'right'}, {elem: l9, side: 'left'});
+          //   cSVG({elem: dec4, side: 'right', pos: 1}, {elem: l10, side: 'left'});
+          //   cSVG({elem: dec4, side: 'right', pos: 2}, {elem: l11, side: 'left'});
+          //   cSVG({elem: dec4, side: 'right', pos: 3}, {elem: l12, side: 'left'});
+          //   cSVG({elem: dec5, side: 'right'}, {elem: l13, side: 'left'});
+          //   cSVG({elem: dec5, side: 'right', pos: 1}, {elem: l14, side: 'left'});
+          //   cSVG({elem: dec5, side: 'right', pos: 2}, {elem: l15, side: 'left'});
+          //   cSVG({elem: dec5, side: 'right', pos: 3}, {elem: l16, side: 'left'});
+          //   break;
+        // }
         break;
       default:
         alert(e.target.id);
@@ -696,6 +642,16 @@ function loadComponent(component) {
           elems[index] = appendElem({type: object.type, x: object.x + hor, y: object.y + vert, label: label, input: input}, undefined, undefined, true); // get labels: $i+
           if (object.connection !== undefined) conns[index] = object.connection[index];
           if (object.connectionAll !== undefined) conns[index] = object.connectionAll;
+          // if (object.connectionRel !== undefined) { // TODO: create another function... (many duplicates <- ^^)
+          //   let connArr = object.connectionRel.connections;
+          //   for (let i = 0; i < connArr.length; i++) {
+          //     for (let j = 0; j < Object.keys(connArr[i]).length; j++) {
+          //       let value = connArr[i][Object.keys(connArr[i])[j]];
+          //       if (row > 0 && col > 0 && !isNaN(value)) connArr[i][Object.keys(connArr[i])[j]] = Number(value) + 1;
+          //     }
+          //   }
+          //   conns[index] = JSON.parse(JSON.stringify(object.connectionRel));
+          // }
 
           index++;
         }
@@ -718,6 +674,17 @@ function loadComponent(component) {
         elems[v + start] = appendElem({type: object.type, x: object.x + hor * v, y: object.y + vert * v, label: label, input: input}, undefined, undefined, true); // get labels: $i+
         if (object.connection !== undefined) conns[v + start] = object.connection[v];
         if (object.connectionAll !== undefined) conns[v + start] = object.connectionAll;
+        if (object.connectionRel !== undefined) { // TODO: create another function... (many duplicates <- ^^)
+          let connArr = object.connectionRel.connections;
+          for (let i = 0; i < connArr.length; i++) {
+            // for (let j = 0; j < Object.keys(connArr[i]).length; j++) {
+            //   let value = connArr[i][Object.keys(connArr[i])[j]];
+            //   if (v > 0 && !isNaN(value)) connArr[i][Object.keys(connArr[i])[j]] = Number(value) + 1;
+            // }
+            if (v > 0 && !isNaN(connArr[i].id)) connArr[i].id = Number(connArr[i].id) + 1;
+          }
+          conns[v + start] = JSON.parse(JSON.stringify(object.connectionRel));
+        }
         // if (object.inputs !== undefined) gate(elems[v + start].querySelector('.textInput'), object.inputs[v]);
       }
       //   v++;
@@ -742,10 +709,6 @@ function loadComponent(component) {
       // for (var j = 0; j < Object.keys(elems).length; j++) {
         var key = Object.keys(elems)[j];
         if (conns[key] !== undefined) {
-          var side = conns[key].side || 'left';
-          var pos = conns[key].pos || 0;
-          var fromSide = conns[key].fromSide || 'right';
-          var fromPos = conns[key].fromPos || 0;
           // for (var c = 0; c < Object.keys(conns[key]).length; c++) {
           //   var connKey = Object.keys(conns[key])[c];
           //   var conn = conns[key][connKey];
@@ -754,15 +717,23 @@ function loadComponent(component) {
           //   }
           // }
           for (var c = 0; c < conns[key].connections.length; c++) {
+            var side = conns[key].side || 'left';
+            var pos = conns[key].pos || 0;
+            var fromSide = conns[key].fromSide || 'right';
+            var fromPos = conns[key].fromPos || 0;
+
             var conn = conns[key].connections[c];
             fromPos = conn.fromPos || fromPos, pos = conn.pos || pos;
             let fromPosStore = fromPos, posStore = pos;
             let multiplier = 1;
             if (pos.toString().includes('*')) multiplier = Number(pos.substring(1));
             else if (fromPos.toString().includes('*')) multiplier = Number(fromPos.substring(1));
+            // if (conn.repeat !== undefined) multiplier = conn.repeat;
+
             for (let b = 0; b < multiplier; b++) {    
               if (posStore.toString().includes('*')) pos = b;
               if (fromPosStore.toString().includes('*')) fromPos = b;
+              // if (conn.repeat !== undefined) id = id + b;
               // console.log(conn);
               if (Array.isArray(conn.id)) {
                 let index = conn.id[0];
@@ -772,7 +743,7 @@ function loadComponent(component) {
                   index++;
                 }
               } else {
-                // console.log(key, conn.id);
+                // console.log(key, conn.id, pos);
                 loading('Adding connection: #' + key + ' - #' + conn.id);
                 cSVG({elem: elems[key], side: conn.fromSide || fromSide, pos: fromPos}, {elem: elems[conn.id], side: conn.side || side, pos: pos});
               }
